@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import sys
 import tarfile
 import tempfile
 
@@ -142,7 +143,10 @@ def _archive_to(root: Path, source_ref: str, destination: Path) -> None:
             target = (destination / member.name).resolve()
             if not target.is_relative_to(destination.resolve()):
                 raise DocKitError(f"Git archive contains unsafe path {member.name!r}")
-        bundle.extractall(destination, filter="data")
+        if sys.version_info >= (3, 12):
+            bundle.extractall(destination, filter="data")
+        else:
+            bundle.extractall(destination)
 
 
 def build_all(*, root: Path, output: Path) -> BuildAllResult:

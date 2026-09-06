@@ -5,11 +5,91 @@ on:
   pull_request:
 
 jobs:
-  test:
+  python-matrix:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -t . -v
+
+  python-forward-compat:
+    name: Python 3.15 pre-release (non-blocking)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.15.0-rc.2'
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -t . -v
+
+  os-qualification:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ['3.10', '3.14']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install .
+      - run: python -m unittest discover -s tests -t . -v
+
+  package-qualification:
+    name: Package qualification
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
-      - run: python -m unittest discover -s tests -t . -v
+          python-version: '3.13'
+      - id: version
+        run: echo "value=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")" >> "$GITHUB_OUTPUT"
+      - run: python -m pip install build
+      - run: python -m build --outdir dist
+      - run: python tests/qualification_artifacts.py "$GITHUB_WORKSPACE/dist" "${{ steps.version.outputs.value }}"
+      - name: Install and qualify the wheel
+        run: |
+          python -m venv /tmp/venv-wheel
+          /tmp/venv-wheel/bin/python -m pip install --no-deps "$GITHUB_WORKSPACE/dist/dockit_fp-${{ steps.version.outputs.value }}-py3-none-any.whl"
+          mkdir -p /tmp/qualification-work
+        env:
+          DOCKIT_QUALIFICATION_SRC: ${{ github.workspace }}
+      - name: Qualify the installed wheel
+        working-directory: /tmp/qualification-work
+        run: /tmp/venv-wheel/bin/python "$GITHUB_WORKSPACE/tests/qualification_installed.py" --expected-version "${{ steps.version.outputs.value }}"
+      - name: Install and qualify the sdist
+        working-directory: /tmp/qualification-work
+        run: |
+          python -m venv /tmp/venv-sdist
+          /tmp/venv-sdist/bin/python -m pip install "$GITHUB_WORKSPACE/dist/dockit_fp-${{ steps.version.outputs.value }}.tar.gz"
+      - name: Qualify the installed sdist
+        working-directory: /tmp/qualification-work
+        run: /tmp/venv-sdist/bin/python "$GITHUB_WORKSPACE/tests/qualification_installed.py" --expected-version "${{ steps.version.outputs.value }}"
+
+  docs-qualification:
+    name: Documentation qualification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - run: python -m pip install .
+      - run: dockit-fp check
+      - run: dockit-fp audit --strict
+      - run: dockit-fp build --output /tmp/docs-site
+      - run: python -c "from pathlib import Path; assert (Path('/tmp/docs-site/index.html').is_file() and (Path('/tmp/docs-site/assets/katex/katex.min.js').is_file()))"

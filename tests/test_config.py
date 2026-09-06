@@ -1,5 +1,7 @@
 import json
+import os
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
 
@@ -357,14 +359,28 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             docs.mkdir()
             outside = Path(external) / "outside.md"
             outside.write_text("# Outside", encoding="utf-8")
-            link = docs / "outside.md"
+            page_path = "outside.md"
             try:
-                link.symlink_to(outside)
-            except OSError as error:
-                self.skipTest(f"symlink creation is unavailable: {error}")
+                (docs / "outside.md").symlink_to(outside)
+            except (NotImplementedError, OSError) as error:
+                if os.name != "nt":
+                    self.skipTest(f"symlink creation is unavailable: {error}")
+                # Windows without Developer Mode cannot create file symlinks, but
+                # unprivileged directory junctions use the same resolve()-based
+                # outside-the-repository guard, so qualify the escape resistance
+                # through a junctioned directory.
+                junction = docs / "outside"
+                try:
+                    subprocess.run(
+                        ["cmd", "/c", "mklink", "/J", str(junction), str(Path(external))],
+                        check=True, capture_output=True,
+                    )
+                except (OSError, subprocess.CalledProcessError) as junction_error:
+                    self.skipTest(f"neither symlink nor junction creation is available: {error}; {junction_error}")
+                page_path = "outside/outside.md"
             (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [{"title": "Docs", "pages": [
-                {"title": "Outside", "path": "outside.md"},
+                {"title": "Outside", "path": page_path},
             ]}]}), encoding="utf-8")
 
             with self.assertRaisesRegex(DocKitError, "outside the repository root"):
