@@ -16,7 +16,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertEqual(1, sum(line.startswith("# ") for line in readme.splitlines()))
         self.assertIn("first site in about 10 minutes", readme)
         self.assertIn("You can stop here", readme)
-        self.assertIn("dockit-fp/archive/refs/tags/v0.16.2.zip", readme)
+        self.assertIn("dockit-fp/archive/refs/tags/v0.17.0.zip", readme)
         self.assertNotIn('pip install "dockit-fp==', readme)
 
     def test_navigation_puts_learning_before_project_internals(self) -> None:
@@ -52,7 +52,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("0.16.2", __version__)
+        self.assertEqual("0.17.0", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
@@ -175,3 +175,18 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("dockit-fp github-pages --update", guide)
         self.assertIn("does not commit or push", guide)
         self.assertIn("## Advanced: manual and historical workflows", guide)
+
+    def test_qualification_document_matches_the_ci_contract(self) -> None:
+        qualification = (self.root / "docs" / "qualification.md").read_text(encoding="utf-8")
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+        ci = (self.root / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+
+        self.assertIn("docs/qualification.md", readme)
+        for version in ("3.10", "3.11", "3.12", "3.13", "3.14"):
+            self.assertIn(version, qualification)
+            self.assertIn(f"'{version}'", ci)
+        for operating_system in ("Linux", "Windows", "macOS"):
+            self.assertIn(operating_system, qualification)
+        self.assertIn("wheel", qualification)
+        self.assertIn("sdist", qualification)
+        self.assertIn("## Manual browser/keyboard matrix", qualification)

@@ -36,10 +36,11 @@ class ManagedGitHubPagesWorkflowTests(unittest.TestCase):
             self.assertEqual("malformed", inspect_workflow(path, "v0.14.0").state)
 
     def test_maintained_workflow_fixture_matches_the_template(self) -> None:
+        from dockit_fp import __version__
         root = Path(__file__).resolve().parents[1]
         fixture = root / "examples" / "github-pages" / ".github" / "workflows" / "dockit-pages.yml"
 
-        self.assertEqual(render_workflow("v0.16.2"), fixture.read_text(encoding="utf-8"))
+        self.assertEqual(render_workflow(f"v{__version__}"), fixture.read_text(encoding="utf-8"))
 
     def test_refuses_a_symlinked_managed_workflow_path(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -144,4 +144,4 @@ class AuditTests(unittest.TestCase):
         with self.assertRaises(SystemExit) as exit_code, redirect_stdout(version):
             main(["--version"])
         self.assertEqual(0, exit_code.exception.code)
-        self.assertIn("0.16.2", version.getvalue())
+        self.assertIn("0.17.0", version.getvalue())
