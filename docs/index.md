@@ -22,6 +22,8 @@ Pascal-friendly, but the input is ordinary Markdown, not Pascal source code.
   Pages](github-pages.md).
 - **I want to catch broken public docs.** Run `dockit-fp audit` and read the
   [audit guide](audit.md).
+- **I want to know what is tested and supported.** Read the [qualification
+  evidence](qualification.md).
 - **A word is unfamiliar.** Check the [glossary](glossary.md).
 
 ## ✨ What stays simple

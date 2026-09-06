@@ -63,8 +63,8 @@ identity asset:
 ```
 
 You can inspect the complete maintained
-[`docs/dockit.json`](https://github.com/ikelaiah/dockit-fp/blob/v0.16.2/docs/dockit.json)
-and its [local SVG asset](https://github.com/ikelaiah/dockit-fp/blob/v0.16.2/docs/assets/dockit-mark.svg).
+[`docs/dockit.json`](https://github.com/ikelaiah/dockit-fp/blob/v0.17.0/docs/dockit.json)
+and its [local SVG asset](https://github.com/ikelaiah/dockit-fp/blob/v0.17.0/docs/assets/dockit-mark.svg).
 On generated DocKit pages, purple is the accent and highlight colour; the
 DocKit mark appears immediately before the project name in the top header;
 `Built with DocKit.` appears at the bottom in the footer; and the `Project`

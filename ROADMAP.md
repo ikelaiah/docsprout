@@ -142,9 +142,29 @@ language-neutral while preserving existing technical identifiers.
 - [x] Protect canonical visual examples with focused documentation and build
       regression tests.
 
-## v0.17 — Qualification
+## v0.17 — Qualification ✅
 
-Python/OS/package/ecosystem/accessibility qualification.
+Python/OS/package/ecosystem/accessibility qualification, enforced by the
+repeatable CI matrix or explicitly documented where a manual browser check
+remains necessary. See [Qualification evidence](docs/qualification.md).
+
+- [x] Qualify every supported stable CPython (3.10–3.14) on Linux, minimum
+      and latest Python on Windows and macOS, plus a non-blocking 3.15
+      forward-compatibility signal.
+- [x] Qualify wheel and sdist build, artifact inspection, fresh-environment
+      installation and the whole CLI journey from outside the source tree.
+- [x] Qualify `init`, `check`, `audit`, `build`, `serve` and `github-pages`
+      end to end on new and existing projects, including deterministic
+      localhost serve smoke tests.
+- [x] Qualify representative repository shapes: root READMEs, docs indexes,
+      explicit homes, unlisted-exclude, nested docs and assets, spaces,
+      Unicode, multi-level navigation, ancillary Markdown policy, and
+      generic and Pascal-oriented repositories.
+- [x] Qualify the ecosystem: non-Git projects, Git repositories with and
+      without remotes, idempotent `github-pages` preparation, and the
+      no-commit/no-push/no-settings rule.
+- [x] Qualify generated-site accessibility fundamentals structurally, with a
+      small documented manual browser/keyboard matrix for visual checks.
 
 ## v1.0 — Stable Contract
 

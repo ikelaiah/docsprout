@@ -20,7 +20,7 @@ class PublishingWorkflowTests(unittest.TestCase):
     def test_reusable_workflow_installs_the_pinned_dockit_release(self) -> None:
         workflow = (self.root / ".github" / "workflows" / "publish-docs.yml").read_text(encoding="utf-8")
 
-        self.assertIn("git+https://github.com/ikelaiah/dockit-fp.git@v0.16.2", workflow)
+        self.assertIn("git+https://github.com/ikelaiah/dockit-fp.git@v0.17.0", workflow)
         self.assertNotIn("python -m pip install .", workflow)
 
     def test_workflows_use_checkout_v7_node_24_major(self) -> None:
@@ -51,7 +51,7 @@ class PublishingWorkflowTests(unittest.TestCase):
         single = (self.root / "examples" / "single-version" / ".github" / "workflows" / "documentation.yml").read_text(encoding="utf-8")
         historical = (self.root / "examples" / "historical" / ".github" / "workflows" / "documentation.yml").read_text(encoding="utf-8")
 
-        self.assertIn("publish-docs.yml@v0.16.2", single)
+        self.assertIn("publish-docs.yml@v0.17.0", single)
         self.assertIn("versioned: false", single)
-        self.assertIn("publish-docs.yml@v0.16.2", historical)
+        self.assertIn("publish-docs.yml@v0.17.0", historical)
         self.assertNotIn("versioned: false", historical)

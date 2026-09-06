@@ -191,6 +191,30 @@ class VersionedBuildTests(unittest.TestCase):
         with self.assertRaisesRegex(DocKitError, r"Documentation differs from HEAD.*Commit docs changes"):
             check_release(root)
 
+    def test_build_all_avoids_the_pre_312_incompatible_extractall_filter_keyword(self) -> None:
+        import tarfile
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        import dockit_fp.versions as versions_module
+
+        root = self._repository()
+        received: dict = {}
+        original_extractall = tarfile.TarFile.extractall
+
+        def recording_extractall(self_, path=".", members=None, *, numeric_owner=False, **kwargs):
+            received.update(kwargs)
+            return original_extractall(self_, path, members, numeric_owner=numeric_owner)
+
+        with patch("tarfile.TarFile.extractall", new=recording_extractall), patch.object(
+            versions_module, "sys", SimpleNamespace(version_info=(3, 11, 0, "final", 0))
+        ):
+            result = build_all(root=root, output=root / "site")
+
+        self.assertEqual(2, result.release_count)
+        self.assertEqual({}, received)
+        self.assertIn("Version one", (root / "site" / "1.0.0" / "index.html").read_text(encoding="utf-8"))
+
     def test_historical_example_build_is_byte_for_byte_deterministic(self) -> None:
         example = Path(__file__).resolve().parents[1] / "examples" / "historical"
         temporary = tempfile.TemporaryDirectory()

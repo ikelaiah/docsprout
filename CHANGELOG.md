@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.17.0
+
+### Added
+
+- A repeatable qualification matrix: every supported stable CPython (3.10,
+  3.11, 3.12, 3.13 and 3.14) on Linux, the minimum and latest Python on
+  Windows and macOS, a non-blocking 3.15 pre-release signal, and Python
+  classifiers that agree with `requires-python`.
+- Installed-package qualification: the wheel and sdist are built, inspected,
+  installed into fresh environments and exercised from outside the source
+  tree (imports, bundled KaTeX assets, console entry point, the full CLI
+  journey and a scan proving generated output embeds no project paths).
+- End-to-end CLI qualification for `init`, `check`, `audit`, `build`,
+  `serve` and `github-pages` on new and existing projects, with a
+  deterministic localhost startup/response/shutdown serve smoke test.
+- Representative repository-shape qualification: root README home, docs
+  index, explicit `home`, `"unlisted": "exclude"`, nested documentation and
+  assets, spaces and Unicode paths, multi-level navigation, ancillary
+  Markdown policy, and generic and Pascal-oriented repository shapes.
+- Accessibility structural qualification across the maintained visual
+  fixture and DocKit's own documentation: keyboard-operable native controls,
+  visible focus, accessible names, the search keyboard contract, heading
+  structure, callout labels, reduced motion, scroller containment,
+  Light/Dark/System coherence and the Classic/Paper/Midnight token contract.
+- A qualification evidence guide (`docs/qualification.md`) stating exactly
+  what is automated, manually verified and known-limited for v0.17.
+
+### Fixed
+
+- Historical `build-all` extraction now works on Python 3.10 and 3.11, where
+  tarfile predates the `filter=` keyword; the pre-extraction archive path
+  safety validation is preserved on every version.
+- The docs-escape symlink test now qualifies Windows without Developer Mode
+  through an unprivileged directory junction; when neither a symlink nor a
+  junction can be created the skip explains the exact platform limitation.
+
 ## 0.16.2
 
 ### Added

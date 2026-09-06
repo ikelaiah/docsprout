@@ -33,6 +33,7 @@
         {"title": "GitHub Pages", "path": "github-pages.md"},
         {"title": "Pre-publish checklist", "path": "pre-publish-checklist.md"},
         {"title": "Historical documentation", "path": "historical-docs.md"},
+        {"title": "Qualification evidence", "path": "qualification.md"},
         {"title": "Migration", "path": "migration.md"}
       ]
     },
