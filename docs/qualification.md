@@ -5,6 +5,10 @@ that CI enforces today, and every row names how it is verified. "Supported"
 means the combination is exercised by the automated qualification on every
 pull request and release, not merely believed to work.
 
+v0.18.0 is the final pre-1.0 simplification and contract-candidate release.
+The v0.17 matrix is retained unchanged and extended with the v0.18 rows at the
+end of this page.
+
 Vertices: **automated** rows run in CI with no browser or network dependency;
 **manual** rows are small, explicit browser checks listed at the end.
 
@@ -123,6 +127,39 @@ DocKit's own built documentation:
 - Light/Dark/System coherence and the shared semantic token contract for
   Classic, Paper and Midnight
 
+## v0.18 additions
+
+The v0.17 matrix above is unchanged. v0.18 adds:
+
+- **Canonical declarative editing model**: regression tests cover the
+  layout.json operations table (add/remove/rename/reorder/move pages,
+  sections, home) against canonical configurations, and the beginner guides
+  are kept synchronized with maintained examples.
+- **Strict configuration diagnostics**: unknown fields in schema-1 objects
+  are rejected with a `Did you mean` suggestion; valid configuration from
+  every released 0.x tag is proven loadable by the automated compatibility
+  corpus test.
+- **Custom CSS contract**: `theme.custom_css` is qualified for safe path
+  resolution (repository-local only, `.css` only, traversal/absolute/symlink
+  escape rejected), missing-file and wrong-extension diagnostics,
+  deterministic copy, load order after DocKit's styles, correct nested-page
+  references and versioned historical builds. DocKit does not claim the
+  accessibility of arbitrary user CSS; only the inclusion mechanics are
+  qualified.
+- **`--dk-*` public token family**: every documented public token is defined
+  in Classic, Paper and Midnight × Light, Dark and System; the legacy generic
+  token names are proven absent; internal implementation variables are not
+  part of the assertions.
+- **Route collision protection**: exact and case-insensitive route collisions
+  fail the build with an actionable error before output is written.
+- **Versioned machine formats**: `search-index.json` and
+  `audit --format json` carry `"schema_version": 1`; consumers (browser
+  search and tests) are updated in lockstep and regression-tested.
+- **`init` guidance**: the post-initialisation output teaches the mental
+  model (Markdown, `layout.json`, `dockit.json`, `serve`) and reports the
+  inferred sections when it created the layout; `serve` rebuilds are
+  regression-tested for `layout.json` and `dockit.json` changes.
+
 ## Known limitations
 
 - Real file-symlink creation on Windows requires Developer Mode or an
@@ -134,6 +171,14 @@ DocKit's own built documentation:
   checks are the small manual matrix below.
 - External URLs in documentation are never network-checked; `audit` reports
   this explicitly.
+- Custom CSS is author-owned: its accessibility, contrast and responsiveness
+  are not DocKit claims. The manual matrix below covers the default site; a
+  project that adds `theme.custom_css` should repeat the relevant checks
+  with its stylesheet applied.
+- If a project uses `theme.custom_css`, the documented `--dk-*` tokens still
+  resolve because they are ordinary custom properties on the document root;
+  internal `--dk-*` implementation variables are not supported for custom
+  stylesheets.
 
 ## Manual browser/keyboard matrix
 

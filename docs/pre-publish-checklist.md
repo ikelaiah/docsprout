@@ -11,9 +11,14 @@ easier to repair than a broken public tag.
 - [ ] Read the changed pages as someone new to the project.
 - [ ] Run `dockit-fp doctor` and resolve every line beginning with `ERROR`.
 - [ ] Run `dockit-fp check` and confirm the reported page total makes sense.
+- [ ] Run `dockit-fp audit --strict` and resolve every error and warning.
 - [ ] Run `dockit-fp build --output build/docs-site` and open the local site.
 - [ ] Check one phone-sized width, one desktop width, keyboard navigation, and
       Light and Dark mode.
+- [ ] If you configure `theme.custom_css`, repeat the width, keyboard and
+      mode checks with the stylesheet applied, and confirm its load order by
+      looking at the page source (the `custom.css` link must come after
+      `site.css`).
 - [ ] Confirm **Settings → Pages → Source** is **GitHub Actions**.
 
 ### Optional offline archive

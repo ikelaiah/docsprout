@@ -25,7 +25,7 @@ that normally contains `README.md` or `src/`.
 Open a terminal in your project folder and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.17.0.zip"
+python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.18.0.zip"
 ```
 
 Then check that the command is available:
@@ -213,6 +213,25 @@ selects that document as its home page:
 }
 ```
 
+### The two editing cheat sheets
+
+Every common change is an edit to a JSON file, not a command:
+
+| What you want | Edit |
+| --- | --- |
+| Add a page | Add a page object (its `"title"` and `"path"`) to `docs/layout.json` |
+| Add a section | Add a `{"title": ..., "pages": [...]}` object to `navigation` |
+| Rename a displayed title | Change that page object's `"title"` in `layout.json` |
+| Reorder pages | Move page objects up or down inside their `pages` list |
+| Move a page to another section | Cut its object and paste it into another section |
+| Change the home page | Change the top-level `"home"` object in `layout.json` |
+| Change colours, theme or logo | Edit `docs/dockit.json` (`theme`, `identity.logo`) |
+| Remove a page from the site | Remove its page object from `layout.json` |
+
+The displayed title is independent of the filename, and the written order of
+the objects is the navigation order. You finish every edit by saving and
+reloading the preview.
+
 For a fuller explanation of `home`, navigation and legacy layouts, see
 [Configuration](configuration.md).
 
@@ -253,7 +272,7 @@ appear in the navigation.
   [Write documentation people can use](writing-great-docs.md).
 - Learn the three configuration files in [Configuration](configuration.md).
 - Copy a small working project from the
-  [minimal example](https://github.com/ikelaiah/dockit-fp/tree/v0.17.0/examples/minimal).
+  [minimal example](https://github.com/ikelaiah/dockit-fp/tree/v0.18.0/examples/minimal).
 - When you truly want a public site, choose the simpler or historical path in
   [GitHub Pages](github-pages.md).
 - Look up unfamiliar words in the [glossary](glossary.md).

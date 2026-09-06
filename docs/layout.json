@@ -22,6 +22,8 @@
         {"title": "Sections and identity", "path": "customisation.md"},
         {"title": "Customize the home page", "path": "homepage-recipes.md"},
         {"title": "Themes", "path": "themes.md"},
+        {"title": "Custom CSS (advanced)", "path": "custom-css.md"},
+        {"title": "Machine-readable contracts", "path": "machine-contracts.md"},
         {"title": "Visual fixtures", "path": "visual-fixtures.md"},
         {"title": "Mathematics", "path": "math.md"}
       ]
@@ -56,7 +58,8 @@
         {"title": "Local syntax highlighting", "path": "decisions/0005-local-syntax-highlighting.md"},
         {"title": "Existing-repository adoption", "path": "decisions/0006-existing-repository-adoption.md"},
         {"title": "GitHub Pages setup", "path": "decisions/0007-github-pages-one-command.md"},
-        {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"}
+        {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
+        {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"}
       ]
     }
   ]

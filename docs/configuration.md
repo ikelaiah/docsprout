@@ -112,6 +112,60 @@ never rewritten; add the field only when you want this explicit publication
 policy. There are no include/exclude patterns: the navigation list is the
 complete publication decision.
 
+## Editing `layout.json` directly
+
+Every common navigation change is an ordinary edit to `docs/layout.json`.
+There are no DocKit commands for these operations:
+
+| What you want | What you edit |
+| --- | --- |
+| Add a page | Add a page object to a section's `pages` list |
+| Remove a page | Remove its page object |
+| Rename a displayed title | Change that page object's `"title"` |
+| Reorder pages | Move page objects within a `pages` list |
+| Move a page to another section | Cut its object and paste it into another section's `pages` list |
+| Add a section | Add a `{"title": ..., "pages": [...]}` object to `navigation` |
+| Rename a section | Change that section's `"title"` |
+| Change the home page | Change the top-level `"home"` object (its `path` must stay a listed page) |
+| Publish or unpublish a page | Add or remove its page object under `"unlisted": "exclude"` |
+
+The `"title"` is independent of the filename: a file named `install-guide.md`
+can display as `Getting installed`. The navigation order is the written order
+of the objects. That is the complete model—there is no hidden state and no
+second navigation representation.
+
+This compact canonical example shows the valuable structure at a glance:
+
+```json
+{
+  "schema_version": 1,
+  "home": {"path": "index.md"},
+  "unlisted": "exclude",
+  "navigation": [
+    {
+      "title": "Getting started",
+      "pages": [
+        {"title": "Overview", "path": "index.md"},
+        {"title": "Installation", "path": "installation.md"}
+      ]
+    },
+    {
+      "title": "Guides",
+      "pages": [
+        {"title": "Configuration", "path": "guides/configuration.md"}
+      ]
+    }
+  ]
+}
+```
+
+DocKit reports configuration problems precisely. A field that was never part
+of a released schema-1 configuration is rejected with the file, the exact
+field path and—when a close match exists—a `Did you mean` suggestion. For
+example `"theme": {"presett": "purple"}` fails with
+`Unknown field 'theme.presett'. Did you mean 'theme.preset'?`. Valid
+configuration from every supported 0.x release keeps loading.
+
 ## Existing repositories and root README
 
 On its first run, `dockit-fp init` considers only `README.md` at the repository
@@ -221,6 +275,22 @@ Each card needs a non-empty `title` and `description`. An empty
 | `release_context` | `false` | Hides the release label above the home-page content. |
 
 Start from a complete example in [Customize the home page](homepage-recipes.md).
+
+## Changing colours, logo and presentation
+
+Appearance and identity are `docs/dockit.json` edits:
+
+| What you want | What you edit |
+| --- | --- |
+| Change colours | `theme.preset`, or exact `theme.accent` / `theme.accent_secondary` |
+| Change the visual style | `theme.style` (`classic`, `paper`, `midnight`) |
+| Add a logo | `identity.logo` (repository-local SVG or PNG) |
+| Change the footer | `identity.footer` and `identity.links` |
+| Add a banner | `banner` with `path` and `alt` |
+| Custom CSS (advanced) | `theme.custom_css` — see [Custom CSS](custom-css.md) |
+
+The documented `--dk-*` tokens are the stable customisation surface for
+selectors you write yourself; see [Themes](themes.md#the-documented-dk-tokens).
 
 ## Release history can wait
 

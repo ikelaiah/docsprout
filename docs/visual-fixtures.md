@@ -41,3 +41,8 @@ site uses the omitted `comfortable` default. Together, those checked-in builds
 cover the semantic width contract. The checked-in banner is the canonical visual
 banner state; use a separate temporary project when you need to inspect the
 optional no-banner default.
+
+The fixture is also the maintained [custom CSS](custom-css.md) example: its
+`docs/assets/custom.css` uses the documented `--dk-*` tokens, every built page
+loads it after DocKit's styles, and CI builds the fixture on every change, so
+the safe inclusion mechanism is always exercised.
