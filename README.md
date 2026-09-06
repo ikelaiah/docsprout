@@ -18,7 +18,7 @@ Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.17.0.zip"
+python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.18.0.zip"
 dockit-fp init
 dockit-fp serve
 ```
@@ -49,6 +49,23 @@ never published by surprise. Once `docs/layout.json` exists it is entirely
 yours: add, remove, rename and reorder pages without DocKit changing it.
 Newly generated layouts use `"unlisted": "exclude"`, so only listed pages are
 published; existing layouts retain their strict validation unless you opt in.
+
+### The mental model from here on
+
+Commands perform actions. Configuration describes intent. There are no
+DocKit commands for editing pages, sections or themes:
+
+- **Markdown** (`README.md`, `docs/*.md`) is your content.
+- **`docs/layout.json`** decides what is published: page objects, section
+  names, titles, order, the home page and the unlisted policy. Add a page by
+  adding one page object; reorder by moving objects; rename by changing
+  `"title"`; change the home page by editing the top-level `"home"`.
+- **`docs/dockit.json`** decides how it looks: name, colours, visual theme,
+  logo, footer, banner and homepage presentation.
+
+`dockit-fp init` explains exactly this when it finishes. `dockit-fp serve`
+watches `README.md` and everything under `docs/`, including `layout.json` and
+`dockit.json`, so you edit, save and reload.
 
 For a slower walkthrough with explanations and expected results, follow
 [Your first DocKit site](docs/beginners-guide.md).
@@ -88,7 +105,8 @@ existing projects and advanced historical publishing.
 
 - 📱 Responsive pages that work on phones and desktops.
 - 🌓 System, Light and Dark colour modes.
-- 🎨 Classic, Paper and Midnight visual themes.
+- 🎨 Classic, Paper and Midnight visual themes, with a documented `--dk-*`
+  token family and an optional repository-local custom CSS escape hatch.
 - 🔎 Search and keyboard-friendly navigation.
 - 📐 Local KaTeX mathematics without a CDN.
 - ✅ Checks for broken links, missing pages and unsafe configuration.

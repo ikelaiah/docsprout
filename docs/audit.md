@@ -32,6 +32,10 @@ For tools and CI systems, request deterministic JSON:
 dockit-fp audit --format json
 ```
 
+The JSON report is a versioned machine contract: it begins with
+`"schema_version": 1` and then reports `pages`, `errors`, `warnings` and the
+ordered `findings` array. See [Machine-readable contracts](machine-contracts.md).
+
 ## What is checked
 
 Audit uses the same configured navigation, root `README.md` handling and

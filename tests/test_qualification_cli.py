@@ -28,7 +28,8 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
 
             init = run_cli(root, "init")
             self.assertIn("Created: docs/dockit.json, docs/index.md, docs/layout.json.", init.stdout)
-            self.assertIn("Next: run dockit-fp serve.", init.stdout)
+            self.assertIn("Preview:  dockit-fp serve", init.stdout)
+            self.assertIn("Navigation sections: Getting started (1 page).", init.stdout)
 
             check = run_cli(root, "check")
             self.assertIn("Documentation check passed: 1 section(s), 1 page(s)", check.stdout)
@@ -49,9 +50,10 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             self.assertTrue(any((site / "assets" / "katex" / "fonts").glob("*.woff2")))
             index = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
             plain_name = re.sub(r"[*_`]+", "", root.name)
+            self.assertEqual(1, index["schema_version"])
             self.assertEqual(
                 [{"title": plain_name, "section": "Getting started", "url": "index.html", "text": f"{plain_name} Welcome to the documentation."}],
-                index,
+                index["entries"],
             )
             release = json.loads((site / "release.json").read_text(encoding="utf-8"))
             self.assertEqual("preview", release["release"])
@@ -115,7 +117,7 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             search = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
             self.assertEqual(
                 ["index.html", "docs-index.html", "guides/advanced.html"],
-                [entry["url"] for entry in search],
+                [entry["url"] for entry in search["entries"]],
             )
 
     def test_serve_starts_serves_and_stops_cleanly(self) -> None:

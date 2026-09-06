@@ -6,7 +6,8 @@
   },
   "theme": {
     "preset": "teal",
-    "style": "classic"
+    "style": "classic",
+    "custom_css": "docs/assets/custom.css"
   },
   "banner": {
     "path": "docs/assets/visual-fixture-banner.svg",

@@ -128,6 +128,7 @@ class AuditTests(unittest.TestCase):
             after = {path.relative_to(root): path.read_bytes() for path in root.rglob("*") if path.is_file()}
 
         self.assertEqual({"pages": 1, "errors": 0, "warnings": 1}, {key: payload[key] for key in ("pages", "errors", "warnings")})
+        self.assertEqual(1, payload["schema_version"])
         self.assertEqual("DK101", payload["findings"][0]["code"])
         self.assertEqual(before, after)
 
@@ -144,4 +145,4 @@ class AuditTests(unittest.TestCase):
         with self.assertRaises(SystemExit) as exit_code, redirect_stdout(version):
             main(["--version"])
         self.assertEqual(0, exit_code.exception.code)
-        self.assertIn("0.17.0", version.getvalue())
+        self.assertIn("0.18.0", version.getvalue())

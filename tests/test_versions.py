@@ -165,6 +165,22 @@ class VersionedBuildTests(unittest.TestCase):
         with self.assertRaisesRegex(DocKitError, r"versions\[0\]\.source_ref.*tag or full commit SHA"):
             load_manifest(root)
 
+    def test_manifest_rejects_unknown_fields_with_a_typo_suggestion(self) -> None:
+        root = self._repository()
+        manifest = root / "docs" / "versions.json"
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        data["versionz"] = data.pop("versions")
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+
+        with self.assertRaisesRegex(DocKitError, r"Unknown field 'versions\.versionz'\. Did you mean 'versions\.versions'\?"):
+            load_manifest(root)
+
+        data["versionz"] = [{"release": "2.0.0", "source_ref": "v2.0.0", "changelog": "notes.md"}]
+        data["versions"] = data.pop("versionz")
+        manifest.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaisesRegex(DocKitError, r"Unknown field 'versions\[0\]\.changelog'"):
+            load_manifest(root)
+
     def test_check_release_requires_current_source_to_match_head(self) -> None:
         root = self._repository()
         (root / "README.md").write_text("post-release change", encoding="utf-8")

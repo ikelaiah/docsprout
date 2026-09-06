@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.18.0
+
+The final pre-1.0 simplification and contract-candidate release.
+
+### Added
+
+- The `layout.json` editing model is documented as ordinary JSON edits (add,
+  remove, rename, reorder, move pages; add and rename sections; change the
+  `home` page), with a compact canonical configuration and no authoring
+  commands.
+- `theme.custom_css`: an optional repository-local `.css` escape hatch that
+  is copied deterministically to `assets/custom.css`, loaded after DocKit's
+  styles on every page (including nested and versioned builds), and strictly
+  guarded against absolute paths, traversal, symlink escapes and missing or
+  non-CSS files. DocKit guarantees the inclusion mechanics; the
+  accessibility of user-written CSS is the author's responsibility.
+- A documented `--dk-*` public token family (fifteen tokens) with contract
+  tests across Classic, Paper and Midnight in Light, Dark and System modes.
+- Strict configuration diagnostics: unknown fields in schema-1 objects of
+  `dockit.json`, `layout.json` and `versions.json` are rejected with
+  actionable `Did you mean` suggestions, built from the field families that
+  legitimately existed in released tags.
+- Deterministic pre-build route-collision detection: exact and
+  case-insensitive collisions fail the build with an actionable error
+  instead of silently overwriting output.
+- Versioned machine formats: `search-index.json` now carries
+  `{"schema_version": 1, "entries": [...]}` and `audit --format json`
+  reports `"schema_version": 1`.
+- `init` guidance: after initialisation DocKit states the mental model
+  (Markdown is content, `layout.json` controls pages/sections/order/titles,
+  `dockit.json` controls appearance) and names the inferred navigation
+  sections when it created the layout.
+- An automated compatibility corpus proving representative valid schema-1
+  configuration from v0.1.0 through v0.17.0 loads and builds under v0.18.
+- New guides: [Custom CSS](docs/custom-css.md) and
+  [Machine-readable contracts](docs/machine-contracts.md), plus the
+  documented Python API boundary and the `0.x → 1.0` upgrade checklist.
+- The maintained visual fixture now dogfoods `theme.custom_css` and the
+  documented token family.
+
+### Changed
+
+- The semantic theme tokens were renamed pre-1.0 from the generic `--bg`,
+  `--surface`, `--text`, `--muted`, `--border`, `--code`, `--code-text`,
+  `--raised`, `--focus-ring` and `--interactive` to the namespaced
+  `--dk-*` family; internal implementation variables are explicitly not part
+  of the contract. Projects with custom stylesheets should rename tokens
+  where they referenced the old names.
+- Navigation sections and pages must have non-empty titles; project
+  description/repository/site fields must be strings when provided; empty
+  titles and wrong metadata types are reported with the exact field path.
+- FAQ-style diagnostics: a typo like `"presett"` now reports
+  `Unknown field 'theme.presett'. Did you mean 'theme.preset'?`.
+
+### Fixed
+
+- `docs/index.md` plus `docs/docs-index.md` with an alternate home, and
+  case-only filename differences, previously risked silently overwriting a
+  generated route; they now fail `check`/`build` with a precise message.
+
 ## 0.17.0
 
 ### Added

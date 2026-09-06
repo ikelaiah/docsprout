@@ -327,6 +327,75 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             with self.assertRaisesRegex(DocKitError, r"schema version 1.*migration"):
                 load_config(root)
 
+    def test_rejects_an_unknown_theme_field_with_a_typo_suggestion(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"presett": "purple"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+
+            with self.assertRaisesRegex(DocKitError, r"Unknown field 'theme\.presett'\. Did you mean 'theme\.preset'\?"):
+                load_config(root)
+
+    def test_rejects_unknown_fields_across_all_documented_schema_one_objects(self) -> None:
+        valid_layout = {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}
+        bad_documents = (
+            {"schema_version": 1, "project": {"name": "Demo"}, "them": {"preset": "purple"}},
+            {"schema_version": 1, "project": {"name": "Demo", "descriptionn": "text"}},
+            {"schema_version": 1, "project": {"name": "Demo"}, "layout": {"width": "wide"}},
+            {"schema_version": 1, "project": {"name": "Demo"}, "banner": {"path": "x", "alt": "y", "scale": 2}},
+            {"schema_version": 1, "project": {"name": "Demo"}, "identity": {"logos": "docs/assets/x.svg"}},
+            {"schema_version": 1, "project": {"name": "Demo"}, "homepage": {"capabiliti": []}},
+            {"schema_version": 1, "project": {"name": "Demo"}, "homepage": {"capabilities": [{"title": "T", "description": "D", "icon": "x"}]}},
+        )
+        for index, document in enumerate(bad_documents):
+            with self.subTest(document=index), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(root, document, valid_layout)
+                with self.assertRaisesRegex(DocKitError, r"Unknown field"):
+                    load_config(root)
+        bad_layouts = (
+            {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}], "extras": True},
+            {"schema_version": 1, "home": {"path": "index.md", "target": "x"}, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md", "target": "x"}]}]},
+            {"schema_version": 1, "navigation": [{"title": "Start", "folded": True, "pages": [{"title": "Home", "path": "index.md"}]}]},
+        )
+        for index, layout in enumerate(bad_layouts):
+            with self.subTest(layout=index), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, layout)
+                with self.assertRaisesRegex(DocKitError, r"Unknown field"):
+                    load_config(root)
+
+    def test_rejects_an_empty_navigation_page_or_section_title(self) -> None:
+        for layout, message in (
+            ({"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "", "path": "index.md"}]}]}, "non-empty title"),
+            ({"schema_version": 1, "navigation": [{"title": "  ", "pages": [{"title": "Home", "path": "index.md"}]}]}, "non-empty title"),
+        ):
+            with self.subTest(layout=layout), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, layout)
+                with self.assertRaisesRegex(DocKitError, message):
+                    load_config(root)
+
+    def test_rejects_non_string_project_metadata_fields(self) -> None:
+        for field, value in (("description", 42), ("repository_url", ["x"]), ("site_url", None)):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(
+                    root,
+                    {"schema_version": 1, "project": {"name": "Demo", field: value}},
+                    {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+                )
+                if field == "site_url":
+                    config = load_config(root)
+                    self.assertIsNone(config.site_url)
+                else:
+                    with self.assertRaisesRegex(DocKitError, rf"project\.{field}.*string"):
+                        load_config(root)
+
     def test_allows_only_the_exact_repository_root_readme_as_an_explicit_source(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

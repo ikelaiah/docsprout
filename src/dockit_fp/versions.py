@@ -13,6 +13,7 @@ import tarfile
 import tempfile
 
 from .build import build_site
+from .config import MANIFEST_FIELDS, VERSION_FIELDS, _reject_unknown_fields
 from .errors import DocKitError
 from .safety import prepare_output
 
@@ -63,6 +64,7 @@ def load_manifest(root: Path) -> VersionManifest:
         raise DocKitError(f"{path}: invalid version manifest: {error}") from error
     if not isinstance(data, dict) or data.get("schema_version") != 1:
         raise DocKitError(f"{path}: field 'schema_version' must be 1")
+    _reject_unknown_fields(data, MANIFEST_FIELDS, "versions", path)
     current, entries = data.get("current"), data.get("versions")
     if not isinstance(current, str) or not isinstance(entries, list) or not entries:
         raise DocKitError(f"{path}: fields 'current' and non-empty 'versions' are required")
@@ -70,6 +72,7 @@ def load_manifest(root: Path) -> VersionManifest:
     for index, entry in enumerate(entries):
         if not isinstance(entry, dict) or not isinstance(entry.get("release"), str) or not isinstance(entry.get("source_ref"), str):
             raise DocKitError(f"{path}: versions[{index}] needs string release and source_ref")
+        _reject_unknown_fields(entry, VERSION_FIELDS, f"versions[{index}]", path)
         release, source_ref = entry["release"], entry["source_ref"]
         if not RELEASE_NAME.fullmatch(release):
             raise DocKitError(

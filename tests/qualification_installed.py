@@ -5,7 +5,7 @@ installed from a built wheel or sdist, from a working directory outside the
 source tree. Every path used here is a fresh temporary directory, so a passing
 run is evidence that the package does not depend on repository-only files.
 
-    python qualification_installed.py --expected-version 0.17.0
+    python qualification_installed.py --expected-version 0.18.0
 
 The script is deliberately self-contained (stdlib only) so it can be copied or
 run from any location without importing anything from the repository.
@@ -112,7 +112,7 @@ def qualify_new_project() -> None:
     with tempfile.TemporaryDirectory(prefix="dk-installed-new-") as temporary:
         root = Path(temporary)
         init = require_run(root, "init")
-        require("Next: run dockit-fp serve." in init, "init did not finish the guided message")
+        require("DocKit is ready." in init and "docs/layout.json" in init, "init did not finish the guided message")
         require((root / "docs" / "dockit.json").is_file(), "init did not create dockit.json")
         require((root / "docs" / "layout.json").is_file(), "init did not create layout.json")
 
@@ -121,7 +121,7 @@ def qualify_new_project() -> None:
 
         audit_output = require_run(root, "audit", "--format", "json")
         report = json.loads(audit_output)
-        require(report["errors"] == 0 and report["warnings"] == 0 and report["pages"] == 1, f"unexpected audit report: {audit_output}")
+        require(report["schema_version"] == 1 and report["errors"] == 0 and report["warnings"] == 0 and report["pages"] == 1, f"unexpected audit report: {audit_output}")
 
         build_output = require_run(root, "build", "--output", str(root / "site"))
         require(f"Built 1 page(s) in {root / 'site'}" in build_output, f"unexpected build output: {build_output}")
@@ -177,7 +177,7 @@ def qualify_existing_repository() -> None:
         require(readme_before == readme.read_text(encoding="utf-8"), "init or build modified the README")
         require(layout_before == (docs / "layout.json").read_text(encoding="utf-8"), "build modified the layout")
         search = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
-        require([entry["url"] for entry in search] == ["index.html", "guides/deep.html"], f"unexpected search index: {search}")
+        require(search["schema_version"] == 1 and [entry["url"] for entry in search["entries"]] == ["index.html", "guides/deep.html"], f"unexpected search index: {search}")
         _require_no_path_leak(site, root)
 
 

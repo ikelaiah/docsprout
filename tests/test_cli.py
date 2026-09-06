@@ -25,7 +25,11 @@ class CliTests(unittest.TestCase):
             layout = json.loads((root / "docs" / "layout.json").read_text(encoding="utf-8"))
             self.assertEqual({"path": "index.md"}, layout["home"])
             self.assertEqual("exclude", layout["unlisted"])
-            self.assertIn("Next: run dockit-fp serve.", output.getvalue())
+            self.assertIn("DocKit is ready.", output.getvalue())
+            self.assertIn("docs/layout.json", output.getvalue())
+            self.assertIn("docs/dockit.json", output.getvalue())
+            self.assertIn("Preview:  dockit-fp serve", output.getvalue())
+            self.assertIn("Navigation sections: Getting started (1 page).", output.getvalue())
             self.assertEqual(0, main(["init", "--root", str(root)]))
 
     def test_init_adopts_a_readme_and_nested_docs_without_publishing_ancillary_files(self) -> None:
@@ -162,6 +166,56 @@ class CliTests(unittest.TestCase):
             with patch("dockit_fp.cli.importlib.reload") as reload:
                 self.assertTrue(preview.rebuild_if_changed())
             self.assertTrue(reload.called)
+
+    def test_preview_rebuilds_when_layout_or_dockit_configuration_changes(self) -> None:
+        for configuration in ("layout.json", "dockit.json"):
+            with self.subTest(configuration=configuration), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self.assertEqual(0, main(["init", "--root", str(root)]))
+                preview = _PreviewBuilder(root=root, output=root / "build" / "docs-site", release="preview")
+                preview.build_initial()
+
+                document = root / "docs" / configuration
+                data = json.loads(document.read_text(encoding="utf-8"))
+                if configuration == "layout.json":
+                    data["navigation"][0]["pages"].append(
+                        {"title": "Reference", "path": "reference.md"},
+                    )
+                    (root / "docs" / "reference.md").write_text("# Reference\n\nContent.", encoding="utf-8")
+                else:
+                    data["theme"] = {"preset": "purple"}
+                document.write_text(json.dumps(data), encoding="utf-8")
+
+                self.assertTrue(preview.rebuild_if_changed(), configuration)
+                built = (root / "build" / "docs-site" / "index.html").read_text(encoding="utf-8")
+                if configuration == "layout.json":
+                    self.assertIn("Reference", built)
+                else:
+                    self.assertIn("--dk-accent:#7c3aed", built)
+                self.assertFalse(preview.rebuild_if_changed())
+
+    def test_the_public_cli_surface_lists_only_operational_commands(self) -> None:
+        commands = ("init", "serve", "check", "audit", "build", "build-all", "check-release", "github-pages", "doctor")
+        with redirect_stdout(io.StringIO()) as help_output:
+            with self.assertRaises(SystemExit) as exit_code:
+                main(["--help"])
+        self.assertEqual(0, exit_code.exception.code)
+        help_text = help_output.getvalue()
+        for command in commands:
+            self.assertIn(command, help_text)
+        for command, options in (
+            ("build", ("--output", "--release", "--offline-archive")),
+            ("build-all", ("--output",)),
+            ("serve", ("--host", "--port")),
+            ("github-pages", ("--update",)),
+            ("audit", ("--strict", "--format")),
+        ):
+            with self.subTest(command=command), redirect_stdout(io.StringIO()) as command_help:
+                with self.assertRaises(SystemExit):
+                    main([command, "--help"])
+            for option in options:
+                self.assertIn(option, command_help.getvalue())
+            self.assertIn("--root", command_help.getvalue())
 
     def test_serve_does_not_start_when_validation_fails(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
