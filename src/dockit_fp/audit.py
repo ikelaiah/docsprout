@@ -200,6 +200,7 @@ def format_text(result: AuditResult) -> str:
 def format_json(result: AuditResult) -> str:
     """Return deterministic machine-readable audit diagnostics."""
     return json.dumps({
+        "schema_version": 1,
         "pages": result.pages,
         "errors": result.errors,
         "warnings": result.warnings,

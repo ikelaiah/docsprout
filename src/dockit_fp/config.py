@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import re
 from pathlib import Path
@@ -28,6 +29,41 @@ HOMEPAGE_SECTION_DEFAULTS = {
     "introduction": True,
     "release_context": False,
 }
+
+DOCKIT_FIELDS = ("schema_version", "project", "theme", "layout", "banner", "identity", "homepage")
+PROJECT_FIELDS = ("name", "description", "repository_url", "site_url")
+THEME_FIELDS = ("preset", "style", "accent", "accent_secondary", "custom_css")
+LAYOUT_OPTION_FIELDS = ("content_width",)
+BANNER_FIELDS = ("path", "alt")
+IDENTITY_FIELDS = ("logo", "footer", "links")
+HOMEPAGE_FIELDS = ("capabilities", "sections")
+CAPABILITY_FIELDS = ("title", "description")
+LINK_FIELDS = ("label", "url")
+LAYOUT_FIELDS = ("schema_version", "home", "unlisted", "navigation")
+HOME_FIELDS = ("path", "source")
+SECTION_FIELDS = ("title", "pages")
+PAGE_FIELDS = ("title", "path", "source")
+MANIFEST_FIELDS = ("schema_version", "current", "versions")
+VERSION_FIELDS = ("release", "source_ref")
+
+
+def _reject_unknown_fields(
+    value: object, allowed: tuple[str, ...], field_path: str, primary: Path,
+) -> None:
+    """Reject fields that never existed in a released schema-1 configuration.
+
+    The allowed sets are the field families observed in the released v0.1.0
+    through v0.17.0 tags, so valid historical configuration keeps loading
+    while genuine typos fail with an actionable suggestion.
+    """
+    if not isinstance(value, dict):
+        return
+    for name in value:
+        if name in allowed:
+            continue
+        suggestion = difflib.get_close_matches(name, allowed, n=1)
+        hint = f" Did you mean '{field_path}.{suggestion[0]}'?" if suggestion else ""
+        raise DocKitError(f"{primary}: Unknown field '{field_path}.{name}'.{hint} Remove it or use a supported field.")
 
 
 def _read_json(path: Path) -> dict:
@@ -85,6 +121,7 @@ def _homepage_config(data: dict, primary: Path) -> Homepage:
     raw_homepage = data.get("homepage", {})
     if not isinstance(raw_homepage, dict):
         raise DocKitError(f"{primary}: field 'homepage' must be an object. Use a homepage object or remove the field.")
+    _reject_unknown_fields(raw_homepage, HOMEPAGE_FIELDS, "homepage", primary)
     if "capabilities" not in raw_homepage:
         capabilities = None
     else:
@@ -95,6 +132,7 @@ def _homepage_config(data: dict, primary: Path) -> Homepage:
         for index, card in enumerate(raw_capabilities):
             if not isinstance(card, dict):
                 raise DocKitError(f"{primary}: homepage.capabilities[{index}] must be an object. Use title and description fields.")
+            _reject_unknown_fields(card, CAPABILITY_FIELDS, f"homepage.capabilities[{index}]", primary)
             values: list[str] = []
             for field in ("title", "description"):
                 value = card.get(field)
@@ -148,6 +186,31 @@ def _identity_logo_path(root: Path, identity: dict, primary: Path) -> str | None
     return path.as_posix()
 
 
+def _custom_css_path(root: Path, theme: dict, primary: Path) -> str | None:
+    value = theme.get("custom_css")
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise DocKitError(f"{primary}: field 'theme.custom_css' must be a non-empty repository-local CSS path")
+    path = Path(value)
+    if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
+        raise DocKitError(f"{primary}: theme.custom_css path is unsafe; use a repository-local relative path")
+    if path.suffix.lower() != ".css":
+        raise DocKitError(f"{primary}: theme.custom_css must reference a .css file")
+    candidate = root / path
+    try:
+        resolved = candidate.resolve()
+    except OSError as error:
+        raise DocKitError(f"{primary}: theme.custom_css asset {value!r} cannot be resolved") from error
+    if not resolved.is_relative_to(root.resolve()):
+        raise DocKitError(
+            f"{primary}: theme.custom_css asset {value!r} resolves outside the repository root; keep the stylesheet inside the repository"
+        )
+    if not resolved.is_file():
+        raise DocKitError(f"{primary}: theme.custom_css asset {value!r} does not exist")
+    return path.as_posix()
+
+
 def _legacy_config(docs: Path) -> SiteConfig:
     paths = sorted(path.relative_to(docs).as_posix() for path in docs.rglob("*.md"))
     if not paths:
@@ -175,13 +238,21 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     if not primary.exists():
         raise DocKitError(f"{primary}: required when modern documentation configuration exists")
     data = _read_json(primary)
+    _reject_unknown_fields(data, DOCKIT_FIELDS, "dockit", primary)
     homepage = _homepage_config(data, primary)
     project = data.get("project")
     if not isinstance(project, dict) or not isinstance(project.get("name"), str) or not project["name"].strip():
         raise DocKitError(f"{primary}: field 'project.name' must be a non-empty string")
+    _reject_unknown_fields(project, PROJECT_FIELDS, "project", primary)
+    for field in ("description", "repository_url", "site_url"):
+        value = project.get(field)
+        if value is not None and not isinstance(value, str):
+            raise DocKitError(f"{primary}: field 'project.{field}' must be a string when provided")
     theme = data.get("theme", {})
     if not isinstance(theme, dict):
         raise DocKitError(f"{primary}: field 'theme' must be an object")
+    _reject_unknown_fields(theme, THEME_FIELDS, "theme", primary)
+    custom_css = _custom_css_path(root, theme, primary)
     preset = theme.get("preset", "blue")
     if not isinstance(preset, str) or preset not in THEME_PRESETS:
         choices = ", ".join(THEME_PRESETS)
@@ -205,6 +276,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     layout_options = data.get("layout", {})
     if not isinstance(layout_options, dict):
         raise DocKitError(f"{primary}: field 'layout' must be an object. Use a layout object or remove the field.")
+    _reject_unknown_fields(layout_options, LAYOUT_OPTION_FIELDS, "layout", primary)
     content_width = layout_options.get("content_width", "comfortable")
     if not isinstance(content_width, str) or content_width not in CONTENT_WIDTHS:
         raise DocKitError(
@@ -214,6 +286,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     if not layout_path.exists():
         raise DocKitError(f"{layout_path}: required for modern documentation")
     layout = _read_json(layout_path)
+    _reject_unknown_fields(layout, LAYOUT_FIELDS, "layout", layout_path)
     unlisted = layout.get("unlisted", "error")
     if unlisted not in {"error", "exclude"}:
         raise DocKitError(f"{layout_path}: field 'unlisted' must be 'error' or 'exclude'")
@@ -222,8 +295,9 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         raise DocKitError(f"{layout_path}: field 'navigation' must be a non-empty list")
     pages: list[Page] = []
     for section in navigation:
-        if not isinstance(section, dict) or not isinstance(section.get("title"), str):
-            raise DocKitError(f"{layout_path}: each navigation section needs a title")
+        if not isinstance(section, dict) or not isinstance(section.get("title"), str) or not section["title"].strip():
+            raise DocKitError(f"{layout_path}: each navigation section needs a non-empty title")
+        _reject_unknown_fields(section, SECTION_FIELDS, f"navigation.{section.get('title')}", layout_path)
         entries = section.get("pages")
         if not isinstance(entries, list) or not entries:
             raise DocKitError(
@@ -231,8 +305,9 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
                 "Add at least one page entry or remove the section."
             )
         for entry in entries:
-            if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
-                raise DocKitError(f"{layout_path}: navigation page needs a title")
+            if not isinstance(entry, dict) or not isinstance(entry.get("title"), str) or not entry["title"].strip():
+                raise DocKitError(f"{layout_path}: navigation page needs a non-empty title")
+            _reject_unknown_fields(entry, PAGE_FIELDS, f"navigation.{section['title']}.pages", layout_path)
             path = safe_document_path(entry.get("path"), f"{layout_path}: navigation page")
             source = entry.get("source", "docs")
             if source not in {"docs", "root"}:
@@ -262,6 +337,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     else:
         if not isinstance(raw_home, dict):
             raise DocKitError(f"{layout_path}: field 'home' must be an object with a listed page path")
+        _reject_unknown_fields(raw_home, HOME_FIELDS, "home", layout_path)
         path = safe_document_path(raw_home.get("path"), f"{layout_path}: home")
         source = raw_home.get("source", "docs")
         if source not in {"docs", "root"}:
@@ -276,6 +352,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     banner = data.get("banner")
     if banner is not None and (not isinstance(banner, dict) or not isinstance(banner.get("path"), str) or not isinstance(banner.get("alt"), str)):
         raise DocKitError(f"{primary}: field 'banner' needs string path and alt fields")
+    _reject_unknown_fields(banner, BANNER_FIELDS, "banner", primary)
     banner_path = banner["path"] if banner else None
     if banner_path and (Path(banner_path).is_absolute() or ".." in Path(banner_path).parts):
         raise DocKitError(f"{primary}: banner path is unsafe")
@@ -286,6 +363,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     identity = data.get("identity", {})
     if not isinstance(identity, dict):
         raise DocKitError(f"{primary}: field 'identity' must be an object")
+    _reject_unknown_fields(identity, IDENTITY_FIELDS, "identity", primary)
     logo = _identity_logo_path(root, identity, primary)
     footer = identity.get("footer")
     if footer is not None and (not isinstance(footer, str) or not footer.strip()):
@@ -297,6 +375,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     for index, link in enumerate(raw_links):
         if not isinstance(link, dict) or not isinstance(link.get("label"), str) or not link["label"].strip() or not isinstance(link.get("url"), str):
             raise DocKitError(f"{primary}: identity.links[{index}] needs non-empty string label and URL fields")
+        _reject_unknown_fields(link if isinstance(link, dict) else {}, LINK_FIELDS, f"identity.links[{index}]", primary)
         parsed = urlsplit(link["url"])
         if parsed.scheme not in {"https", "http"} or not parsed.netloc:
             raise DocKitError(f"{primary}: identity.links[{index}].url must be an absolute http(s) URL")
@@ -309,5 +388,5 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         banner_alt=banner.get("alt") if banner else None, logo=logo, footer=footer.strip() if footer else None,
         project_links=tuple(project_links), pages=tuple(pages),
         legacy=False, home_document=home, homepage=homepage,
-        excluded_documents=excluded_documents,
+        custom_css=custom_css, excluded_documents=excluded_documents,
     )

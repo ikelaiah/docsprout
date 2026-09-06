@@ -70,7 +70,7 @@ def _page_navigation(*, page: Page, config, current_route: str) -> str:
     return f'<nav class="page-navigation" aria-label="Page navigation">{"".join(links)}</nav>' if links else ""
 
 
-def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page, config, current_route: str, version_options: str, banner: str | None, logo: str | None, release: str) -> str:
+def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page, config, current_route: str, version_options: str, banner: str | None, logo: str | None, release: str, custom_css: bool = False) -> str:
     navigation_sections: list[str] = []
     for section in dict.fromkeys(item.section for item in config.pages):
         section_links: list[str] = []
@@ -120,7 +120,29 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     homepage = page.path == config.home_document
     main_context = ' data-homepage="true"' if homepage else ' data-homepage="false"'
     theme_bootstrap = """<script>try{const root=document.documentElement,theme=localStorage.getItem('dockit-fp-theme'),visualTheme=localStorage.getItem('dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','midnight'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
-    return f'''<!doctype html><html lang="en" data-visual-theme="{html.escape(config.theme_style, quote=True)}" data-content-width="{html.escape(config.content_width, quote=True)}" style="{style}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{html.escape(config.description, quote=True)}"><title>{html.escape(page.title)} — {html.escape(config.name)}</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%237c3aed' d='M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4'/%3E%3C/svg%3E">{theme_bootstrap}<link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/site.css'), quote=True)}"><link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/katex/katex.min.css'), quote=True)}"></head><body><div class="reading-progress" aria-hidden="true"><span></span></div><header class="site-header"><div class="topbar"><a class="brand" href="{html.escape(_relative(current_route, 'index.html'), quote=True)}">{brand_identity}<span>{html.escape(config.name)}</span> <em>docs</em></a><div class="search-control"><input id="search" type="search" placeholder="Search docs, commands, and versions" aria-label="Search documentation, commands, and versions" aria-controls="search-results" aria-describedby="search-help" aria-expanded="false" autocomplete="off" data-search-index="{html.escape(_relative(current_route, 'search-index.json'), quote=True)}"><kbd aria-hidden="true" title="Press / to search">/</kbd><span id="search-help" class="visually-hidden">Type to search. Use the arrow keys to move through results, Enter to open, and Escape to close.</span></div>{header_controls}</div><div id="search-results" class="search-results" role="region" aria-label="Search results" aria-live="polite" hidden></div></header><details class="mobile-nav"><summary>Browse documentation</summary>{nav}</details><div class="shell"><nav class="sidebar" aria-label="Documentation navigation">{nav}</nav><main class="prose" id="content"{main_context}>{banner_html}{release_context}{body}{page_navigation}</main><aside class="toc" aria-label="On this page">{toc}</aside></div>{footer}<script src="{html.escape(_relative(current_route, 'assets/katex/katex.min.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/math.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/site.js'), quote=True)}"></script></body></html>'''
+    custom_css_link = f'<link rel="stylesheet" href="{html.escape(_relative(current_route, "assets/custom.css"), quote=True)}">' if custom_css else ""
+    return f'''<!doctype html><html lang="en" data-visual-theme="{html.escape(config.theme_style, quote=True)}" data-content-width="{html.escape(config.content_width, quote=True)}" style="{style}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{html.escape(config.description, quote=True)}"><title>{html.escape(page.title)} — {html.escape(config.name)}</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%237c3aed' d='M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4'/%3E%3C/svg%3E">{theme_bootstrap}<link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/site.css'), quote=True)}"><link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/katex/katex.min.css'), quote=True)}">{custom_css_link}</head><body><div class="reading-progress" aria-hidden="true"><span></span></div><header class="site-header"><div class="topbar"><a class="brand" href="{html.escape(_relative(current_route, 'index.html'), quote=True)}">{brand_identity}<span>{html.escape(config.name)}</span> <em>docs</em></a><div class="search-control"><input id="search" type="search" placeholder="Search docs, commands, and versions" aria-label="Search documentation, commands, and versions" aria-controls="search-results" aria-describedby="search-help" aria-expanded="false" autocomplete="off" data-search-index="{html.escape(_relative(current_route, 'search-index.json'), quote=True)}"><kbd aria-hidden="true" title="Press / to search">/</kbd><span id="search-help" class="visually-hidden">Type to search. Use the arrow keys to move through results, Enter to open, and Escape to close.</span></div>{header_controls}</div><div id="search-results" class="search-results" role="region" aria-label="Search results" aria-live="polite" hidden></div></header><details class="mobile-nav"><summary>Browse documentation</summary>{nav}</details><div class="shell"><nav class="sidebar" aria-label="Documentation navigation">{nav}</nav><main class="prose" id="content"{main_context}>{banner_html}{release_context}{body}{page_navigation}</main><aside class="toc" aria-label="On this page">{toc}</aside></div>{footer}<script src="{html.escape(_relative(current_route, 'assets/katex/katex.min.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/math.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/site.js'), quote=True)}"></script></body></html>'''
+
+
+def detect_route_collisions(pages: tuple[Page, ...], home: str) -> None:
+    """Reject documented pages whose generated routes would overwrite each other.
+
+    Exact collisions are deterministic on every platform. Case-insensitive
+    collisions are also rejected because supported hosts include
+    case-insensitive filesystems; a site that builds on Linux must not
+    silently break when deployed to GitHub Pages or a Windows/macOS host.
+    """
+    owners: dict[str, str] = {}
+    for page in pages:
+        route = _route(page.path, home)
+        for key in (route, route.casefold()):
+            owner = owners.get(key)
+            if owner is not None and owner != page.path:
+                raise DocKitError(
+                    f"Generated route collision: {route!r} is produced by both {owner!r} and {page.path!r}. "
+                    "Rename or move one of the listed Markdown documents so every published route is unique."
+                )
+            owners[key] = page.path
 
 
 def build_site(
@@ -131,6 +153,8 @@ def build_site(
     root, output = root.resolve(), output.resolve()
     config = load_config(root, require_listed_documents=require_listed_documents)
     docs = root / "docs"
+    routes = {item.path: _route(item.path, config.home_document) for item in config.pages}
+    detect_route_collisions(config.pages, config.home_document)
     prepare_output(output)
     assets = output / "assets"
     assets.mkdir()
@@ -148,7 +172,10 @@ def build_site(
         suffix = Path(config.logo).suffix.lower()
         logo = f"assets/logo{suffix}"
         shutil.copyfile(root / config.logo, output / logo)
-    routes = {item.path: _route(item.path, config.home_document) for item in config.pages}
+    custom_css_route = None
+    if config.custom_css:
+        custom_css_route = "assets/custom.css"
+        shutil.copyfile(root / config.custom_css, output / custom_css_route)
     source_documents = {page_source_reference(page): page.path for page in config.pages}
     content_assets: dict[str, str] = {}
     anchors = {
@@ -206,9 +233,9 @@ def build_site(
             )
         else:
             version_options = f'<option value="index.html">{html.escape(release)}</option>'
-        path.write_text(_shell(body=rendered.html, headings=rendered.headings, page=page, config=config, current_route=current_route, version_options=version_options, banner=page_banner, logo=logo, release=release), encoding="utf-8")
+        path.write_text(_shell(body=rendered.html, headings=rendered.headings, page=page, config=config, current_route=current_route, version_options=version_options, banner=page_banner, logo=logo, release=release, custom_css=custom_css_route is not None), encoding="utf-8")
         entries.append({"title": rendered.title, "section": page.section, "url": current_route, "text": rendered.text})
-    (output / "search-index.json").write_text(json.dumps(entries, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (output / "search-index.json").write_text(json.dumps({"schema_version": 1, "entries": entries}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (output / "release.json").write_text(json.dumps({"schema_version": 1, "release": release, "page_count": len(entries)}, indent=2) + "\n", encoding="utf-8")
     return BuildResult(
         len(entries), len({page.section for page in config.pages}), config.legacy,

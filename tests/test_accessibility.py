@@ -30,14 +30,23 @@ IMAGE = re.compile(r"<img\b[^>]*>")
 ATTRIBUTE = re.compile(r'([a-z-]+)="([^"]*)"', re.IGNORECASE)
 VOID_TAG = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 INTERACTIVE_ATTRIBUTE = re.compile(r"\b(onclick|onkeydown|onkeyup|onkeypress|tabindex)\s*=", re.IGNORECASE)
-SEMANTIC_TOKENS = ("--bg", "--surface", "--text", "--muted", "--border", "--code", "--raised", "--focus-ring", "--interactive")
+PUBLIC_TOKENS = (
+    "--dk-accent", "--dk-accent-secondary", "--dk-bg", "--dk-surface", "--dk-text", "--dk-muted",
+    "--dk-border", "--dk-code-bg", "--dk-code-text", "--dk-raised", "--dk-focus-ring",
+    "--dk-interactive", "--dk-content-width", "--dk-reading-width", "--dk-shell-width",
+)
+LEGACY_TOKENS = ("--bg", "--surface", "--text", "--muted", "--border", "--code", "--raised", "--focus-ring", "--interactive")
+CHROMATIC_TOKENS = (
+    "--dk-bg", "--dk-surface", "--dk-text", "--dk-muted", "--dk-border",
+    "--dk-code-bg", "--dk-raised", "--dk-focus-ring", "--dk-interactive",
+)
 
 
 def _theme_tokens(css: str, selector: str) -> set[str]:
     match = re.search(re.escape(selector) + r"\{([^}]*)\}", css)
     if match is None:
         return set()
-    return {token for token in SEMANTIC_TOKENS if token in match.group(1)}
+    return {token for token in PUBLIC_TOKENS if token in match.group(1)}
 
 
 def _open_tags(html: str) -> list[str]:
@@ -79,7 +88,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
     def test_focus_indicators_are_visible_in_every_theme(self) -> None:
         css = self.fixture.css
         self.assertIn(
-            "button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus-ring);outline-offset:3px}",
+            "button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--dk-focus-ring);outline-offset:3px}",
             css,
         )
         for theme in ("classic", "paper", "midnight"):
@@ -197,7 +206,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
     def test_light_dark_system_modes_are_coherent_across_themes(self) -> None:
         css = self.fixture.css
         base = _theme_tokens(css, ":root")
-        self.assertEqual(set(SEMANTIC_TOKENS), base)
+        self.assertEqual(set(PUBLIC_TOKENS), base)
         for selector in (
             'html[data-theme="dark"]',
             'html[data-visual-theme="paper"][data-theme="dark"]',
@@ -205,16 +214,16 @@ class AccessibilityQualificationTests(unittest.TestCase):
             'html[data-visual-theme="midnight"][data-theme="light"]',
         ):
             coverage = _theme_tokens(css, selector) | base
-            self.assertEqual(set(SEMANTIC_TOKENS), coverage, selector)
+            self.assertEqual(set(PUBLIC_TOKENS), coverage, selector)
         paper_light = _theme_tokens(css, 'html[data-visual-theme="paper"]') | base
-        self.assertEqual(set(SEMANTIC_TOKENS), paper_light, "paper light")
+        self.assertEqual(set(PUBLIC_TOKENS), paper_light, "paper light")
         paper_system_dark = re.search(
             r'@media\(prefers-color-scheme:dark\)\{html\[data-visual-theme="paper"\]:not\(\[data-theme\]\)\{([^}]*)\}\}',
             css,
         )
         self.assertIsNotNone(paper_system_dark)
-        paper_system_tokens = {token for token in SEMANTIC_TOKENS if token in paper_system_dark.group(1)} | base
-        self.assertEqual(set(SEMANTIC_TOKENS), paper_system_tokens, "paper system dark")
+        paper_system_tokens = {token for token in PUBLIC_TOKENS if token in paper_system_dark.group(1)} | base
+        self.assertEqual(set(PUBLIC_TOKENS), paper_system_tokens, "paper system dark")
         self.assertIn('html[data-theme="light"]{color-scheme:light}', css)
         self.assertIn('html[data-theme="dark"]{color-scheme:dark', css)
         for theme in ("classic", "paper", "midnight"):
@@ -227,8 +236,18 @@ class AccessibilityQualificationTests(unittest.TestCase):
         )
         self.assertEqual(2, len(system_blocks))
         merged = "".join(system_blocks)
-        for token in SEMANTIC_TOKENS:
+        for token in CHROMATIC_TOKENS:
             self.assertIn(token, merged)
+
+    def test_the_public_dk_token_family_is_namespaced_complete_and_used(self) -> None:
+        css = self.fixture.css
+        for legacy in LEGACY_TOKENS:
+            self.assertNotIn(f"{legacy}:", css, f"legacy token {legacy} survived the pre-1.0 rename")
+            self.assertNotIn(f"var({legacy})", css, f"legacy token {legacy} is still referenced")
+        root = _theme_tokens(css, ":root")
+        self.assertEqual(set(PUBLIC_TOKENS), root, ":root must define every documented public token")
+        for token in PUBLIC_TOKENS:
+            self.assertIn(f"var({token})", css, f"public token {token} is defined but never used")
 
     def test_every_generated_page_has_document_structure(self) -> None:
         for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):

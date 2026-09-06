@@ -16,7 +16,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertEqual(1, sum(line.startswith("# ") for line in readme.splitlines()))
         self.assertIn("first site in about 10 minutes", readme)
         self.assertIn("You can stop here", readme)
-        self.assertIn("dockit-fp/archive/refs/tags/v0.17.0.zip", readme)
+        self.assertIn("dockit-fp/archive/refs/tags/v0.18.0.zip", readme)
         self.assertNotIn('pip install "dockit-fp==', readme)
 
     def test_navigation_puts_learning_before_project_internals(self) -> None:
@@ -52,7 +52,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("0.17.0", __version__)
+        self.assertEqual("0.18.0", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
@@ -190,3 +190,46 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
+
+    def test_v018_contract_guides_and_examples_are_maintained(self) -> None:
+        layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
+        pages = [page["path"] for section in layout["navigation"] for page in section["pages"]]
+        machine = (self.root / "docs" / "machine-contracts.md").read_text(encoding="utf-8")
+        custom_css = (self.root / "docs" / "custom-css.md").read_text(encoding="utf-8")
+        themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
+        configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
+        fixture_config = json.loads(
+            (self.root / "examples" / "visual-fixtures" / "docs" / "dockit.json").read_text(encoding="utf-8")
+        )
+
+        self.assertIn("custom-css.md", pages)
+        self.assertIn("machine-contracts.md", pages)
+        self.assertEqual("docs/assets/custom.css", fixture_config["theme"]["custom_css"])
+        self.assertTrue((self.root / "examples" / "visual-fixtures" / "docs" / "assets" / "custom.css").is_file())
+        self.assertIn("--dk-accent", custom_css)
+        self.assertIn("schema_version", machine)
+        self.assertIn("search-index.json", machine)
+        self.assertIn("--dk-focus-ring", themes)
+        self.assertIn("theme.custom_css", custom_css)
+        self.assertIn("theme.custom_css", configuration)
+        self.assertIn("Did you mean", configuration)
+
+    def test_migration_guide_covers_every_release_through_v018_and_the_10_checklist(self) -> None:
+        migration = (self.root / "docs" / "migration.md").read_text(encoding="utf-8")
+
+        for release in ("v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0", "v0.6.0", "v0.7.0",
+                        "v0.8.0", "v0.9.0", "v0.10.0", "v0.11.0", "v0.12.0", "v0.13.0", "v0.14.0",
+                        "v0.15.0", "v0.16.0", "v0.17.0", "v0.18.0"):
+            self.assertIn(release, migration, release)
+        self.assertIn("v0.17.0 to v0.18.0", migration)
+        self.assertIn("--dk-bg", migration)
+        self.assertIn("search-index.json", migration)
+        self.assertIn("## 0.x to 1.0 upgrade checklist", migration)
+
+    def test_init_guidance_documents_the_declarative_mental_model(self) -> None:
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("The mental model from here on", readme)
+        self.assertIn("layout.json", readme)
+        self.assertIn("dockit.json", readme)
+        self.assertIn("DocKit commands for editing pages, sections or themes", readme)

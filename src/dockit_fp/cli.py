@@ -76,7 +76,19 @@ def _init(root: Path) -> list[str]:
     if discovery.ancillary_documents:
         messages.append(f"Available for explicit inclusion: {', '.join(discovery.ancillary_documents)}.")
     messages.append("Existing Markdown was left untouched.")
-    messages.append("Next: run dockit-fp serve.")
+    if not discovery.has_layout and navigation:
+        sections = ", ".join(
+            f"{section['title']} ({len(section['pages'])} page{'s' if len(section['pages']) != 1 else ''})"
+            for section in navigation
+        )
+        messages.append(f"Navigation sections: {sections}.")
+    messages.extend((
+        "DocKit is ready.",
+        "  Write documentation: README.md and docs/*.md",
+        "  Add, rename, group or reorder pages:  docs/layout.json",
+        "  Change colours, logo and presentation:  docs/dockit.json",
+        "  Preview:  dockit-fp serve",
+    ))
     return messages
 
 

@@ -97,6 +97,14 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn("Long-form reading fixture", long_form)
             self.assertTrue((Path(temporary) / "site" / "assets" / "banner.svg").is_file())
             self.assertIn('class="banner" src="assets/banner.svg"', home)
+            custom_css = Path(temporary) / "site" / "assets" / "custom.css"
+            self.assertTrue(custom_css.is_file())
+            self.assertIn("var(--dk-accent)", custom_css.read_text(encoding="utf-8"))
+            self.assertIn('href="assets/custom.css"', home)
+            self.assertGreater(
+                home.index('href="assets/custom.css"'),
+                home.index('href="assets/site.css"'),
+            )
 
     def test_copies_an_identity_logo_into_the_header(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -203,8 +211,8 @@ class BuildSiteTests(unittest.TestCase):
             site_css = (root / "site" / "assets" / "site.css").read_text(encoding="utf-8")
             system_classic_dark_rule = (
                 '@media(prefers-color-scheme:dark){html[data-visual-theme="classic"]'
-                ':not([data-theme]){color-scheme:dark;--bg:#111827;--surface:#1f2937;'
-                '--text:#f3f4f6;--muted:#b8c2d3;--border:#3b4659;--code:#030712}}'
+                ':not([data-theme]){color-scheme:dark;--dk-bg:#111827;--dk-surface:#1f2937;'
+                '--dk-text:#f3f4f6;--dk-muted:#b8c2d3;--dk-border:#3b4659;--dk-code-bg:#030712}}'
             )
             self.assertIn(
                 system_classic_dark_rule,
@@ -212,13 +220,13 @@ class BuildSiteTests(unittest.TestCase):
             )
             self.assertIn(
                 '@media(prefers-color-scheme:dark){html[data-visual-theme="classic"]'
-                ':not([data-theme]){--raised:#172033;--focus-ring:#67e8f9;'
-                '--interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff)}}',
+                ':not([data-theme]){--dk-raised:#172033;--dk-focus-ring:#67e8f9;'
+                '--dk-interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff)}}',
                 site_css,
             )
             self.assertIn('--dk-content-width:46rem', site_css)
-            self.assertIn('--interactive:color-mix(in srgb,var(--dk-accent) 78%,#000)', site_css)
-            self.assertIn('--interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff)', site_css)
+            self.assertIn('--dk-interactive:color-mix(in srgb,var(--dk-accent) 78%,#000)', site_css)
+            self.assertIn('--dk-interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff)', site_css)
             self.assertIn('html[data-content-width="wide"]{--dk-content-width:54rem', site_css)
             self.assertIn('--dk-space-1:.25rem', site_css)
             self.assertIn('--dk-control-height:2.5rem', site_css)
@@ -243,7 +251,8 @@ class BuildSiteTests(unittest.TestCase):
                 site_css,
             )
             search = json.loads((root / "site" / "search-index.json").read_text(encoding="utf-8"))
-            self.assertEqual(["index.html", "guides/pascal.html"], [entry["url"] for entry in search])
+            self.assertEqual(1, search["schema_version"])
+            self.assertEqual(["index.html", "guides/pascal.html"], [entry["url"] for entry in search["entries"]])
 
     def test_marks_a_custom_three_card_homepage_for_responsive_layout(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

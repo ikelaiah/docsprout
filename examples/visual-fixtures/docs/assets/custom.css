@@ -1,0 +1,8 @@
+/* Maintained custom-CSS example (v0.18).
+   DocKit qualifies the safe inclusion mechanism only: this stylesheet is
+   deliberately tiny and demonstrates overriding a default rule with the
+   documented public --dk-* tokens. Accessibility of custom CSS is the
+   author's responsibility; see docs/custom-css.md. */
+.prose blockquote {
+  border-left-color: var(--dk-accent);
+}

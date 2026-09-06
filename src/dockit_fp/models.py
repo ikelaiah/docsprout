@@ -39,4 +39,5 @@ class SiteConfig:
     legacy: bool
     home_document: str
     homepage: Homepage
+    custom_css: str | None = None
     excluded_documents: tuple[str, ...] = ()

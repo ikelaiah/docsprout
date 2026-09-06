@@ -172,7 +172,7 @@ class RepositoryShapeQualificationTests(unittest.TestCase):
             home = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="getting started.html"', home)
             search = json.loads((output / "search-index.json").read_text(encoding="utf-8"))
-            self.assertIn("user guides/install notes.html", [entry["url"] for entry in search])
+            self.assertIn("user guides/install notes.html", [entry["url"] for entry in search["entries"]])
 
     def test_qualifies_unicode_document_names_and_anchors(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
