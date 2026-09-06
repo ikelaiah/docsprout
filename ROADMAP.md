@@ -166,10 +166,42 @@ remains necessary. See [Qualification evidence](docs/qualification.md).
 - [x] Qualify generated-site accessibility fundamentals structurally, with a
       small documented manual browser/keyboard matrix for visual checks.
 
+## v0.18 — Simple Configuration & Stable Customisation ✅
+
+The final pre-1.0 simplification and contract-candidate release. Theme:
+**minimal CLI + obvious declarative configuration.** Commands perform
+actions; `layout.json`, `dockit.json` and `versions.json` describe the site.
+See [release notes](CHANGELOG.md#0180) and [Qualification evidence]
+(docs/qualification.md).
+
+- [x] Keep the command surface operational; making pages, sections, titles,
+      order, home and publication ordinary `layout.json` edits with a
+      compact canonical example, and appearance/identity `dockit.json`
+      edits.
+- [x] Teach the mental model from `init` (Markdown / `layout.json` /
+      `dockit.json` / `serve`) and keep `serve` the centre of authoring,
+      with rebuild regression coverage for `layout.json` and `dockit.json`.
+- [x] Offer the three customisation levels: presets and exact colours,
+      documented intermediate configuration, and the deliberately bounded
+      repository-local custom CSS escape hatch with tested safe inclusion.
+- [x] Establish the documented `--dk-*` public token family (pre-1.0 rename
+      documented) with contract tests in every theme and mode, and state
+      which selectors/DOM internals are not stable.
+- [x] Tighten configuration diagnostics (`Did you mean` suggestions for
+      unknown fields, non-empty titles, typed metadata) while preserving
+      every released 0.x schema-1 configuration (automated corpus).
+- [x] Harden the route contract with pre-build collision detection, version
+      `search-index.json` and `audit` JSON machine output, and document all
+      machine contracts and the Python API boundary.
+- [x] Bring the migration guide through v0.18 and add the `0.x → 1.0`
+      upgrade checklist.
+
 ## v1.0 — Stable Contract
 
 Version 1.0 is the commitment point: the supported configuration and workflow
-become dependable foundations for code projects.
+become dependable foundations for code projects. v0.18 candidates the
+contracts (declarative configuration, routes, machine formats, `--dk-*`
+tokens, custom CSS inclusion, CLI surface); v1.0 formally commits to them.
 
 - [ ] Declare the stable configuration contract, compatibility policy and
       deprecation process.
@@ -177,10 +209,14 @@ become dependable foundations for code projects.
       verification matrix for every supported configuration.
 - [ ] Review public documentation, examples, CLI help and release workflow for
       a maintainer's first successful publication.
-- [ ] Publish a migration guide from each 0.x release and a concise 1.0 upgrade
-      checklist.
+- [ ] Publish the final migration/upgrade review from every 0.x release and
+      the completed 1.0 upgrade checklist.
+- [ ] Rehearse the first publication end to end and prove that easy to
+      customise, easy to use and good-looking defaults are true of the
+      shipped artifact.
 - [ ] Ship only when the three promises—easy to customise, easy to use and
-      looks good—are demonstrably true.
+      looks good—are demonstrably true. If v0.18 leaves no genuine blockers,
+      v1.0 is the next planned release.
 
 ## Quality bar
 
