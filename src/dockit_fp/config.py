@@ -193,7 +193,8 @@ def _custom_css_path(root: Path, theme: dict, primary: Path) -> str | None:
     if not isinstance(value, str) or not value.strip():
         raise DocKitError(f"{primary}: field 'theme.custom_css' must be a non-empty repository-local CSS path")
     path = Path(value)
-    if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
+    drive_absolute = re.match(r"^[A-Za-z]:[\\/]", value) is not None
+    if path.is_absolute() or drive_absolute or any(part in {"", ".", ".."} for part in path.parts):
         raise DocKitError(f"{primary}: theme.custom_css path is unsafe; use a repository-local relative path")
     if path.suffix.lower() != ".css":
         raise DocKitError(f"{primary}: theme.custom_css must reference a .css file")
