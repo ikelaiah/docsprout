@@ -1,5 +1,7 @@
 # 📚 DocKit
 
+[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F0.18.1%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/0.18.1/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)
+
 ![DocKit banner — Build documentation people can use.](docs/assets/dockit-banner.svg)
 
 Turn Markdown files into a polished documentation website with search, themes,
