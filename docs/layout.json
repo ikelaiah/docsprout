@@ -45,7 +45,8 @@
         {"title": "PasWeave integration", "path": "pasweave-integration.md"},
         {"title": "Architecture", "path": "architecture.md"},
         {"title": "Architecture analysis", "path": "architecture-analysis.md"},
-        {"title": "Project specification", "path": "spec.md"}
+        {"title": "Project specification", "path": "spec.md"},
+        {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"}
       ]
     },
     {

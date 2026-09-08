@@ -4,6 +4,59 @@ DocKit produces deterministic generated output for browsers and for tools.
 This page documents which output is a public contract, and which parts are
 deliberately **not** stable.
 
+## Schema-version-1 configuration
+
+The following field families are the stable customisation contract for 1.x.
+Every modern file starts with `"schema_version": 1`; unknown fields are
+errors rather than silently ignored. Optional fields may be omitted to keep the
+defaults.
+
+| File/object | Stable fields |
+| --- | --- |
+| `dockit.json` | `schema_version`, `project`, `theme`, `layout`, `banner`, `identity`, `homepage` |
+| `project` | `name`, `description`, `repository_url`, `site_url` |
+| `theme` | `preset`, `style`, `accent`, `accent_secondary`, `custom_css` |
+| `layout` in `dockit.json` | `content_width` (`compact`, `comfortable`, `wide`) |
+| `banner` | `path`, `alt` |
+| `identity` | `logo`, `footer`, `links` |
+| `homepage` | `capabilities`, `sections` (`capabilities`, `banner`, `introduction`, `release_context`) |
+| `layout.json` | `schema_version`, `home`, `unlisted`, `navigation` |
+| page/section entries | `title`, `path`, `source`; section entries contain `pages` |
+| `docs/versions.json` | `schema_version`, `current`, `versions` (`release`, `source_ref`) |
+
+`source: "root"` is reserved for the exact repository-root `README.md`.
+`theme.custom_css` and `identity.logo` must remain repository-local assets.
+The configuration guide gives the editing examples and the validation
+diagnostics for each field family.
+
+## CLI contract
+
+The stable command names are `init`, `serve`, `check`, `audit`, `build`,
+`doctor`, `github-pages`, `check-release` and `build-all`. All accept
+`--root`; the command-specific options are:
+
+| Command | Options |
+| --- | --- |
+| `build` | `--output`, `--release`, `--offline-archive` |
+| `build-all` | `--output` |
+| `serve` | `--host`, `--port` |
+| `audit` | `--strict`, `--format text\|json` |
+| `github-pages` | `--update` |
+
+Successful commands exit 0. A documentation or release validation error exits
+1; `audit` uses exit 1 for errors (or strict warnings) and exit 0 for
+non-strict warnings; invalid `audit` configuration exits 2. `--version` exits
+0 and prints `dockit-fp <version>`. Argparse usage errors are the usual exit
+2. Human-readable sentences may improve without being a compatibility change.
+
+## Reusable workflow inputs
+
+`.github/workflows/publish-docs.yml` is a reusable workflow with two stable
+inputs: boolean `versioned` (default `true`) and string `release` (default
+`preview`). Versioned builds require immutable `docs/versions.json` refs;
+single-version builds use the `release` label. Caller workflows must pin a
+released DocKit tag, never `main`.
+
 ## Generated routes
 
 Routes come from the listed Markdown path and the selected home page:
@@ -47,7 +100,7 @@ Written by every single-release build. Versioned shape:
 ```json
 {
   "schema_version": 1,
-  "release": "0.18.1",
+  "release": "1.0.0",
   "page_count": 23
 }
 ```
@@ -60,9 +113,9 @@ configured `docs/versions.json` manifest:
 ```json
 {
   "schema_version": 1,
-  "current": "0.18.1",
+  "current": "1.0.0",
   "versions": [
-    {"release": "0.18.1", "source_ref": "v0.18.1"}
+    {"release": "1.0.0", "source_ref": "v1.0.0"}
   ]
 }
 ```
@@ -96,6 +149,16 @@ Deterministic CI-friendly diagnostics. Root fields:
 `target` is present only when a finding names one. Findings are ordered
 deterministically by page order, then source position.
 
+## 1.x compatibility policy
+
+Compatible additions are preferred within 1.x. A deprecation keeps the old
+surface working for at least one minor release and is documented in the
+changelog and migration guide before removal in the next major release. Schema
+or machine-format changes require a new schema version and an explicit
+migration path. A safety fix may reject behavior outside this documented
+contract, with a regression test and migration guidance when user action is
+needed.
+
 ## The compatibility boundary
 
 **Stable for 1.x:**
@@ -106,6 +169,9 @@ deterministically by page order, then source position.
 - the documented `--dk-*` public token family;
 - the custom CSS inclusion mechanism (`theme.custom_css`);
 - generated routes and the machine formats above.
+
+The documented `--dk-*` names are the stable customisation contract. Internal
+variables that happen to share the prefix are not included.
 
 **Not stable (may change without notice):**
 

@@ -61,20 +61,25 @@ below, replace `1.2.0` with your version.
 1. Add release `1.2.0` and source ref `v1.2.0` to `docs/versions.json`. Set
    `current` to `1.2.0`.
 2. Run `dockit-fp check`.
-3. Commit all release files, including the documentation, manifest and workflow:
+3. Commit all release files, including the documentation, manifest and workflow,
+   on a branch named `release/vX.Y.Z`:
 
    ```bash
    git add docs .github/workflows
    git commit -m "Prepare v1.2.0 documentation"
    ```
 
-4. Create the tag on that exact commit:
+4. Push the qualified branch and open a PR against `main`. Wait for every
+   required CI/qualification check, inspect failures, and merge only the green
+   candidate. Do not tag the unmerged PR head.
+
+5. Check out the merged `main` commit and create the tag on that exact commit:
 
    ```bash
    git tag -a v1.2.0 -m "v1.2.0"
    ```
 
-5. Run the release checks and historical build:
+6. Run the release checks and historical build:
 
    ```bash
    dockit-fp check-release
@@ -84,15 +89,16 @@ below, replace `1.2.0` with your version.
    The release check should report immutable releases. The build should contain
    one folder per release and a `versions.json` file at its root.
 
-6. Run `git status --short`. No output means tracked release files are clean.
-7. Push the commit and tag together:
+7. Run `git status --short`. No output means tracked release files are clean.
+8. Push the annotated tag (the merge commit is already on `main`):
 
    ```bash
-   git push origin main v1.2.0
+   git push origin v1.2.0
    ```
 
-8. Confirm both CI and the Documentation workflow are green on GitHub.
-9. Open the public site, switch between two releases, and confirm their content
+9. Create the GitHub Release from the tag. Confirm both CI and the Documentation
+   workflow are green on GitHub.
+10. Open the public site, switch between two releases, and confirm their content
    is different where expected.
 
 ## If you find a mistake

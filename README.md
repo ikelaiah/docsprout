@@ -1,6 +1,6 @@
 # 📚 DocKit
 
-[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F0.18.1%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/0.18.1/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)
+[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/1.0.0/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)
 
 ![DocKit banner — Build documentation people can use.](docs/assets/dockit-banner.svg)
 
@@ -13,14 +13,15 @@ but it does not require Pascal source code.
 
 ## 🚀 Make your first site in about 10 minutes
 
-You need Python 3.10 or newer and an internet connection for installation. You
-do not need Git or a GitHub account for this first preview.
+You need supported Python 3.10–3.14 and internet for installation; no Git or
+GitHub account is needed for this first preview. Python 3.15 pre-release is a
+non-blocking forward-compatibility signal, not a support commitment.
 
 Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.18.1.zip"
+python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v1.0.0.zip"
 dockit-fp init
 dockit-fp serve
 ```
@@ -103,19 +104,19 @@ existing projects and advanced historical publishing.
 | Find out what is tested and supported | [Qualification evidence](docs/qualification.md) |
 | Understand an unfamiliar term | [Glossary](docs/glossary.md) |
 
-## ✨ What DocKit gives you
+## ✨ Five promises
 
-- 📱 Responsive pages that work on phones and desktops.
-- 🖼️ Markdown images shrink to the content column by default while smaller
-  images keep their natural size.
-- 🌓 System, Light and Dark colour modes.
-- 🎨 Classic, Paper and Midnight visual themes, with a documented `--dk-*`
-  token family and an optional repository-local custom CSS escape hatch.
-- 🔎 Search and keyboard-friendly navigation.
-- 📐 Local KaTeX mathematics without a CDN.
-- ✅ Checks for broken links, missing pages and unsafe configuration.
-- 🏷️ Optional immutable documentation for every tagged release.
-- 🚀 A reusable GitHub Pages workflow.
+- **Easy to use.** Short commands take a project from Markdown to preview,
+  checks, audit and publication.
+- **Easy to learn.** The beginner path explains the mental model and the next
+  useful edit without hiding decisions in a generator.
+- **Easy to look good.** Responsive, keyboard-friendly Classic, Paper and
+  Midnight sites work with local assets and no custom CSS required.
+- **Easy to create from existing repositories.** `init` preserves Markdown,
+  discovers ordinary and Pascal-shaped projects, and creates only missing
+  configuration.
+- **Easy to maintain.** Explicit navigation, machine contracts, release
+  checks and pinned Pages workflows keep ownership visible.
 
 Your repository keeps its Markdown, navigation, project identity and release
 tags. DocKit supplies the renderer and shared website machinery. You should

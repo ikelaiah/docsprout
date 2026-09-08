@@ -6,6 +6,7 @@ import tempfile
 from contextlib import redirect_stdout
 
 from dockit_fp.cli import main
+from dockit_fp import __version__
 
 
 def _write_project(root: Path, pages: dict[str, str], *, layout_pages: list[str] | None = None, home: dict | None = None) -> None:
@@ -145,4 +146,4 @@ class AuditTests(unittest.TestCase):
         with self.assertRaises(SystemExit) as exit_code, redirect_stdout(version):
             main(["--version"])
         self.assertEqual(0, exit_code.exception.code)
-        self.assertIn("0.18.1", version.getvalue())
+        self.assertIn(__version__, version.getvalue())

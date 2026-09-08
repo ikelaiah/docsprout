@@ -1,5 +1,9 @@
 # Migration
 
+The v1.0.0 upgrade is deliberately boring: it freezes the qualified v0.18.1
+surface and does not introduce a new configuration schema. Pin the released
+package and workflow, then run the same checks you already use.
+
 Migrate gradually from local `tools/build_docs.py`, `build_all_docs.py`,
 `check_built_docs.py` and `tools/docs_assets/` copies:
 
@@ -27,7 +31,7 @@ each published release manifest on immutable tags while upgrading.
 ## Upgrade directly from any supported 0.x release
 
 All released 0.x configurations use schema version 1. Upgrade the pinned package
-and workflow to v0.18.1, then use this table before running `doctor`, `check`, and
+and workflow to v1.0.0, then use this table before running `doctor`, `check`, and
 the appropriate publish build.
 
 | Starting release | Required compatibility work |
@@ -96,6 +100,28 @@ machine consumers and advanced customisation only.
 No configuration change is required. Ordinary Markdown images now shrink to
 the prose column by default while smaller images retain their intrinsic size;
 configured banners and existing custom CSS behavior remain compatible.
+
+## v0.18.1 to v1.0.0
+
+No configuration migration is required. v1.0.0 is the stable commitment to
+the contract qualified by v0.18.1:
+
+1. Pin the package archive or source installation to `v1.0.0` and pin the
+   reusable Pages workflow to `@v1.0.0`; never use `main`.
+2. Keep `"schema_version": 1` in `dockit.json`, `layout.json` and
+   `versions.json`. There is no schema rewrite or generated-route migration.
+3. If custom CSS still uses pre-v0.18 generic names such as `--bg`, `--text`
+   or `--interactive`, rename them to their documented `--dk-*` equivalents.
+4. Machine consumers must use the schema-1 `search-index.json`, `release.json`,
+   built `versions.json` and `audit --format json` shapes documented in
+   [Machine-readable contracts](machine-contracts.md).
+5. Run `doctor`, `check`, `audit --strict`, a local `serve` preview, and the
+   historical `check-release` + `build-all` flow when version history is used.
+
+The v1.x policy is additive within the major release. Deprecations remain
+available for at least one minor release and are documented before removal in a
+future major release; schema or machine-format changes require a new schema
+version and migration guidance.
 
 ## v0.10.0 to v0.11.0
 
@@ -211,12 +237,11 @@ safe, readable plain code.
 
 ## 0.x to 1.0 upgrade checklist
 
-Version 1.0 is the formal commitment point for the contracts that v0.18
-candidates. There is no 1.0 schema change pending. Before adopting 1.0:
+Version 1.0 is the formal commitment point for the contracts that v0.18.1
+qualified. There is no 1.0 schema change. Before adopting v1.0.0:
 
-1. Upgrade the pinned package and Pages workflow to the latest 1.x release
-   following this migration guide's patterns (config-compatible, then
-   rebuild).
+1. Upgrade the pinned package and Pages workflow to `v1.0.0` following this
+   guide's patterns (config-compatible, then rebuild).
 2. Remove references to any pre-v0.18 generic theme token names
    (`--bg`, `--text`, `--interactive`, …) in custom CSS; the `--dk-*` names
    are the 1.x contract.
