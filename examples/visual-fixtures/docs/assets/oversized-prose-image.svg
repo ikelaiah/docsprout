@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1983" height="793" viewBox="0 0 1983 793" role="img" aria-labelledby="title description">
+  <title id="title">Oversized prose image</title>
+  <desc id="description">A deliberately wide visual used to qualify responsive Markdown images.</desc>
+  <rect width="1983" height="793" fill="#172033"/>
+  <rect x="72" y="72" width="1839" height="649" rx="24" fill="#2563eb"/>
+  <path d="M190 560h1603M190 490h1220M190 420h1440" stroke="#bfdbfe" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="1730" cy="220" r="92" fill="#67e8f9"/>
+</svg>

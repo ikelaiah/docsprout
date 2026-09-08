@@ -18,7 +18,7 @@ Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.18.0.zip"
+python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v0.18.1.zip"
 dockit-fp init
 dockit-fp serve
 ```
@@ -104,6 +104,8 @@ existing projects and advanced historical publishing.
 ## ✨ What DocKit gives you
 
 - 📱 Responsive pages that work on phones and desktops.
+- 🖼️ Markdown images shrink to the content column by default while smaller
+  images keep their natural size.
 - 🌓 System, Light and Dark colour modes.
 - 🎨 Classic, Paper and Midnight visual themes, with a documented `--dk-*`
   token family and an optional repository-local custom CSS escape hatch.

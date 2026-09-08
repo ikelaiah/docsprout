@@ -10,6 +10,10 @@ DocKit guarantees the **safe inclusion mechanism**. It does not guarantee the
 accessibility or correctness of the CSS you write. That distinction is the
 contract of this feature.
 
+Ordinary Markdown images are responsive by default: oversized images shrink to
+the prose column, while smaller images keep their intrinsic size. Custom CSS is
+only needed when a project deliberately wants a different presentation.
+
 ## Configure one stylesheet
 
 Add `theme.custom_css` to `docs/dockit.json`:
