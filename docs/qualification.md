@@ -5,7 +5,8 @@ that CI enforces today, and every row names how it is verified. "Supported"
 means the combination is exercised by the automated qualification on every
 pull request and release, not merely believed to work.
 
-v0.18.0 is the final pre-1.0 simplification and contract-candidate release.
+v0.18.1 is the focused responsive-image patch release; v0.18.0 remains the
+final pre-1.0 simplification and contract-candidate release.
 The v0.17 matrix is retained unchanged and extended with the v0.18 rows at the
 end of this page.
 
@@ -159,6 +160,15 @@ The v0.17 matrix above is unchanged. v0.18 adds:
   model (Markdown, `layout.json`, `dockit.json`, `serve`) and reports the
   inferred sections when it created the layout; `serve` rebuilds are
   regression-tested for `layout.json` and `dockit.json` changes.
+
+## v0.18.1 additions
+
+The v0.18.1 patch adds a shared `.prose img` default that constrains oversized
+Markdown images to the prose column, preserves aspect ratio, and leaves smaller
+images at intrinsic size. Regression coverage checks the normal, single-version
+and versioned build paths, configured banners, custom-CSS ordering, themes and
+content-width settings. The maintained visual fixture carries both an
+oversized SVG and a small badge for browser review.
 
 ## Known limitations
 

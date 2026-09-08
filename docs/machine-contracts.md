@@ -47,7 +47,7 @@ Written by every single-release build. Versioned shape:
 ```json
 {
   "schema_version": 1,
-  "release": "0.18.0",
+  "release": "0.18.1",
   "page_count": 23
 }
 ```
@@ -60,9 +60,9 @@ configured `docs/versions.json` manifest:
 ```json
 {
   "schema_version": 1,
-  "current": "0.18.0",
+  "current": "0.18.1",
   "versions": [
-    {"release": "0.18.0", "source_ref": "v0.18.0"}
+    {"release": "0.18.1", "source_ref": "v0.18.1"}
   ]
 }
 ```

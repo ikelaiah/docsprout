@@ -30,7 +30,7 @@ Visitors can switch the Style too. DocKit remembers both choices in
 the browser when storage is available.
 
 The maintained
-[single-version example](https://github.com/ikelaiah/dockit-fp/tree/v0.18.0/examples/single-version)
+[single-version example](https://github.com/ikelaiah/dockit-fp/tree/v0.18.1/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
@@ -70,7 +70,7 @@ hexadecimal values:
 Test custom colours in both Light and Dark mode. Links, selected navigation and
 keyboard focus must remain easy to see. A preset is safer when you are unsure.
 The maintained
-[minimal example](https://github.com/ikelaiah/dockit-fp/tree/v0.18.0/examples/minimal)
+[minimal example](https://github.com/ikelaiah/dockit-fp/tree/v0.18.1/examples/minimal)
 uses the exact teal values shown above; its built links, selected navigation
 and focus state use that accent.
 

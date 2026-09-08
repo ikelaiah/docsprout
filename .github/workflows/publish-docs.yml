@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
-      - run: python -m pip install "git+https://github.com/ikelaiah/dockit-fp.git@v0.18.0"
+      - run: python -m pip install "git+https://github.com/ikelaiah/dockit-fp.git@v0.18.1"
       - run: dockit-fp check
       - if: inputs.versioned
         run: dockit-fp check-release

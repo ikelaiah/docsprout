@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.1
+
+Focused patch release for responsive Markdown images.
+
+### Fixed
+
+- Ordinary Markdown images inside `.prose` now shrink to the content column
+  with `max-width: 100%` while preserving their aspect ratio. Images that are
+  already smaller than the column retain their intrinsic size, and configured
+  homepage banners keep their existing behavior.
+
 ## 0.18.0
 
 The final pre-1.0 simplification and contract-candidate release.

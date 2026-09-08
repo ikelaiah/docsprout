@@ -27,7 +27,7 @@ each published release manifest on immutable tags while upgrading.
 ## Upgrade directly from any supported 0.x release
 
 All released 0.x configurations use schema version 1. Upgrade the pinned package
-and workflow to v0.18.0, then use this table before running `doctor`, `check`, and
+and workflow to v0.18.1, then use this table before running `doctor`, `check`, and
 the appropriate publish build.
 
 | Starting release | Required compatibility work |
@@ -90,6 +90,12 @@ machine consumers and advanced customisation only.
   page is home, or case-only filename differences), the build now fails with
   an actionable error instead of silently overwriting output. Rename or move
   one of the documents.
+
+## v0.18.0 to v0.18.1
+
+No configuration change is required. Ordinary Markdown images now shrink to
+the prose column by default while smaller images retain their intrinsic size;
+configured banners and existing custom CSS behavior remain compatible.
 
 ## v0.10.0 to v0.11.0
 
