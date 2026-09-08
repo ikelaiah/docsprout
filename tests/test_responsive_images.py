@@ -89,6 +89,7 @@ class ResponsiveProseImageTests(unittest.TestCase):
             self.assertEqual("auto", prose_images["height"])
             self.assertNotIn("width", prose_images)
             self.assertNotIn("display", prose_images)
+            self.assertNotRegex(css, r"(?:^|})img\{")
 
             page = (root / "site" / "index.html").read_text(encoding="utf-8")
             self.assertIn(
