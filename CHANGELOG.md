@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.0.0
+
+The stable contract release. DocKit v1.0.0 commits to the small, offline-first
+workflow qualified through v0.18.1 and makes the Five Promises explicit:
+easy to use, easy to learn, easy to look good, easy to create from existing
+repositories, and easy to maintain.
+
+### Stability commitment
+
+- Schema-version-1 `dockit.json`, `layout.json` and `versions.json` fields are
+  the supported configuration surface.
+- CLI commands/options and exit behavior, generated routes, machine-readable
+  files, the documented `--dk-*` tokens, safe custom-CSS inclusion and
+  reusable-workflow inputs are stable for 1.x.
+- Compatible additions are preferred in 1.x. Deprecations remain available for
+  at least one minor release and are documented before a future major removal.
+- Private Python modules, internal DOM/CSS details, exact generated whitespace
+  and human-readable prose remain implementation details.
+
+### User-visible improvements
+
+- A concise README and beginner path now lead from existing Markdown to a local
+  preview, configuration, audit and publication.
+- Qualification evidence records package, OS, repository-shape, accessibility,
+  responsive-fixture, clean-room and Pages rehearsals with known limitations.
+- The release process and migration guide explain the boring 0.x → 1.0 path:
+  pin v1.0.0, keep schema version 1, use `--dk-*` tokens, and re-run the
+  release checks.
+- Maintained examples and reusable Pages callers pin the stable `v1.0.0`
+  workflow.
+
 ## 0.18.1
 
 Focused patch release for responsive Markdown images.

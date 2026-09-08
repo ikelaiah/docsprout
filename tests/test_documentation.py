@@ -16,8 +16,23 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertEqual(1, sum(line.startswith("# ") for line in readme.splitlines()))
         self.assertIn("first site in about 10 minutes", readme)
         self.assertIn("You can stop here", readme)
-        self.assertIn("dockit-fp/archive/refs/tags/v0.18.1.zip", readme)
+        self.assertIn("dockit-fp/archive/refs/tags/v1.0.0.zip", readme)
         self.assertNotIn('pip install "dockit-fp==', readme)
+
+    def test_readme_badges_are_canonical_and_deliberate(self) -> None:
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+
+        expected_badges = (
+            "[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain)",
+            "[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/1.0.0/)",
+            "[![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest)",
+            "[![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions)",
+            "[![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)",
+        )
+        for badge in expected_badges:
+            with self.subTest(badge=badge):
+                self.assertIn(badge, readme)
+        self.assertNotIn("python-3.10%2B", readme)
 
     def test_navigation_puts_learning_before_project_internals(self) -> None:
         layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
@@ -52,9 +67,15 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("0.18.1", __version__)
+        self.assertEqual("1.0.0", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
+
+        pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
+        self.assertIn('version = "1.0.0"', pyproject)
+        self.assertIn('license = "MIT"', pyproject)
+        self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
+        self.assertIn('Development Status :: 5 - Production/Stable', pyproject)
 
     def test_beginner_guide_shows_complete_docs_and_root_readme_layouts(self) -> None:
         beginner = (self.root / "docs" / "beginners-guide.md").read_text(encoding="utf-8")
@@ -190,8 +211,32 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
+        self.assertIn("# Qualification evidence for DocKit v1.0.0", qualification)
+        self.assertIn("Browser automation status", qualification)
 
-    def test_v018_contract_guides_and_examples_are_maintained(self) -> None:
+    def test_v1_five_promises_and_contract_are_explicit(self) -> None:
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+        roadmap = (self.root / "ROADMAP.md").read_text(encoding="utf-8")
+        architecture = (self.root / "docs" / "architecture.md").read_text(encoding="utf-8")
+        machine = (self.root / "docs" / "machine-contracts.md").read_text(encoding="utf-8")
+        qualification = (self.root / "docs" / "qualification.md").read_text(encoding="utf-8")
+        contributing = (self.root / "CONTRIBUTING.md").read_text(encoding="utf-8")
+        decision = (self.root / "docs" / "decisions" / "0010-v1-stable-contract.md").read_text(encoding="utf-8")
+
+        for promise in (
+            "Easy to use", "Easy to learn", "Easy to look good",
+            "Easy to create from existing repositories", "Easy to maintain",
+        ):
+            with self.subTest(promise=promise):
+                self.assertIn(promise, readme + roadmap + qualification)
+        self.assertIn("## v1.0 — Stable Contract", roadmap)
+        self.assertIn("Release branches", contributing)
+        self.assertIn("Compatibility policy", architecture)
+        self.assertIn("Schema-version-1 configuration", machine)
+        self.assertIn("1.x compatibility policy", machine)
+        self.assertIn("0010", decision)
+
+    def test_stable_contract_guides_and_examples_are_maintained(self) -> None:
         layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
         pages = [page["path"] for section in layout["navigation"] for page in section["pages"]]
         machine = (self.root / "docs" / "machine-contracts.md").read_text(encoding="utf-8")
@@ -213,6 +258,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("theme.custom_css", custom_css)
         self.assertIn("theme.custom_css", configuration)
         self.assertIn("Did you mean", configuration)
+        self.assertIn("stable customisation contract", machine)
 
     def test_migration_guide_covers_every_release_through_v018_and_the_10_checklist(self) -> None:
         migration = (self.root / "docs" / "migration.md").read_text(encoding="utf-8")
@@ -225,6 +271,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("--dk-bg", migration)
         self.assertIn("search-index.json", migration)
         self.assertIn("## 0.x to 1.0 upgrade checklist", migration)
+        self.assertIn("v1.0.0", migration)
 
     def test_init_guidance_documents_the_declarative_mental_model(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")

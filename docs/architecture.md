@@ -24,6 +24,12 @@ Internal selectors, DOM wrappers, exact generated whitespace, private Python
 modules and human CLI prose are deliberately not part of the contract; see
 the boundary in [Machine-readable contracts](machine-contracts.md).
 
+## Compatibility policy
+
+v1.x prefers compatible additions. Deprecations remain available for at least
+one minor release and are documented before a future major removal; schema and
+machine-format changes require a new schema version and migration guidance.
+
 ## The Python API boundary
 
 DocKit-FP is primarily a CLI/application package. `dockit_fp.__version__` is
@@ -33,13 +39,14 @@ downstream tools should use the CLI and the machine formats.
 
 ## Language of this release
 
-The v0.18 line is the final pre-1.0 simplification release. Its theme is
-**minimal CLI + obvious declarative configuration**: `layout.json` is the
-authoritative navigation model (pages, sections, titles, order, home,
-publication), `dockit.json` describes appearance and identity, and no
-authoring-mutator commands exist. The default site needs no custom CSS; the
-custom stylesheet mechanism is a deliberately bounded escape hatch whose
-inclusion mechanics DocKit owns and whose accessibility the author owns.
+v1.0.0 is the stable commitment point for the **minimal CLI + obvious
+declarative configuration** model: `layout.json` is the authoritative
+navigation model (pages, sections, titles, order, home, publication),
+`dockit.json` describes appearance and identity, and no authoring-mutator
+commands exist. The default site needs no custom CSS; the custom stylesheet
+mechanism is a deliberately bounded escape hatch whose inclusion mechanics
+DocKit owns and whose accessibility the author owns.
 
-Downstream projects should pin released tags such as `v0.18.1`, never
-the main branch.
+Downstream projects should pin released tags such as `v1.0.0`, never the main
+branch. The stable boundary and deprecation policy are in [Machine-readable
+contracts](machine-contracts.md).

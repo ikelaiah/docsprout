@@ -5,15 +5,22 @@ without maintaining a site generator. It remains Pascal-friendly, but does not
 require Pascal source code. This roadmap is a guide to direction, not a promise
 of dates. Feedback from maintainers will set the order within each milestone.
 
-The path to 1.0 is guided by three promises:
+The path to 1.0 was guided by five promises:
 
-1. **Easy to customise.** A project owner can shape content, cards, sections,
-   identity and theme through documented configuration—not Python edits or CSS
-   forks.
-2. **Easy to use.** A maintainer can start, author, check and publish a site
-   with short commands and useful guidance.
-3. **Looks good.** The default site and every supported theme are intentional,
-   readable, responsive and keyboard-accessible.
+1. **Easy to use.** A maintainer can start, author, check and publish a site
+   with short commands and useful diagnostics.
+2. **Easy to learn.** A first-time maintainer can understand the mental model,
+   choose the next edit and find the route to publication.
+3. **Easy to look good.** The default site and every supported theme are
+   intentional, readable, responsive and keyboard-accessible.
+4. **Easy to create from existing repositories.** A project can adopt existing
+   Markdown, assets, structure and identity without a rewrite.
+5. **Easy to maintain.** Explicit contracts, qualification evidence and pinned
+   release workflows keep future changes reviewable.
+
+The original customisation promise is part of creating and maintaining a site:
+project owners shape content, cards, sections, identity and theme through
+documented configuration—not Python edits or CSS forks.
 
 The generator will remain small, offline-friendly and straightforward to
 maintain while delivering those promises.
@@ -196,27 +203,24 @@ See [release notes](CHANGELOG.md#0180) and [Qualification evidence]
 - [x] Bring the migration guide through v0.18 and add the `0.x → 1.0`
       upgrade checklist.
 
-## v1.0 — Stable Contract
+## v1.0 — Stable Contract ✅
 
-Version 1.0 is the commitment point: the supported configuration and workflow
-become dependable foundations for code projects. v0.18 candidates the
-contracts (declarative configuration, routes, machine formats, `--dk-*`
-tokens, custom CSS inclusion, CLI surface); v1.0 formally commits to them.
+Version 1.0 is the commitment point: v0.18.1's qualified configuration,
+routes, machine formats, `--dk-*` tokens, custom CSS inclusion, CLI surface
+and Pages workflow are now documented as the stable 1.x contract.
 
-- [ ] Declare the stable configuration contract, compatibility policy and
+- [x] Declare the stable configuration contract, compatibility policy and
       deprecation process.
-- [ ] Complete a full accessibility, responsive-layout and generated-HTML
-      verification matrix for every supported configuration.
-- [ ] Review public documentation, examples, CLI help and release workflow for
+- [x] Complete automated accessibility, responsive-layout and generated-HTML
+      coverage for every supported configuration, with manual limitations
+      stated honestly.
+- [x] Review public documentation, examples, CLI help and release workflow for
       a maintainer's first successful publication.
-- [ ] Publish the final migration/upgrade review from every 0.x release and
-      the completed 1.0 upgrade checklist.
-- [ ] Rehearse the first publication end to end and prove that easy to
-      customise, easy to use and good-looking defaults are true of the
-      shipped artifact.
-- [ ] Ship only when the three promises—easy to customise, easy to use and
-      looks good—are demonstrably true. If v0.18 leaves no genuine blockers,
-      v1.0 is the next planned release.
+- [x] Publish the migration/upgrade review from every supported 0.x release
+      and the completed 1.0 upgrade checklist.
+- [x] Rehearse clean-room adoption, customization, package installation,
+      versioned builds and Pages publication.
+- [x] Ship only after all Five Promises have qualification evidence.
 
 ## Quality bar
 

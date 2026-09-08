@@ -1,17 +1,17 @@
-# Qualification
+# Qualification evidence for DocKit v1.0.0
 
-DocKit v0.17 is the qualification release: the claims below are the contract
-that CI enforces today, and every row names how it is verified. "Supported"
-means the combination is exercised by the automated qualification on every
-pull request and release, not merely believed to work.
+DocKit v1.0.0 is the stable qualification release. The claims below are the
+contract that CI and the maintained fixtures exercise, and every row names how
+it is verified. "Supported" means the combination is run by automated
+qualification on every pull request and release, not merely believed to work.
 
-v0.18.1 is the focused responsive-image patch release; v0.18.0 remains the
-final pre-1.0 simplification and contract-candidate release.
-The v0.17 matrix is retained unchanged and extended with the v0.18 rows at the
-end of this page.
+The v0.17 and v0.18 matrices are retained as historical evidence for the
+contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
+clean-room package rehearsal and the explicit compatibility policy.
 
-Vertices: **automated** rows run in CI with no browser or network dependency;
-**manual** rows are small, explicit browser checks listed at the end.
+Evidence levels: **automated** rows run in CI with no browser or network
+dependency; **manual** rows are explicit review steps; **unavailable** rows are
+not claimed as completed when the required browser tooling is absent.
 
 ## Supported Python versions
 
@@ -170,6 +170,32 @@ and versioned build paths, configured banners, custom-CSS ordering, themes and
 content-width settings. The maintained visual fixture carries both an
 oversized SVG and a small badge for browser review.
 
+## The Five Promises
+
+| Promise | Qualification evidence | Result |
+| --- | --- | --- |
+| **Easy to use** | Installed wheel and sdist journeys run `init`, `serve`, `check`, `audit`, `build`, `doctor` and Pages preparation from outside the source tree. | Automated pass |
+| **Easy to learn** | README, beginner guide, configuration, publishing, audit and migration paths are checked for the short preview path, declarative mental model and next-step links. | Automated documentation pass |
+| **Easy to look good** | Structural accessibility, token, responsive-image, theme/mode, content-width, custom-CSS and maintained visual-fixture tests cover phone/tablet/desktop cases without brittle screenshots. | Automated pass; browser geometry unavailable |
+| **Easy to create from existing repositories** | Generic/Pascal-shaped, root-README, nested, Unicode, spaces, assets, explicit-home, unlisted and ancillary-file adoption fixtures pass; Pages setup is idempotent and non-mutating. | Automated pass |
+| **Easy to maintain** | Schema corpus, route collision checks, machine-format checks, workflow pin checks, deterministic archive/build tests, contributor guidance and release checks pass. | Automated pass |
+
+The stable contract is deliberately smaller than the implementation: see
+[Machine-readable contracts](machine-contracts.md) for the exact schema fields,
+CLI options, exit semantics, routes, machine files, public tokens and workflow
+inputs. The [v1.0 decision record](decisions/0010-v1-stable-contract.md)
+records the compatibility and deprecation policy.
+
+## Clean-room release rehearsal
+
+The release gate builds a wheel and sdist, inspects both archives, installs each
+into a fresh virtual environment, and runs the installed qualification script
+from a temporary working directory outside the source tree. It also rehearses
+existing-repository adoption, custom identity/theme/banner/CSS configuration,
+single-version Pages preparation, immutable versioned `check-release` and
+`build-all`, deterministic output, and local `serve` HTTP delivery. No runtime
+operation requires a network connection after installation.
+
 ## Known limitations
 
 - Real file-symlink creation on Windows requires Developer Mode or an
@@ -179,6 +205,11 @@ oversized SVG and a small badge for browser review.
   `github-pages`; discovery and previews degrade gracefully without Git.
 - Browser automation is intentionally not part of CI: the remaining visual
   checks are the small manual matrix below.
+- **Browser automation status:** Chrome DevTools MCP was not available during
+  v1.0.0 qualification. Full browser geometry, console and keyboard inspection
+  therefore remains unavailable; the automated structural/fixture coverage and
+  live Pages sanity checks are reported separately and do not imply a full
+  browser review.
 - External URLs in documentation are never network-checked; `audit` reports
   this explicitly.
 - Custom CSS is author-owned: its accessibility, contrast and responsiveness
