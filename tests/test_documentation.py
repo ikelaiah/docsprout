@@ -73,6 +73,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('version = "1.0.0"', pyproject)
+        self.assertIn('license = "MIT"', pyproject)
         self.assertIn('Development Status :: 5 - Production/Stable', pyproject)
 
     def test_beginner_guide_shows_complete_docs_and_root_readme_layouts(self) -> None:

@@ -8,6 +8,7 @@ Install the local checkout and run the complete suite before proposing a
 change:
 
 ```powershell
+python -m pip install -e .
 python -m unittest discover -s tests -t . -v
 ```
 
