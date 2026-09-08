@@ -54,3 +54,13 @@ end;
 > [!WARNING] Warnings identify a recoverable risk before publication.
 
 > [!TIP] Tips identify a safer or faster way to complete a task.
+
+## Responsive Markdown images
+
+Markdown images are responsive by default: oversized artwork shrinks to the
+prose column while small badges retain their intrinsic size. This fixture keeps
+both cases visible for review at desktop, tablet and phone widths.
+
+![Deliberately oversized prose illustration](assets/oversized-prose-image.svg)
+
+![Small intrinsic-size badge](assets/small-badge.svg)

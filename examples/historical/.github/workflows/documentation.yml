@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   documentation:
-    uses: ikelaiah/dockit-fp/.github/workflows/publish-docs.yml@v0.18.0
+    uses: ikelaiah/dockit-fp/.github/workflows/publish-docs.yml@v0.18.1
     permissions:
       contents: read
       pages: write

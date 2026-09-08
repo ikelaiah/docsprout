@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
-  "current": "0.18.0",
+  "current": "0.18.1",
   "versions": [
+    {"release": "0.18.1", "source_ref": "v0.18.1"},
     {"release": "0.18.0", "source_ref": "v0.18.0"},
     {"release": "0.17.0", "source_ref": "v0.17.0"},
     {"release": "0.16.2", "source_ref": "v0.16.2"},

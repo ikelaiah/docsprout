@@ -62,6 +62,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .prose h2{font-size:1.7rem;line-height:1.2;margin:2.75rem 0 .8rem}
 .prose h3{font-size:1.25rem;line-height:1.3;margin:2.15rem 0 .6rem}
 .prose p,.prose li,.prose dl{max-width:var(--dk-reading-width)}
+.prose img{max-width:100%;height:auto}
 .prose p{margin:.8rem 0}
 .prose ul,.prose ol{padding-left:1.45rem}
 .prose blockquote{max-width:var(--dk-reading-width);margin:1.25rem 0;padding:.1rem 1rem;border-left:3px solid var(--dk-border);color:var(--dk-muted)}

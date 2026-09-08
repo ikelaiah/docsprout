@@ -33,7 +33,7 @@ downstream tools should use the CLI and the machine formats.
 
 ## Language of this release
 
-v0.18.0 is the final pre-1.0 simplification release. Its theme is
+The v0.18 line is the final pre-1.0 simplification release. Its theme is
 **minimal CLI + obvious declarative configuration**: `layout.json` is the
 authoritative navigation model (pages, sections, titles, order, home,
 publication), `dockit.json` describes appearance and identity, and no
@@ -41,5 +41,5 @@ authoring-mutator commands exist. The default site needs no custom CSS; the
 custom stylesheet mechanism is a deliberately bounded escape hatch whose
 inclusion mechanics DocKit owns and whose accessibility the author owns.
 
-Downstream projects should pin released tags such as `v0.18.0`, never
+Downstream projects should pin released tags such as `v0.18.1`, never
 the main branch.

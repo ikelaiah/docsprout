@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dockit-fp"
-version = "0.18.0"
+version = "0.18.1"
 description = "Versioned static documentation sites for code projects"
 readme = "README.md"
 requires-python = ">=3.10"

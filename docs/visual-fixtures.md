@@ -3,7 +3,7 @@
 The maintained project in `examples/visual-fixtures` exercises typography,
 ordered and nested lists, inline code, definition lists, fenced Pascal, wide
 tables, callouts, search, theme controls, page navigation, a long document,
-the reading-progress indicator and a home-page banner. Its checked-in
+the reading-progress indicator, responsive Markdown images and a home-page banner. Its checked-in
 `docs/dockit.json` configures `docs/assets/visual-fixture-banner.svg`, so every
 fixture build includes the banner above the opening content without a manual
 file edit.
@@ -23,10 +23,10 @@ errors or warnings.
 
 | View | Width | Checks |
 | --- | ---: | --- |
-| Phone | 360px and 390px | Native navigation disclosure, visible copy control, no page overflow |
-| Tablet | 768px | Search and controls wrap cleanly, readable table scrolling |
+| Phone | 360px and 390px | Native navigation disclosure, visible copy control, no page overflow; oversized Markdown images stay within the prose column and small badges remain intrinsic |
+| Tablet | 768px | Search and controls wrap cleanly, readable table scrolling, responsive Markdown images |
 | Narrow desktop | 1024px | Article measure, heading rhythm and compact navigation remain balanced |
-| Desktop | 1440px | Sidebar, article and on-page outline align without crowding |
+| Desktop | 1440px | Sidebar, article and on-page outline align without crowding; oversized Markdown images stay within the prose column |
 | Long document | 1024px or wider | Heading rhythm, reading progress and sticky local navigation |
 
 At each useful width, switch among Classic, Paper and Midnight and repeat with
