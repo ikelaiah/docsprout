@@ -52,7 +52,7 @@ otherwise intentionally quiet.
 | DK005 | error | Local link attempts to escape documentation paths. |
 | DK101 | warning | Markdown image has empty alternative text. |
 | DK102 | warning | Heading levels skip an intermediate level. |
-| DK103 | warning | Headings produce the same published anchor. |
+| DK103 | warning | Two headings share the same anchor text; published anchors receive a numeric suffix. |
 
 Local Markdown assets are published under the generated site's content assets
 directory. External `https:` URLs are accepted but never network-checked;

@@ -28,7 +28,7 @@ body:
     attributes:
       label: DocSprout version
       description: Output of `docsprout --version`.
-      placeholder: docsprout 1.1.1
+      placeholder: docsprout 1.1.2
     validations:
       required: true
   - type: input

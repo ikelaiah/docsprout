@@ -4,6 +4,35 @@ from docsprout.markdown import render_markdown
 
 
 class MarkdownTests(unittest.TestCase):
+    def test_typographic_punctuation_reaches_prose_but_not_code_math_or_link_targets(self) -> None:
+        rendered = render_markdown(
+            "Quotes \"like this\" and an apostrophe don't stop a dash --- or an en dash -- "
+            "or an ellipsis... Keep `--flag`, `don't` and $a--b$ exact, "
+            "and [the label -- here](a--b.md).",
+            lambda target: target,
+        )
+
+        self.assertIn("“like this”", rendered.html)
+        self.assertIn("don’t", rendered.html)
+        self.assertIn("—", rendered.html)
+        self.assertIn("–", rendered.html)
+        self.assertIn("…", rendered.html)
+        self.assertIn("<code>--flag</code>", rendered.html)
+        self.assertIn("<code>don't</code>", rendered.html)
+        self.assertIn('data-tex="a--b"', rendered.html)
+        self.assertIn('href="a--b.md"', rendered.html)
+        self.assertIn("the label – here", rendered.html)
+
+    def test_disambiguates_repeated_heading_slugs_with_a_stable_suffix(self) -> None:
+        rendered = render_markdown("## Setup\n\nFirst.\n\n## Setup\n\nSecond.", lambda target: target)
+
+        self.assertEqual(
+            ("setup", "setup-2"),
+            tuple(identifier for _level, _text, identifier in rendered.headings),
+        )
+        self.assertIn('id="setup"', rendered.html)
+        self.assertIn('id="setup-2"', rendered.html)
+
     def test_renders_safe_task_lists_for_documentation_checklists(self) -> None:
         rendered = render_markdown("- [ ] Write guide\n- [x] Run check", lambda target: target)
 
@@ -25,7 +54,7 @@ class MarkdownTests(unittest.TestCase):
 
         self.assertEqual(
             rendered.html,
-            '<ul><li>Follow the <a href="beginners-guide.md">beginner\'s guide</a>.</li><li>Then build the site.</li></ul>',
+            '<ul><li>Follow the <a href="beginners-guide.md">beginner’s guide</a>.</li><li>Then build the site.</li></ul>',
         )
 
     def test_preserves_indented_nested_lists_inside_their_parent_item(self) -> None:

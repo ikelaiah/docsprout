@@ -243,6 +243,17 @@ and Pages workflow are now documented as the stable 1.x contract.
 - [x] Split the 2,566-character document shell into named, byte-identical
       parts and guard against pathologically long source lines.
 
+## v1.1.2 — Typography pass ✅
+
+- [x] Resolve cross-platform system font stacks for UI, display and code text
+      without bundling or fetching a webfont.
+- [x] Style `h4`–`h6` and the matching outline levels, running-text
+      hyphenation, tabular figures, selection styling and print output.
+- [x] Convert typewriter punctuation to typographic characters in prose while
+      protecting inline code, fenced code, math and link targets.
+- [x] Disambiguate repeated heading anchors, keep the audit warning, and extend
+      the maintained visual fixture and regression tests.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

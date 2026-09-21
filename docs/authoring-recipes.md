@@ -65,3 +65,15 @@ public Markdown file to the `navigation` list in `docs/layout.json`; preserve
 its explicit `home` selection and `"unlisted": "exclude"` policy. New layouts
 keep other docs Markdown private; older layouts retain strict checking until
 you explicitly choose that policy.
+
+## Typographic punctuation
+
+DocSprout turns common typewriter punctuation into typographic characters in
+prose: straight quotes become curly quotes, `--` becomes an en dash, `---`
+becomes an em dash and `...` becomes an ellipsis. Apostrophes inside words
+become typographic apostrophes too.
+
+The conversion never touches inline code, fenced code, math or link targets, so
+command flags such as `--update`, identifiers such as `a--b` and literal
+ellipses in code stay exact. Write the characters you mean in a code span when
+precision matters.

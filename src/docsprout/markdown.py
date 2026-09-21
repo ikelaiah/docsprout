@@ -22,6 +22,8 @@ IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
 CODE = re.compile(r"`([^`]+)`")
 INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)\$")
 DEFINITION_DESCRIPTION = re.compile(r"^:\s+(.+)$")
+PROTECTED_INLINE = re.compile(r"(`[^`]+`|(?<!\\)\$[^$\n]+\$|!?\[[^\]]*\]\([^)]*\))")
+LINK_COMPONENTS = re.compile(r"(!?)\[([^\]]*)\]\(([^)]*)\)", re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -41,8 +43,38 @@ def _plain(value: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[*_`]+", "", value)).strip()
 
 
+def _smart(value: str) -> str:
+    value = value.replace("...", "…").replace("---", "—").replace("--", "–")
+    output: list[str] = []
+    for index, character in enumerate(value):
+        previous = value[index - 1] if index else ""
+        following = value[index + 1] if index + 1 < len(value) else ""
+        if character == "'" and previous.isalnum() and following.isalnum():
+            output.append("’")
+        elif character in {'"', "'"}:
+            opening = not previous or previous.isspace() or previous in "([{—–"
+            if opening and following and not following.isspace():
+                output.append("“" if character == '"' else "‘")
+            else:
+                output.append("”" if character == '"' else "’")
+        else:
+            output.append(character)
+    return "".join(output)
+
+
+def _typographic(value: str) -> str:
+    parts = PROTECTED_INLINE.split(value)
+    for index in range(0, len(parts), 2):
+        parts[index] = _smart(parts[index])
+    for index in range(1, len(parts), 2):
+        link = LINK_COMPONENTS.fullmatch(parts[index])
+        if link:
+            parts[index] = f"{link.group(1)}[{_smart(link.group(2))}]({link.group(3)})"
+    return "".join(parts)
+
+
 def _inline(value: str, resolve: LinkResolver) -> str:
-    escaped = html.escape(value, quote=False)
+    escaped = html.escape(_typographic(value), quote=False)
     escaped = IMAGE.sub(
         lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{match.group(1)}">',
         escaped,
@@ -161,6 +193,11 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
             flush_paragraph()
             level, text = len(heading.group(1)), _plain(heading.group(2))
             identifier = slugify(text)
+            if identifier in seen:
+                suffix = 2
+                while f"{identifier}-{suffix}" in seen:
+                    suffix += 1
+                identifier = f"{identifier}-{suffix}"
             seen.add(identifier)
             headings.append((level, text, identifier))
             output.append(f"<h{level} id=\"{identifier}\">{_inline(heading.group(2), resolve_link)}</h{level}>")

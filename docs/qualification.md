@@ -1,15 +1,16 @@
-# Qualification evidence for DocSprout v1.1.1
+# Qualification evidence for DocSprout v1.1.2
 
-DocSprout v1.1.1 is the quality patch for the rebrand release, with the v1.0.0
-stable contract preserved. The claims below are the contract that CI and the
-maintained fixtures exercise, and every row names how it is verified.
+DocSprout v1.1.2 is the typography release for generated sites, with the
+v1.0.0 stable contract preserved. The claims below are the contract that CI and
+the maintained fixtures exercise, and every row names how it is verified.
 "Supported" means the combination is run by automated qualification on every
 pull request and release, not merely believed to work.
 
 The v0.17 and v0.18 matrices are retained as historical evidence for the
 contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
 clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
-the rebrand compatibility evidence and the quality-gate additions below.
+the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
+the typography evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -222,6 +223,26 @@ The quality patch adds gates and guidance without changing the contract:
   rejects any `src/docsprout` line longer than 1,000 characters.
 - **Repository health**: security policy, code of conduct, issue and pull
   request templates and Dependabot updates are in place.
+
+## v1.1.2 additions
+
+The typography release changes presentation only; no configuration, route or
+token value changes:
+
+- **Font stacks**: generated sites resolve a cross-platform system stack
+  (`system-ui` first, `ui-monospace` first for code) with no bundled or fetched
+  webfont; the stacks are pinned by regression tests and the offline guarantee
+  is unchanged.
+- **Heading and outline scale**: `h4`–`h6` and `.toc-level-4`–`.toc-level-6`
+  are styled, and the maintained visual fixture exercises both.
+- **Running text**: `text-wrap:pretty`, `orphans`/`widows`, automatic
+  hyphenation outside code, tabular figures in tables and a print stylesheet
+  are asserted on the built fixture.
+- **Typographic punctuation**: prose converts `--`, `---`, `...` and straight
+  quotes while inline code, fenced code, math and link targets stay exact;
+  unit tests cover each protected case.
+- **Unique heading anchors**: repeated headings receive `-2`, `-3` suffixes;
+  the audit keeps warning (DK103) when headings share anchor text.
 
 ## The Five Promises
 

@@ -418,6 +418,35 @@ class BuildSiteTests(unittest.TestCase):
             self.assertNotIn('class="capability-strip"', guide)
             self.assertNotIn('class="release-context"', guide)
 
+    def test_typography_layer_is_cross_platform_complete_and_print_ready(self) -> None:
+        root = Path(__file__).resolve().parents[1] / "examples" / "visual-fixtures"
+        with tempfile.TemporaryDirectory() as temporary:
+            build_site(root=root, output=Path(temporary) / "site", release="fixture")
+
+            css = (Path(temporary) / "site" / "assets" / "site.css").read_text(encoding="utf-8")
+            self.assertIn('--dk-font-ui:system-ui,-apple-system,"Segoe UI",Inter,"Aptos",sans-serif', css)
+            self.assertIn('--dk-font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Cascadia Code",monospace', css)
+            for selector in (".prose h4{", ".prose h5{", ".prose h6{", ".toc .toc-level-4{", ".toc .toc-level-5{", ".toc .toc-level-6{"):
+                with self.subTest(selector=selector):
+                    self.assertIn(selector, css)
+            self.assertIn("text-wrap:pretty;orphans:3;widows:3", css)
+            self.assertIn("hyphens:auto", css)
+            self.assertIn("font-variant-numeric:tabular-nums", css)
+            self.assertIn("::selection", css)
+            self.assertIn("@media print{", css)
+            self.assertIn(".prose p,.prose li{hyphens:none}", css)
+
+            home = (Path(temporary) / "site" / "index.html").read_text(encoding="utf-8")
+            for identifier in ("heading-level-four", "heading-level-five", "heading-level-six"):
+                with self.subTest(identifier=identifier):
+                    self.assertIn(f'id="{identifier}"', home)
+            self.assertIn('class="toc-level-4" href="#heading-level-four"', home)
+            self.assertIn("don’t", home)
+            self.assertIn("—", home)
+            self.assertIn("…", home)
+            self.assertIn("<code>--flag</code>", home)
+            self.assertIn("<code>don't</code>", home)
+
     def test_rejects_broken_heading_fragments_and_unsafe_links(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

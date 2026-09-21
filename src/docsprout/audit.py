@@ -10,7 +10,7 @@ import re
 from urllib.parse import urlsplit
 
 from .config import load_config, page_source_path, page_source_reference
-from .markdown import HEADING, render_markdown
+from .markdown import HEADING, render_markdown, slugify
 
 
 IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
@@ -142,10 +142,11 @@ def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> l
             inside_fence = not inside_fence
         elif not inside_fence and HEADING.match(source_line):
             heading_lines.append(line_number)
-    for (level, _text, identifier), line_number in zip(page.headings, heading_lines):
-        if identifier in anchors:
-            structural_findings.append(_finding("DK103", "warning", page, line_number, "Duplicate heading anchor", "Rename one heading so published anchors are unambiguous.", identifier))
-        anchors.add(identifier)
+    for (level, text, _identifier), line_number in zip(page.headings, heading_lines):
+        anchor = slugify(text)
+        if anchor in anchors:
+            structural_findings.append(_finding("DK103", "warning", page, line_number, "Duplicate heading anchor", "Rename one heading. Anchors that share the same text receive a numeric suffix and stay ambiguous to link.", anchor))
+        anchors.add(anchor)
         if previous_level is not None and level > previous_level + 1:
             structural_findings.append(_finding("DK102", "warning", page, line_number, f"Heading level jumps from H{previous_level} to H{level}", "Use an intermediate heading level when it represents document structure."))
         previous_level = level
