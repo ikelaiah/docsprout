@@ -87,7 +87,7 @@ they are easy to copy:
 example-tool input.txt
 ```
 
-Name the language after the opening fence when you can. DocKit highlights
+Name the language after the opening fence when you can. DocSprout highlights
 `json`, `pascal` (also `fpc`), `python`, `bash`, `yaml` and `markdown` locally;
 other names stay as readable plain code. This never needs a CDN or a browser
 extension:
@@ -141,6 +141,6 @@ without guessing:
 - [ ] Are new terms defined?
 - [ ] Is there one clear next step?
 
-Run `dockit-fp check` after adding the page. It catches broken links and pages
+Run `docsprout check` after adding the page. It catches broken links and pages
 that are missing from navigation. For suggested folder structures, continue to
 [Authoring recipes](authoring-recipes.md).

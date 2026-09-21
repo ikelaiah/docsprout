@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": {
-    "name": "DocKit-FP visual fixtures",
+    "name": "DocSprout visual fixtures",
     "description": "Maintained fixtures for responsive and accessible visual verification."
   },
   "theme": {
@@ -11,7 +11,7 @@
   },
   "banner": {
     "path": "docs/assets/visual-fixture-banner.svg",
-    "alt": "DocKit visual fixture banner"
+    "alt": "DocSprout visual fixture banner"
   },
   "layout": {
     "content_width": "wide"

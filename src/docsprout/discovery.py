@@ -20,8 +20,14 @@ class RepositoryDiscovery:
     has_readme: bool
     documents: tuple[str, ...]
     ancillary_documents: tuple[str, ...]
-    has_dockit_config: bool
+    has_docsprout_config: bool
+    has_legacy_dockit_config: bool
     has_layout: bool
+
+    @property
+    def has_config(self) -> bool:
+        """Whether a supported configuration file already exists under docs/."""
+        return self.has_docsprout_config or self.has_legacy_dockit_config
 
 
 def _display_title(value: str) -> str:
@@ -88,7 +94,8 @@ def discover_repository(root: Path) -> RepositoryDiscovery:
         has_readme=(root / "README.md").is_file() and inside_root(root / "README.md"),
         documents=documents,
         ancillary_documents=ancillary,
-        has_dockit_config=(docs / "dockit.json").is_file(),
+        has_docsprout_config=(docs / "docsprout.json").is_file(),
+        has_legacy_dockit_config=(docs / "dockit.json").is_file(),
         has_layout=(docs / "layout.json").is_file(),
     )
 

@@ -5,8 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
-from dockit_fp.errors import DocKitError
-from dockit_fp.versions import build_all, check_release, load_manifest
+from docsprout.errors import DocSproutError
+from docsprout.versions import build_all, check_release, load_manifest
 
 
 class VersionedBuildTests(unittest.TestCase):
@@ -50,7 +50,7 @@ class VersionedBuildTests(unittest.TestCase):
         docs.mkdir()
         (docs / "index.md").write_text("# Version one\n\nOld content.", encoding="utf-8")
         (docs / "archive.md").write_text("# Archived note\n\nOld navigation did not list this.", encoding="utf-8")
-        (docs / "dockit.json").write_text(json.dumps({
+        (docs / "docsprout.json").write_text(json.dumps({
             "schema_version": 1,
             "project": {"name": "Historical docs"},
         }), encoding="utf-8")
@@ -121,7 +121,7 @@ class VersionedBuildTests(unittest.TestCase):
         docs = root / "docs"
         docs.mkdir()
         (root / "README.md").write_text("# Version one", encoding="utf-8")
-        (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+        (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [{"title": "Overview", "pages": [{"title": "Overview", "path": "README.md", "source": "root"}]}]}), encoding="utf-8")
         self._git(root, "add", ".")
         self._git(root, "commit", "-m", "v1")
@@ -146,7 +146,7 @@ class VersionedBuildTests(unittest.TestCase):
         data["versions"][0]["source_ref"] = "main"
         manifest.write_text(json.dumps(data), encoding="utf-8")
 
-        with self.assertRaisesRegex(DocKitError, "moving source_ref"):
+        with self.assertRaisesRegex(DocSproutError, "moving source_ref"):
             check_release(root)
 
     def test_manifest_rejects_unsafe_release_paths_and_git_option_refs(self) -> None:
@@ -156,13 +156,13 @@ class VersionedBuildTests(unittest.TestCase):
         data["versions"][0]["release"] = "../outside"
         manifest.write_text(json.dumps(data), encoding="utf-8")
 
-        with self.assertRaisesRegex(DocKitError, r"versions\[0\]\.release.*safe name"):
+        with self.assertRaisesRegex(DocSproutError, r"versions\[0\]\.release.*safe name"):
             load_manifest(root)
 
         data["versions"][0]["release"] = "2.0.0"
         data["versions"][0]["source_ref"] = "--help"
         manifest.write_text(json.dumps(data), encoding="utf-8")
-        with self.assertRaisesRegex(DocKitError, r"versions\[0\]\.source_ref.*tag or full commit SHA"):
+        with self.assertRaisesRegex(DocSproutError, r"versions\[0\]\.source_ref.*tag or full commit SHA"):
             load_manifest(root)
 
     def test_manifest_rejects_unknown_fields_with_a_typo_suggestion(self) -> None:
@@ -172,13 +172,13 @@ class VersionedBuildTests(unittest.TestCase):
         data["versionz"] = data.pop("versions")
         manifest.write_text(json.dumps(data), encoding="utf-8")
 
-        with self.assertRaisesRegex(DocKitError, r"Unknown field 'versions\.versionz'\. Did you mean 'versions\.versions'\?"):
+        with self.assertRaisesRegex(DocSproutError, r"Unknown field 'versions\.versionz'\. Did you mean 'versions\.versions'\?"):
             load_manifest(root)
 
         data["versionz"] = [{"release": "2.0.0", "source_ref": "v2.0.0", "changelog": "notes.md"}]
         data["versions"] = data.pop("versionz")
         manifest.write_text(json.dumps(data), encoding="utf-8")
-        with self.assertRaisesRegex(DocKitError, r"Unknown field 'versions\[0\]\.changelog'"):
+        with self.assertRaisesRegex(DocSproutError, r"Unknown field 'versions\[0\]\.changelog'"):
             load_manifest(root)
 
     def test_check_release_requires_current_source_to_match_head(self) -> None:
@@ -187,7 +187,7 @@ class VersionedBuildTests(unittest.TestCase):
         self._git(root, "add", "README.md")
         self._git(root, "commit", "-m", "move past release")
 
-        with self.assertRaisesRegex(DocKitError, r"current release '2\.0\.0'.*does not match HEAD"):
+        with self.assertRaisesRegex(DocSproutError, r"current release '2\.0\.0'.*does not match HEAD"):
             check_release(root)
 
     def test_check_release_explains_how_to_create_a_missing_tag(self) -> None:
@@ -197,14 +197,14 @@ class VersionedBuildTests(unittest.TestCase):
         data["versions"][0]["source_ref"] = "v2.0.1"
         manifest.write_text(json.dumps(data), encoding="utf-8")
 
-        with self.assertRaisesRegex(DocKitError, r"does not exist.*Create the tag"):
+        with self.assertRaisesRegex(DocSproutError, r"does not exist.*Create the tag"):
             check_release(root)
 
     def test_check_release_rejects_uncommitted_documentation(self) -> None:
         root = self._repository()
         (root / "docs" / "new.md").write_text("# Changed after tagging", encoding="utf-8")
 
-        with self.assertRaisesRegex(DocKitError, r"Documentation differs from HEAD.*Commit docs changes"):
+        with self.assertRaisesRegex(DocSproutError, r"Documentation differs from HEAD.*Commit docs changes"):
             check_release(root)
 
     def test_build_all_avoids_the_pre_312_incompatible_extractall_filter_keyword(self) -> None:
@@ -212,7 +212,7 @@ class VersionedBuildTests(unittest.TestCase):
         from types import SimpleNamespace
         from unittest.mock import patch
 
-        import dockit_fp.versions as versions_module
+        import docsprout.versions as versions_module
 
         root = self._repository()
         received: dict = {}

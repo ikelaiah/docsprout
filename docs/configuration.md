@@ -1,24 +1,31 @@
 # Configure your site
 
-You can build a useful site with the files created by `dockit-fp init`. Change
-one thing at a time, run `dockit-fp check`, and keep the last working version in
+You can build a useful site with the files created by `docsprout init`. Change
+one thing at a time, run `docsprout check`, and keep the last working version in
 Git when possible.
 
 ## The three configuration files
 
 | File | What it controls | When you need it |
 | --- | --- | --- |
-| `docs/dockit.json` | Project identity, appearance and home-page presentation | Created by `init` |
+| `docs/docsprout.json` | Project identity, appearance and home-page presentation | Created by `init` |
 | `docs/layout.json` | Published pages, navigation order, home page and unlisted policy | Created by `init` |
 | `docs/versions.json` | Published release history | Only for a historical site |
 
 These files use JSON. Keep the commas, quotation marks and braces exactly
 paired. Every file starts with `"schema_version": 1`; leave that value alone.
-If the punctuation is wrong, `dockit-fp check` names the file and error.
+If the punctuation is wrong, `docsprout check` names the file and error.
+
+> [!NOTE] Upgrading from DocKit? The identity file may initially be named
+> `docs/dockit.json`. That pre-rebrand filename keeps loading, but do not keep
+> both names: DocSprout fails with an ambiguity error rather than choosing one
+> silently. The
+> [migration guide](migration.md#dockit-to-docsprout-1x-rebrand) covers the
+> rename.
 
 ## Project metadata and colours
 
-Edit `docs/dockit.json`:
+Edit `docs/docsprout.json`:
 
 ```json
 {
@@ -35,8 +42,8 @@ Edit `docs/dockit.json`:
 
 `project.name` appears in the header and browser page title.
 `project.description` becomes each generated page's description metadata; it
-is not ordinary visible page text. `dockit-fp init` may add
-`project.repository_url` from a GitHub remote. DocKit stores that value and an
+is not ordinary visible page text. `docsprout init` may add
+`project.repository_url` from a GitHub remote. DocSprout stores that value and an
 optional `project.site_url`, but does not render `repository_url` or `site_url`
 as a footer or project link. Add an `identity.links` entry when readers should
 be able to follow a visible project link.
@@ -49,7 +56,7 @@ with a preset. You can choose exact colours later in [Themes](themes.md).
 `docs/layout.json` decides what is public. **Navigation** is the ordered list
 of published pages and sections. Its top-level `home` object selects which
 listed Markdown page becomes `index.html`, the page readers see at the site's
-root. `dockit.json.homepage` is different: it only controls the presentation of
+root. `docsprout.json.homepage` is different: it only controls the presentation of
 that selected home page.
 
 Edit `docs/layout.json`. Keep `home` and `unlisted` at the top level and add
@@ -103,11 +110,11 @@ should make the selection explicit.
 navigation:
 
 - `"error"` is the default and preserves existing strict validation. A missing
-  page is reported by `dockit-fp check`.
+  page is reported by `docsprout check`.
 - `"exclude"` publishes only listed pages. `check` succeeds and reports the
   number of unlisted documents excluded from the site.
 
-New layouts made by `dockit-fp init` use `"exclude"`. Existing layouts are
+New layouts made by `docsprout init` use `"exclude"`. Existing layouts are
 never rewritten; add the field only when you want this explicit publication
 policy. There are no include/exclude patterns: the navigation list is the
 complete publication decision.
@@ -115,7 +122,7 @@ complete publication decision.
 ## Editing `layout.json` directly
 
 Every common navigation change is an ordinary edit to `docs/layout.json`.
-There are no DocKit commands for these operations:
+There are no DocSprout commands for these operations:
 
 | What you want | What you edit |
 | --- | --- |
@@ -159,7 +166,7 @@ This compact canonical example shows the valuable structure at a glance:
 }
 ```
 
-DocKit reports configuration problems precisely. A field that was never part
+DocSprout reports configuration problems precisely. A field that was never part
 of a released schema-1 configuration is rejected with the file, the exact
 field path and—when a close match exists—a `Did you mean` suggestion. For
 example `"theme": {"presett": "purple"}` fails with
@@ -168,7 +175,7 @@ configuration from every supported 0.x release keeps loading.
 
 ## Existing repositories and root README
 
-On its first run, `dockit-fp init` considers only `README.md` at the repository
+On its first run, `docsprout init` considers only `README.md` at the repository
 root and Markdown under `docs/`. It does not modify either one. Ancillary root
 files such as `CHANGELOG.md` and `CONTRIBUTING.md` are deliberately excluded;
 detection is not permission to publish.
@@ -187,14 +194,14 @@ Git release archive.
 Only the repository-root `README.md` has special root-source support. Other
 Markdown you want to publish should live under `docs/`.
 
-After `layout.json` exists it is authoritative. DocKit will not discover new
+After `layout.json` exists it is authoritative. DocSprout will not discover new
 pages, alter order or titles, add ancillary files, or reorganise sections. Add
 an ancillary page only by deliberately listing an allowed docs-path in the
 layout (for example, after copying or authoring a public docs version yourself).
 
 ## Reading width
 
-Add `layout` inside `docs/dockit.json` when the default width does not suit the
+Add `layout` inside `docs/docsprout.json` when the default width does not suit the
 content:
 
 ```json
@@ -214,13 +221,13 @@ Choose:
 - `wide` for large tables and code samples.
 
 Omit this setting to keep `comfortable`.
-The maintained minimal example uses `compact`, this DocKit site uses the
+The maintained minimal example uses `compact`, this DocSprout site uses the
 omitted `comfortable` default, and the [visual fixture](visual-fixtures.md)
 uses `wide` for tables and code.
 
 ## Footer links
 
-You can add a short footer and a few useful links inside `docs/dockit.json`:
+You can add a short footer and a few useful links inside `docs/docsprout.json`:
 
 ```json
 {
@@ -235,8 +242,8 @@ You can add a short footer and a few useful links inside `docs/dockit.json`:
 }
 ```
 
-Link URLs must begin with `https://` or `http://`. DocKit safely escapes the
-visible text. The [DocKit site itself](customisation.md#before-and-after-project-identity)
+Link URLs must begin with `https://` or `http://`. DocSprout safely escapes the
+visible text. The [DocSprout site itself](customisation.md#before-and-after-project-identity)
 is the maintained example: its footer text and `Project` link appear together
 at the bottom of every generated page.
 
@@ -244,7 +251,7 @@ at the bottom of every generated page.
 
 The default home page works without extra configuration. When you want to
 change that page's cards or visible sections, add a `homepage` object to
-`docs/dockit.json`:
+`docs/docsprout.json`:
 
 ```json
 {
@@ -278,7 +285,7 @@ Start from a complete example in [Customize the home page](homepage-recipes.md).
 
 ## Changing colours, logo and presentation
 
-Appearance and identity are `docs/dockit.json` edits:
+Appearance and identity are `docs/docsprout.json` edits:
 
 | What you want | What you edit |
 | --- | --- |

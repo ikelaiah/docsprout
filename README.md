@@ -1,15 +1,17 @@
-# 📚 DocKit
+# 🌱 DocSprout
 
-[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/1.0.0/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)
+[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.0.0/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)
 
-![DocKit banner — Build documentation people can use.](docs/assets/dockit-banner.svg)
+![DocSprout banner — Build documentation people can use.](docs/assets/docsprout-banner.svg)
+
+**Grow polished documentation from Markdown.**
 
 Turn Markdown files into a polished documentation website with search, themes,
 mobile navigation and optional release history.
 
-DocKit is a small, offline-friendly Markdown documentation-site builder for code
-projects. It originated in the Free Pascal ecosystem and remains Pascal-friendly,
-but it does not require Pascal source code.
+DocSprout is a small, offline-friendly Markdown documentation-site builder for
+code projects. It originated in the Free Pascal ecosystem and remains
+Pascal-friendly, but it does not require Pascal source code.
 
 ## 🚀 Make your first site in about 10 minutes
 
@@ -21,21 +23,21 @@ Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v1.0.0.zip"
-dockit-fp init
-dockit-fp serve
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.0.0.zip"
+docsprout init
+docsprout serve
 ```
 
 `init` inspects the project without changing existing Markdown. It detects a
 root `README.md`, Markdown below `docs/`, Git/GitHub metadata and common
-ancillary files. It creates only the missing DocKit configuration around those
-documents:
+ancillary files. It creates only the missing DocSprout configuration around
+those documents:
 
 ```text
 docs/
-├── dockit.json   # project name and colours
-├── layout.json   # navigation order
-└── index.md      # only for a project with no existing documentation
+├── docsprout.json   # project name and colours
+├── layout.json      # navigation order
+└── index.md         # only for a project with no existing documentation
 ```
 
 Visit <http://127.0.0.1:8000> in a browser. You should see your existing
@@ -49,46 +51,47 @@ you are ready to add pages or publish it. `README.md` and `docs/**/*.md`
 are the only automatic candidates. `CHANGELOG.md`, `CONTRIBUTING.md`,
 `SECURITY.md` and `CODE_OF_CONDUCT.md` are reported for deliberate inclusion,
 never published by surprise. Once `docs/layout.json` exists it is entirely
-yours: add, remove, rename and reorder pages without DocKit changing it.
+yours: add, remove, rename and reorder pages without DocSprout changing it.
 Newly generated layouts use `"unlisted": "exclude"`, so only listed pages are
 published; existing layouts retain their strict validation unless you opt in.
 
 ### The mental model from here on
 
 Commands perform actions. Configuration describes intent. There are no
-DocKit commands for editing pages, sections or themes:
+DocSprout commands for editing pages, sections or themes:
 
 - **Markdown** (`README.md`, `docs/*.md`) is your content.
 - **`docs/layout.json`** decides what is published: page objects, section
   names, titles, order, the home page and the unlisted policy. Add a page by
   adding one page object; reorder by moving objects; rename by changing
   `"title"`; change the home page by editing the top-level `"home"`.
-- **`docs/dockit.json`** decides how it looks: name, colours, visual theme,
+- **`docs/docsprout.json`** decides how it looks: name, colours, visual theme,
   logo, footer, banner and homepage presentation.
 
-`dockit-fp init` explains exactly this when it finishes. `dockit-fp serve`
+`docsprout init` explains exactly this when it finishes. `docsprout serve`
 watches `README.md` and everything under `docs/`, including `layout.json` and
-`dockit.json`, so you edit, save and reload.
+`docsprout.json`, so you edit, save and reload.
 
 For a slower walkthrough with explanations and expected results, follow
-[Your first DocKit site](docs/beginners-guide.md).
+[Your first DocSprout site](docs/beginners-guide.md).
 
 ## 🌐 Publish with GitHub Pages in one command
 
 When this is a Git repository and you are ready to publish, run:
 
 ```bash
-dockit-fp github-pages
+docsprout github-pages
 git add .
-git commit -m "Add DocKit documentation"
+git commit -m "Add DocSprout documentation"
 git push
 ```
 
-DocKit safely creates missing documentation configuration and a pinned GitHub
-Pages workflow. It does not commit or push; those remain your decisions. Enable
-GitHub Pages with **GitHub Actions** once in the repository settings, then a
-push to the repository's default branch publishes the site. See [GitHub Pages
-in one command](docs/github-pages.md#github-pages-in-one-command) for updates,
+DocSprout safely creates missing documentation configuration and a pinned
+GitHub Pages workflow at `.github/workflows/docsprout-pages.yml`. It does not
+commit or push; those remain your decisions. Enable GitHub Pages with **GitHub
+Actions** once in the repository settings, then a push to the repository's
+default branch publishes the site. See [GitHub Pages in one
+command](docs/github-pages.md#github-pages-in-one-command) for updates,
 existing projects and advanced historical publishing.
 
 ## 🧭 Choose what you want to do next
@@ -119,15 +122,15 @@ existing projects and advanced historical publishing.
   checks and pinned Pages workflows keep ownership visible.
 
 Your repository keeps its Markdown, navigation, project identity and release
-tags. DocKit supplies the renderer and shared website machinery. You should
+tags. DocSprout supplies the renderer and shared website machinery. You should
 not need to copy its CSS or JavaScript into your project.
 
 ## 🚫 What it does not do
 
-DocKit does not read source code and invent API documentation. For Free
+DocSprout does not read source code and invent API documentation. For Free
 Pascal API extraction, use [PasWeave](https://github.com/ikelaiah/pasweave) to
-produce Markdown, then let DocKit combine that Markdown with your handwritten
-guides.
+produce Markdown, then let DocSprout combine that Markdown with your
+handwritten guides.
 
 ## 📝 Already have documentation?
 
@@ -136,7 +139,23 @@ configuration files around them, and introduce explicit navigation gradually.
 See [Configuration](docs/configuration.md) for the supported files and the
 explicit root-README entry.
 
-## 🛠️ Working on DocKit itself
+### Upgrading from DocKit
+
+DocSprout is the new name for the 1.x builder released as DocKit. Your existing
+project keeps working:
+
+- `dockit-fp` remains a deprecated console-script alias and
+  `python -m dockit_fp` remains a deprecated module entry point for at least
+  one minor release; use `docsprout` and `python -m docsprout` instead.
+- Existing `docs/dockit.json` files keep loading. New projects create
+  `docs/docsprout.json`; never keep both, because the ambiguity is an error.
+- Managed `dockit-pages.yml` workflows are recognised and updated in place.
+- The `--dk-*` CSS tokens are unchanged.
+
+See [Migration](docs/migration.md#dockit-to-docsprout-1x-rebrand) for the full
+list.
+
+## 🛠️ Working on DocSprout itself
 
 Run the complete test suite from this repository:
 
@@ -147,4 +166,4 @@ python -m unittest discover -s tests -t . -v
 Project design details live in [Architecture](docs/architecture.md), and major
 decisions are recorded in [docs/decisions](docs/decisions/).
 
-DocKit is released under the MIT licence.
+DocSprout is released under the MIT licence.

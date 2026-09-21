@@ -5,10 +5,10 @@ import subprocess
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site
-from dockit_fp.config import load_config
-from dockit_fp.errors import DocKitError
-from dockit_fp.versions import build_all
+from docsprout.build import build_site
+from docsprout.config import load_config
+from docsprout.errors import DocSproutError
+from docsprout.versions import build_all
 
 
 class CustomCssTests(unittest.TestCase):
@@ -24,7 +24,7 @@ class CustomCssTests(unittest.TestCase):
         (docs / "assets" / "custom.css").write_text(
             ".prose h1{color:rebeccapurple}.prose{--dk-accent:#7c3aed}", encoding="utf-8"
         )
-        (docs / "dockit.json").write_text(json.dumps({
+        (docs / "docsprout.json").write_text(json.dumps({
             "schema_version": 1, "project": {"name": "Demo"}, "theme": {"custom_css": custom_css},
         }), encoding="utf-8")
         pages = [{"title": "Home", "path": "index.md"}]
@@ -44,7 +44,7 @@ class CustomCssTests(unittest.TestCase):
 
             self.assertEqual("docs/assets/custom.css", config.custom_css)
 
-    def test_copies_custom_css_deterministically_and_loads_it_after_dockit_styles(self) -> None:
+    def test_copies_custom_css_deterministically_and_loads_it_after_docsprout_styles(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self._project(root)
@@ -78,7 +78,7 @@ class CustomCssTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self._project(root)
-            (root / "docs" / "dockit.json").write_text(json.dumps({
+            (root / "docs" / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1, "project": {"name": "Demo"},
             }), encoding="utf-8")
 
@@ -93,7 +93,7 @@ class CustomCssTests(unittest.TestCase):
             root = Path(temporary)
             self._project(root, custom_css="docs/assets/missing.css")
 
-            with self.assertRaisesRegex(DocKitError, "does not exist"):
+            with self.assertRaisesRegex(DocSproutError, "does not exist"):
                 load_config(root)
 
     def test_rejects_a_non_css_custom_css_extension(self) -> None:
@@ -102,7 +102,7 @@ class CustomCssTests(unittest.TestCase):
             self._project(root, custom_css="docs/assets/custom.txt")
             (root / "docs" / "assets" / "custom.txt").write_text("not css", encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, r"\.css file"):
+            with self.assertRaisesRegex(DocSproutError, r"\.css file"):
                 load_config(root)
 
     def test_rejects_absolute_and_traversing_custom_css_paths(self) -> None:
@@ -115,7 +115,7 @@ class CustomCssTests(unittest.TestCase):
                 root = Path(temporary)
                 self._project(root, custom_css=value)
 
-                with self.assertRaisesRegex(DocKitError, message):
+                with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
     def test_rejects_a_custom_css_symlink_that_escapes_the_repository(self) -> None:
@@ -144,13 +144,13 @@ class CustomCssTests(unittest.TestCase):
                 except (OSError, subprocess.CalledProcessError) as junction_error:
                     self.skipTest(f"neither symlink nor junction creation is available: {error}; {junction_error}")
                 configured = "docs/assets/css-outside/outside.css"
-                (root / "docs" / "dockit.json").write_text(json.dumps({
+                (root / "docs" / "docsprout.json").write_text(json.dumps({
                     "schema_version": 1,
                     "project": {"name": "Demo"},
                     "theme": {"custom_css": configured},
                 }), encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, "outside the repository root"):
+            with self.assertRaisesRegex(DocSproutError, "outside the repository root"):
                 load_config(root)
 
     def test_versioned_builds_include_repository_local_custom_css(self) -> None:
@@ -160,7 +160,7 @@ class CustomCssTests(unittest.TestCase):
             (docs / "assets").mkdir(parents=True)
             (docs / "index.md").write_text("# Version one", encoding="utf-8")
             (docs / "assets" / "custom.css").write_text(".prose h1{color:rebeccapurple}", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1, "project": {"name": "Demo"}, "theme": {"custom_css": "docs/assets/custom.css"},
             }), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({

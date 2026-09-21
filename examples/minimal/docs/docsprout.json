@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "project": {"name": "Example-FP", "description": "A maintained DocKit-FP starter project."},
+  "project": {"name": "Example-FP", "description": "A maintained DocSprout starter project."},
   "theme": {"accent": "#0f766e", "accent_secondary": "#0891b2"},
   "layout": {"content_width": "compact"}
 }

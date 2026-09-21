@@ -1,6 +1,6 @@
 # Example-FP
 
-Welcome to a maintained **DocKit-FP** starter site. It uses the supported
+Welcome to a maintained **DocSprout** starter site. It uses the supported
 navigation and colour settings, so you can copy this structure without
 copying CSS.
 

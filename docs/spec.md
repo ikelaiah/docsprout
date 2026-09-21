@@ -1,4 +1,4 @@
-# Spec: DocKit-FP 0.3.0
+# Spec: DocSprout 0.3.0 (originally DocKit-FP)
 
 ## Objective
 
@@ -11,11 +11,11 @@ releases, validate sources, and produce an accessible offline GitHub Pages site.
 - Python 3.10+ standard library only.
 - Test: `python -m unittest discover -s tests -v`
 - Build package: `python -m build` (when the optional build frontend is installed)
-- Local CLI during development: `python -m dockit_fp --help`
+- Local CLI during development: `python -m docsprout --help`
 
 ## Structure
 
-`src/dockit_fp/` is the package; `tests/` contains unit and fixture tests;
+`src/docsprout/` is the package; `tests/` contains unit and fixture tests;
 `examples/minimal/` is a consumer project; `docs/` contains user guides and
 ADRs. Generated output is not committed.
 

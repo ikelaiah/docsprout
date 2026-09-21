@@ -1,6 +1,6 @@
 # Contributing
 
-DocKit supports Python 3.10–3.14 on Linux, with the minimum and latest stable
+DocSprout supports Python 3.10–3.14 on Linux, with the minimum and latest stable
 versions qualified on Windows and macOS. Python 3.15 pre-release runs as a
 non-blocking forward-compatibility signal, not as a support commitment.
 
@@ -22,9 +22,9 @@ documentation/migration update, and review against
 For documentation changes, also run:
 
 ```powershell
-dockit-fp check
-dockit-fp audit --strict
-dockit-fp build --output build/docs-site
+docsprout check
+docsprout audit --strict
+docsprout build --output build/docs-site
 ```
 
 Before a release, build and inspect both wheel and sdist, qualify each from a

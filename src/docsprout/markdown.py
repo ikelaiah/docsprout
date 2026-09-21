@@ -7,7 +7,7 @@ import html
 import re
 from collections.abc import Callable
 
-from .errors import DocKitError
+from .errors import DocSproutError
 from .highlight import highlight_code, supports_language
 
 LinkResolver = Callable[[str], str]
@@ -135,7 +135,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
                 code.append(lines[index])
                 index += 1
             if index == len(lines):
-                raise DocKitError("Markdown: unclosed fenced code block")
+                raise DocSproutError("Markdown: unclosed fenced code block")
             tex = "\n".join(code)
             if language == "math":
                 output.append(f'<div class="math-display" data-tex="{html.escape(tex, quote=True)}"></div>')
@@ -153,7 +153,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
                 tex.append(lines[index])
                 index += 1
             if index == len(lines):
-                raise DocKitError("Markdown: unclosed display math block")
+                raise DocSproutError("Markdown: unclosed display math block")
             value = "\n".join(tex)
             output.append(f'<div class="math-display" data-tex="{html.escape(value, quote=True)}"></div>')
             plain.extend(tex)
@@ -170,7 +170,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
             kind, text = line[4:].split("]", 1)
             kind = kind.strip().lower()
             if kind not in {"note", "tip", "important", "warning"}:
-                raise DocKitError(f"Markdown: unsupported admonition {kind!r}")
+                raise DocSproutError(f"Markdown: unsupported admonition {kind!r}")
             message = [text.strip()]
             index += 1
             while index < len(lines) and lines[index].startswith(">"):

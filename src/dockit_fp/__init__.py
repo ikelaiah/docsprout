@@ -1,3 +1,10 @@
-"""DocKit: versioned static documentation sites for code projects."""
+"""Deprecated compatibility shim for the pre-rebrand ``dockit_fp`` package.
 
-__version__ = "1.0.0"
+DocSprout is the canonical package. This shim keeps ``python -m dockit_fp``
+and ``from dockit_fp import __version__`` working for at least one minor
+release after the DocKit to DocSprout rename.
+"""
+
+from docsprout import __version__
+
+__all__ = ["__version__"]

@@ -1,6 +1,6 @@
-"""Qualification: exercise DocKit as an *installed package*, not source checkout.
+"""Qualification: exercise DocSprout as an *installed package*, not source checkout.
 
-Run with the Python interpreter of a virtual environment that had DocKit
+Run with the Python interpreter of a virtual environment that had DocSprout
 installed from a built wheel or sdist, from a working directory outside the
 source tree. Every path used here is a fresh temporary directory, so a passing
 run is evidence that the package does not depend on repository-only files.
@@ -29,8 +29,8 @@ import time
 import urllib.request
 import zipfile
 
-import dockit_fp
-from dockit_fp.github_pages import WORKFLOW_RELATIVE_PATH, render_workflow
+import docsprout
+from docsprout.github_pages import CANONICAL_WORKFLOW_RELATIVE_PATH, render_workflow
 
 EXPECTED_MODULES = (
     "archive", "assets", "audit", "build", "cli", "config", "discovery", "errors",
@@ -49,7 +49,7 @@ def require(condition: bool, message: str) -> None:
 
 def run(root: Path, *arguments: str, check: bool = True) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, "-m", "dockit_fp", *arguments, "--root", str(root)],
+        [sys.executable, "-m", "docsprout", *arguments, "--root", str(root)],
         cwd=str(root), capture_output=True, text=True, encoding="utf-8", timeout=120,
         check=False,
     )
@@ -59,7 +59,7 @@ def require_run(root: Path, *arguments: str) -> str:
     result = run(root, *arguments)
     if result.returncode != 0:
         raise Failure(
-            f"dockit-fp {arguments} exited {result.returncode}:\n{result.stdout}\n{result.stderr}"
+            f"docsprout {arguments} exited {result.returncode}:\n{result.stdout}\n{result.stderr}"
         )
     return result.stdout
 
@@ -71,49 +71,66 @@ def free_port() -> int:
 
 
 def qualify_installation(version: str) -> None:
-    package = Path(dockit_fp.__file__).resolve()
+    package = Path(docsprout.__file__).resolve()
     purelib = Path(sysconfig.get_path("purelib")).resolve()
-    require(package.is_relative_to(purelib), f"dockit_fp is not installed at {purelib}: {package}")
-    require(str(package).find("src") == -1 or "site-packages" in package.parts, f"dockit_fp resolves into a source tree: {package}")
-    require(importlib.metadata.version("dockit-fp") == version, "importlib.metadata version mismatch")
+    require(package.is_relative_to(purelib), f"docsprout is not installed at {purelib}: {package}")
+    require(str(package).find("src") == -1 or "site-packages" in package.parts, f"docsprout resolves into a source tree: {package}")
+    require(importlib.metadata.version("docsprout") == version, "importlib.metadata version mismatch")
     for name in EXPECTED_MODULES:
-        require(importlib.util.find_spec(f"dockit_fp.{name}") is not None, f"installed package cannot import dockit_fp.{name}")
+        require(importlib.util.find_spec(f"docsprout.{name}") is not None, f"installed package cannot import docsprout.{name}")
+    require(importlib.util.find_spec("dockit_fp") is not None, "compatibility shim dockit_fp cannot be imported")
+    shim = importlib.import_module("dockit_fp")
+    require(shim.__version__ == version, "dockit_fp compatibility shim version mismatch")
 
     vendor = package.parent / "vendor" / "katex"
     for required in ("katex.min.js", "katex.min.css", "LICENSE", "fonts/KaTeX_Main-Regular.woff2", "fonts/KaTeX_AMS-Regular.woff2"):
         asset = vendor / required
         require(asset.is_file() and asset.stat().st_size > 0, f"bundled KaTeX asset missing or empty: {required}")
 
-    from dockit_fp import assets
+    from docsprout import assets
     require(len(assets.SITE_CSS) > 1000 and len(assets.SITE_JS) > 1000 and len(assets.MATH_JS) > 100, "bundled browser assets are unexpectedly small")
     require("prefers-reduced-motion" in assets.SITE_CSS, "site CSS lost its reduced-motion rule")
     require("ArrowDown" in assets.SITE_JS, "site JS lost its search keyboard contract")
+    require("docsprout-theme" in assets.SITE_JS and "dockit-fp-theme" in assets.SITE_JS, "site JS lost its theme storage migration")
 
     version_output = subprocess.run(
+        [sys.executable, "-m", "docsprout", "--version"], capture_output=True, text=True, check=False,
+    )
+    require(version_output.returncode == 0, "python -m docsprout --version failed")
+    require(version_output.stdout.strip() == f"docsprout {version}", f"CLI version mismatch: {version_output.stdout!r}")
+
+    legacy_version_output = subprocess.run(
         [sys.executable, "-m", "dockit_fp", "--version"], capture_output=True, text=True, check=False,
     )
-    require(version_output.returncode == 0, "python -m dockit_fp --version failed")
-    require(version_output.stdout.strip() == f"dockit-fp {version}", f"CLI version mismatch: {version_output.stdout!r}")
+    require(legacy_version_output.returncode == 0, "python -m dockit_fp --version failed")
+    require(legacy_version_output.stdout.strip() == f"dockit-fp {version}", f"legacy CLI version mismatch: {legacy_version_output.stdout!r}")
 
     scripts = Path(sysconfig.get_path("scripts"))
-    executable = scripts / ("dockit-fp.exe" if os.name == "nt" else "dockit-fp")
+    executable = scripts / ("docsprout.exe" if os.name == "nt" else "docsprout")
     require(executable.is_file(), f"console script missing at {executable}")
     script_output = subprocess.run([str(executable), "--version"], capture_output=True, text=True, check=False)
-    require(script_output.returncode == 0, "dockit-fp console script --version failed")
-    require(script_output.stdout.strip() == f"dockit-fp {version}", "console script version mismatch")
+    require(script_output.returncode == 0, "docsprout console script --version failed")
+    require(script_output.stdout.strip() == f"docsprout {version}", "console script version mismatch")
+
+    legacy_executable = scripts / ("dockit-fp.exe" if os.name == "nt" else "dockit-fp")
+    require(legacy_executable.is_file(), f"deprecated console script missing at {legacy_executable}")
+    legacy_script_output = subprocess.run([str(legacy_executable), "--version"], capture_output=True, text=True, check=False)
+    require(legacy_script_output.returncode == 0, "dockit-fp console script --version failed")
+    require(legacy_script_output.stdout.strip() == f"dockit-fp {version}", "legacy console script version mismatch")
 
     qualify_new_project()
     qualify_existing_repository()
+    qualify_legacy_configuration()
     qualify_git_pages_walkthrough(version)
     qualify_serve()
 
 
 def qualify_new_project() -> None:
-    with tempfile.TemporaryDirectory(prefix="dk-installed-new-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="ds-installed-new-") as temporary:
         root = Path(temporary)
         init = require_run(root, "init")
-        require("DocKit is ready." in init and "docs/layout.json" in init, "init did not finish the guided message")
-        require((root / "docs" / "dockit.json").is_file(), "init did not create dockit.json")
+        require("DocSprout is ready." in init and "docs/layout.json" in init, "init did not finish the guided message")
+        require((root / "docs" / "docsprout.json").is_file(), "init did not create docsprout.json")
         require((root / "docs" / "layout.json").is_file(), "init did not create layout.json")
 
         check = require_run(root, "check")
@@ -128,6 +145,7 @@ def qualify_new_project() -> None:
         site = root / "site"
         for relative, marker in (
             ("index.html", "assets/katex/katex.min.js"),
+            (".docsprout-site", "DocSprout generated output"),
             ("search-index.json", '"url": "index.html"'),
             ("release.json", "preview"),
             ("assets/site.css", "--dk-accent"),
@@ -142,7 +160,7 @@ def qualify_new_project() -> None:
 
 
 def qualify_existing_repository() -> None:
-    with tempfile.TemporaryDirectory(prefix="dk-installed-existing-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="ds-installed-existing-") as temporary:
         root = Path(temporary)
         docs = root / "docs"
         (docs / "guides").mkdir(parents=True)
@@ -150,7 +168,7 @@ def qualify_existing_repository() -> None:
         readme.write_text("# Existing repository\n\n[Guide](docs/guides/deep.md)", encoding="utf-8")
         (docs / "guides" / "deep.md").write_text("# Deep guide\n\n[Back](../../README.md)", encoding="utf-8")
         (docs / "draft.md").write_text("# Draft\n\nDo not publish.", encoding="utf-8")
-        (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Existing"}}), encoding="utf-8")
+        (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Existing"}}), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps({
             "schema_version": 1, "unlisted": "exclude",
             "home": {"path": "README.md", "source": "root"},
@@ -181,8 +199,28 @@ def qualify_existing_repository() -> None:
         _require_no_path_leak(site, root)
 
 
+def qualify_legacy_configuration() -> None:
+    with tempfile.TemporaryDirectory(prefix="ds-installed-legacy-") as temporary:
+        root = Path(temporary)
+        docs = root / "docs"
+        docs.mkdir()
+        (docs / "index.md").write_text("# Legacy configuration\n", encoding="utf-8")
+        (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Legacy"}}), encoding="utf-8")
+        (docs / "layout.json").write_text(json.dumps({
+            "schema_version": 1,
+            "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
+        }), encoding="utf-8")
+
+        check = require_run(root, "check")
+        require("Documentation check passed" in check, f"legacy dockit.json did not load: {check}")
+
+        build = require_run(root, "build", "--output", str(root / "site"))
+        require("Built 1 page(s)" in build, f"legacy dockit.json did not build: {build}")
+        require((root / "site" / ".docsprout-site").is_file(), "legacy project did not receive the DocSprout ownership marker")
+
+
 def qualify_git_pages_walkthrough(version: str) -> None:
-    with tempfile.TemporaryDirectory(prefix="dk-installed-pages-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="ds-installed-pages-") as temporary:
         root = Path(temporary)
         subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True, text=True)
         subprocess.run(["git", "config", "user.email", "tests@example.test"], cwd=root, check=True, capture_output=True, text=True)
@@ -194,8 +232,8 @@ def qualify_git_pages_walkthrough(version: str) -> None:
         head_before = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True, capture_output=True, text=True).stdout
 
         prepared = require_run(root, "github-pages")
-        require("DocKit is ready for GitHub Pages." in prepared, f"unexpected github-pages output: {prepared}")
-        workflow = root / WORKFLOW_RELATIVE_PATH
+        require("DocSprout is ready for GitHub Pages." in prepared, f"unexpected github-pages output: {prepared}")
+        workflow = root / CANONICAL_WORKFLOW_RELATIVE_PATH
         require(workflow.is_file(), "github-pages did not create the managed workflow")
         require(workflow.read_text(encoding="utf-8") == render_workflow(f"v{version}"), "managed workflow does not pin the installed release")
 
@@ -206,7 +244,7 @@ def qualify_git_pages_walkthrough(version: str) -> None:
         log = subprocess.run(["git", "log", "--oneline"], cwd=root, check=True, capture_output=True, text=True).stdout
         require(len(log.splitlines()) == 1, "github-pages created a commit")
         status = subprocess.run(["git", "status", "--porcelain"], cwd=root, check=True, capture_output=True, text=True).stdout
-        require("?? docs/" in status and "?? .github/" in status, f"expected only new DocKit files: {status}")
+        require("?? docs/" in status and "?? .github/" in status, f"expected only new DocSprout files: {status}")
 
         workflow.write_text(render_workflow("v0.12.1"), encoding="utf-8")
         told = require_run(root, "github-pages")
@@ -219,12 +257,12 @@ def qualify_git_pages_walkthrough(version: str) -> None:
 
 
 def qualify_serve() -> None:
-    with tempfile.TemporaryDirectory(prefix="dk-installed-serve-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="ds-installed-serve-") as temporary:
         root = Path(temporary)
         require_run(root, "init")
         port = free_port()
         server = subprocess.Popen(
-            [sys.executable, "-u", "-m", "dockit_fp", "serve", "--root", str(root), "--port", str(port)],
+            [sys.executable, "-u", "-m", "docsprout", "serve", "--root", str(root), "--port", str(port)],
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
         )
         try:
@@ -269,11 +307,12 @@ def main() -> int:
         qualify_installation(arguments.expected_version)
     except Failure as failure:
         print(f"Installed-package qualification FAILED for v{arguments.expected_version}: {failure}")
-        print(f"Python: {sys.version.split()[0]}; package: {Path(dockit_fp.__file__).resolve()}")
+        print(f"Python: {sys.version.split()[0]}; package: {Path(docsprout.__file__).resolve()}")
         return 1
     print(f"Installed-package qualification passed for v{arguments.expected_version}: "
-          f"wheel/sdist install, imports, bundled KaTeX assets, console script, "
-          f"new-project and existing-repository journeys, github-pages preparation, serve smoke.")
+          f"wheel/sdist install, imports, bundled KaTeX assets, console scripts, "
+          f"new-project and existing-repository journeys, legacy dockit.json loading, "
+          f"github-pages preparation, serve smoke.")
     return 0
 
 

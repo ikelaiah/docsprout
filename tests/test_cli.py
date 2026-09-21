@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from dockit_fp.cli import _PreviewBuilder, main
+from docsprout.cli import _PreviewBuilder, main
 
 
 class CliTests(unittest.TestCase):
@@ -21,14 +21,14 @@ class CliTests(unittest.TestCase):
 
             with redirect_stdout(output):
                 self.assertEqual(0, main(["init", "--root", str(root)]))
-            self.assertTrue((root / "docs" / "dockit.json").exists())
+            self.assertTrue((root / "docs" / "docsprout.json").exists())
             layout = json.loads((root / "docs" / "layout.json").read_text(encoding="utf-8"))
             self.assertEqual({"path": "index.md"}, layout["home"])
             self.assertEqual("exclude", layout["unlisted"])
-            self.assertIn("DocKit is ready.", output.getvalue())
+            self.assertIn("DocSprout is ready.", output.getvalue())
             self.assertIn("docs/layout.json", output.getvalue())
-            self.assertIn("docs/dockit.json", output.getvalue())
-            self.assertIn("Preview:  dockit-fp serve", output.getvalue())
+            self.assertIn("docs/docsprout.json", output.getvalue())
+            self.assertIn("Preview:  docsprout serve", output.getvalue())
             self.assertIn("Navigation sections: Getting started (1 page).", output.getvalue())
             self.assertEqual(0, main(["init", "--root", str(root)]))
 
@@ -81,7 +81,7 @@ class CliTests(unittest.TestCase):
             output = io.StringIO()
             with redirect_stdout(output):
                 self.assertEqual(0, main(["init", "--root", str(root)]))
-            config = json.loads((docs / "dockit.json").read_text(encoding="utf-8"))
+            config = json.loads((docs / "docsprout.json").read_text(encoding="utf-8"))
             self.assertEqual("existing-project", config["project"]["name"])
             self.assertEqual("https://github.com/example/existing-project", config["project"]["repository_url"])
 
@@ -126,7 +126,7 @@ class CliTests(unittest.TestCase):
                 return Server()
 
             output = io.StringIO()
-            with patch("dockit_fp.cli.ThreadingHTTPServer", side_effect=make_server):
+            with patch("docsprout.cli.ThreadingHTTPServer", side_effect=make_server):
                 with redirect_stdout(output):
                     self.assertEqual(0, main(["serve", "--root", str(root), "--host", "127.0.0.1", "--port", "8000"]))
 
@@ -163,12 +163,12 @@ class CliTests(unittest.TestCase):
 
             renderer.write_text("updated renderer", encoding="utf-8")
 
-            with patch("dockit_fp.cli.importlib.reload") as reload:
+            with patch("docsprout.cli.importlib.reload") as reload:
                 self.assertTrue(preview.rebuild_if_changed())
             self.assertTrue(reload.called)
 
-    def test_preview_rebuilds_when_layout_or_dockit_configuration_changes(self) -> None:
-        for configuration in ("layout.json", "dockit.json"):
+    def test_preview_rebuilds_when_layout_or_docsprout_configuration_changes(self) -> None:
+        for configuration in ("layout.json", "docsprout.json"):
             with self.subTest(configuration=configuration), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self.assertEqual(0, main(["init", "--root", str(root)]))
@@ -222,8 +222,8 @@ class CliTests(unittest.TestCase):
             root = Path(temporary)
             docs = root / "docs"
             docs.mkdir()
-            (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Broken"}}', encoding="utf-8")
-            with patch("dockit_fp.cli.ThreadingHTTPServer") as server:
+            (docs / "docsprout.json").write_text('{"schema_version": 1, "project": {"name": "Broken"}}', encoding="utf-8")
+            with patch("docsprout.cli.ThreadingHTTPServer") as server:
                 self.assertEqual(1, main(["serve", "--root", str(root)]))
             server.assert_not_called()
 
@@ -234,7 +234,7 @@ class CliTests(unittest.TestCase):
             docs.mkdir()
             (docs / "index.md").write_text("# Home", encoding="utf-8")
             (docs / "private.md").write_text("# Private", encoding="utf-8")
-            (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Demo"}}', encoding="utf-8")
+            (docs / "docsprout.json").write_text('{"schema_version": 1, "project": {"name": "Demo"}}', encoding="utf-8")
             (docs / "layout.json").write_text('{"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}]}', encoding="utf-8")
             output = io.StringIO()
 
@@ -254,7 +254,7 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(0, main(["doctor", "--root", str(root)]))
 
             self.assertIn("Status: preview-ready", output.getvalue())
-            self.assertIn("Next: run dockit-fp serve.", output.getvalue())
+            self.assertIn("Next: run docsprout serve.", output.getvalue())
 
     def test_doctor_explains_the_next_release_step(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -312,3 +312,42 @@ class CliTests(unittest.TestCase):
             self.assertIn("Documentation check passed: 1 section(s), 1 page(s)", output.getvalue())
             self.assertEqual(0, main(["build", "--root", str(root), "--output", str(root / "site")]))
             self.assertTrue((root / "site" / "index.html").exists())
+
+    def test_init_preserves_a_legacy_dockit_json_without_creating_a_second_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Legacy"}}', encoding="utf-8")
+            (docs / "layout.json").write_text(
+                '{"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}',
+                encoding="utf-8",
+            )
+            output = io.StringIO()
+
+            with redirect_stdout(output):
+                self.assertEqual(0, main(["init", "--root", str(root)]))
+
+            self.assertFalse((docs / "docsprout.json").exists())
+            self.assertTrue((docs / "dockit.json").exists())
+            self.assertIn("Existing DocSprout configuration was left authoritative", output.getvalue())
+
+    def test_check_fails_with_an_ambiguity_error_when_both_configurations_exist(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "docsprout.json").write_text('{"schema_version": 1, "project": {"name": "Current"}}', encoding="utf-8")
+            (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Legacy"}}', encoding="utf-8")
+            (docs / "layout.json").write_text(
+                '{"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}',
+                encoding="utf-8",
+            )
+            output = io.StringIO()
+
+            with redirect_stdout(output):
+                self.assertEqual(1, main(["check", "--root", str(root)]))
+
+            self.assertIn("both docsprout.json and dockit.json exist", output.getvalue())

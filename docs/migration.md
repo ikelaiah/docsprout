@@ -4,11 +4,39 @@ The v1.0.0 upgrade is deliberately boring: it freezes the qualified v0.18.1
 surface and does not introduce a new configuration schema. Pin the released
 package and workflow, then run the same checks you already use.
 
+## DocKit to DocSprout (1.x rebrand)
+
+DocSprout is the new name for the builder released through v1.0.0 as
+DocKit-FP. The 1.x contract is preserved, so this is a branding and
+configuration-name transition, not a schema migration:
+
+- `docsprout` is the canonical command; `python -m docsprout` is the canonical
+  module entry point. The deprecated `dockit-fp` console script and
+  `python -m dockit_fp` module keep working for at least one minor release.
+- New projects create `docs/docsprout.json`. Existing `docs/dockit.json`
+  files keep loading unchanged. If both files exist, DocSprout fails with an
+  actionable ambiguity error instead of choosing one silently; rename the
+  legacy file to `docsprout.json` and delete the old name.
+- Generated output now uses the `.docsprout-site` ownership marker. Rebuilding
+  a directory that carries the old `.dockit-fp-site` marker recognises it,
+  replaces the directory, and writes the new marker.
+- Fresh GitHub Pages setup creates
+  `.github/workflows/docsprout-pages.yml`. An existing managed
+  `.github/workflows/dockit-pages.yml` is recognised; `docsprout github-pages
+  --update` updates it in place, so a repository never ends up with two
+  deployment workflows. Unmanaged workflow files are never overwritten.
+- Browser theme preferences migrate automatically from the old
+  `dockit-fp-theme` and `dockit-fp-visual-theme` storage keys to the new
+  `docsprout-theme` and `docsprout-visual-theme` keys.
+- The public `--dk-*` CSS custom-property names are unchanged, as are routes,
+  JSON schemas, configuration field names and command behaviour unrelated to
+  the rebrand.
+
 Migrate gradually from local `tools/build_docs.py`, `build_all_docs.py`,
 `check_built_docs.py` and `tools/docs_assets/` copies:
 
-1. Pin a released DocKit-FP version.
-2. Add `dockit.json` and `layout.json` around the existing Markdown.
+1. Pin a released DocSprout version.
+2. Add `docsprout.json` and `layout.json` around the existing Markdown.
 3. Reproduce and compare the current site.
 4. Add and verify historical `versions.json` entries.
 5. Switch the Pages workflow and run `check`, `check-release`, and `build-all`.
@@ -18,10 +46,12 @@ Do not rewrite historical tags or remove the old builder first.
 
 ## Configuration compatibility
 
-DocKit-FP configuration is versioned deliberately. v0.5 supports
-`"schema_version": 1` for `dockit.json`, `layout.json` and `versions.json`.
-Version 1 additions are optional and remain backwards compatible: a project can
-adopt presets, identity fields and visual themes one at a time.
+DocSprout configuration is versioned deliberately. v0.5 supports
+`"schema_version": 1` for the configuration file (released then as
+`dockit.json` and now named `docsprout.json`), `layout.json` and
+`versions.json`. Version 1 additions are optional and remain backwards
+compatible: a project can adopt presets, identity fields and visual themes one
+at a time.
 
 Future schema versions will fail clearly rather than being guessed at. A major
 schema change will ship with release notes, a migration guide, compatibility
@@ -68,7 +98,7 @@ Most projects need **no configuration change**; the changes below affect
 machine consumers and advanced customisation only.
 
 - **New:** optional `theme.custom_css` (repository-local `.css`, loaded after
-  DocKit's styles). Adds a feature; existing sites are unchanged. See
+  DocSprout's styles). Adds a feature; existing sites are unchanged. See
   [Custom CSS](custom-css.md).
 - **Renamed tokens (pre-1.0):** the generic semantic colour tokens are now
   namespaced. `--bg`, `--surface`, `--text`, `--muted`, `--border`, `--code`,
@@ -80,7 +110,7 @@ machine consumers and advanced customisation only.
   internally; no project configuration references these names.
 - **Versioned machine formats:** `search-index.json` is now
   `{"schema_version": 1, "entries": [...]}`, and
-  `dockit-fp audit --format json` now reports `"schema_version": 1` at the
+  `docsprout audit --format json` now reports `"schema_version": 1` at the
   root. `release.json` and built-site `versions.json` were already versioned.
   Tools that consumed the old unversioned search-index array must read
   `entries`.
@@ -108,7 +138,7 @@ the contract qualified by v0.18.1:
 
 1. Pin the package archive or source installation to `v1.0.0` and pin the
    reusable Pages workflow to `@v1.0.0`; never use `main`.
-2. Keep `"schema_version": 1` in `dockit.json`, `layout.json` and
+2. Keep `"schema_version": 1` in `docsprout.json`, `layout.json` and
    `versions.json`. There is no schema rewrite or generated-route migration.
 3. If custom CSS still uses pre-v0.18 generic names such as `--bg`, `--text`
    or `--interactive`, rename them to their documented `--dk-*` equivalents.
@@ -147,13 +177,13 @@ listed page).
 
 ## v0.13.0 to v0.14.0
 
-No configuration change is required. `dockit-fp github-pages` prepares safe
+No configuration change is required. `docsprout github-pages` prepares safe
 Pages configuration and a pinned managed workflow in a Git repository,
 without committing, pushing or changing repository settings.
 
 ## v0.14.0 to v0.15.0
 
-No configuration change is required. `dockit-fp audit` reports read-only
+No configuration change is required. `docsprout audit` reports read-only
 publication diagnostics; `audit --strict` is the CI-warning gate option.
 `check` remains the buildability gate.
 
@@ -184,7 +214,7 @@ cards or control homepage sections.
 ## v0.6.0 to v0.7.0
 
 Modern documentation trees now require every `docs/**/*.md` file to be listed
-in `layout.json`. Run `dockit-fp check`; add each reported path to an
+in `layout.json`. Run `docsprout check`; add each reported path to an
 appropriate section, or remove documentation that should no longer ship.
 Existing Markdown rendering remains compatible, and definition lists are an
 optional authoring feature.
@@ -247,11 +277,11 @@ qualified. There is no 1.0 schema change. Before adopting v1.0.0:
    are the 1.x contract.
 3. If a tool consumed the unversioned search-index array, switch it to the
    `{"schema_version": 1, "entries": [...]}` shape.
-4. Run `dockit-fp check` and resolve every strict-field diagnostic: fields
+4. Run `docsprout check` and resolve every strict-field diagnostic: fields
    outside the released schema-1 surface are errors from v0.18 onward.
 5. Keep `unlisted` and `home` explicit in `layout.json` where you author new
    layouts.
-6. Re-run the quality gate: `dockit-fp check`, `dockit-fp audit --strict`,
+6. Re-run the quality gate: `docsprout check`, `docsprout audit --strict`,
    a local `serve` preview, and the historical `check-release` +
    `build-all` flow when `versions.json` is configured.
 7. Verify the generated search index, `release.json`, audit JSON and version

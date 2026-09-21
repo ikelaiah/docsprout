@@ -1,4 +1,4 @@
-"""Qualification: DocKit behaves sensibly in the ecosystems it explicitly supports.
+"""Qualification: DocSprout behaves sensibly in the ecosystems it explicitly supports.
 
 Non-Git projects, Git repositories, GitHub Pages preparation, idempotent reruns,
 existing and generated configuration, and the no-commit/no-push rule. All tests
@@ -13,9 +13,9 @@ import subprocess
 import tempfile
 import unittest
 
-from dockit_fp import __version__
-from dockit_fp.build import build_site
-from dockit_fp.github_pages import WORKFLOW_RELATIVE_PATH, render_workflow
+from docsprout import __version__
+from docsprout.build import build_site
+from docsprout.github_pages import CANONICAL_WORKFLOW_RELATIVE_PATH, render_workflow
 
 from tests.helper import run_cli
 
@@ -56,7 +56,7 @@ class EcosystemQualificationTests(unittest.TestCase):
 
             prepared = run_cli(root, "github-pages")
             self.assertIn("not connected to GitHub yet", prepared.stdout)
-            config = json.loads((root / "docs" / "dockit.json").read_text(encoding="utf-8"))
+            config = json.loads((root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
             self.assertNotIn("repository_url", config["project"])
 
     def test_qualifies_a_git_repository_with_a_github_remote(self) -> None:
@@ -73,7 +73,7 @@ class EcosystemQualificationTests(unittest.TestCase):
 
             prepared = run_cli(root, "github-pages")
             self.assertIn("GitHub remote: https://github.com/acme/library", prepared.stdout)
-            config = json.loads((root / "docs" / "dockit.json").read_text(encoding="utf-8"))
+            config = json.loads((root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
             self.assertEqual("https://github.com/acme/library", config["project"]["repository_url"])
             self.assertEqual("library", config["project"]["name"])
 
@@ -90,8 +90,8 @@ class EcosystemQualificationTests(unittest.TestCase):
             head = _git(root, "rev-parse", "HEAD")
 
             first = run_cli(root, "github-pages")
-            self.assertIn("DocKit is ready for GitHub Pages.", first.stdout)
-            self.assertEqual(render_workflow(f"v{__version__}"), (root / WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
+            self.assertIn("DocSprout is ready for GitHub Pages.", first.stdout)
+            self.assertEqual(render_workflow(f"v{__version__}"), (root / CANONICAL_WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
 
             for _ in range(2):
                 rerun = run_cli(root, "github-pages")
@@ -100,10 +100,10 @@ class EcosystemQualificationTests(unittest.TestCase):
                 self.assertEqual(head, _git(root, "rev-parse", "HEAD"))
                 self.assertEqual(
                     render_workflow(f"v{__version__}"),
-                    (root / WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"),
+                    (root / CANONICAL_WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"),
                 )
 
-            workflow = root / WORKFLOW_RELATIVE_PATH
+            workflow = root / CANONICAL_WORKFLOW_RELATIVE_PATH
             workflow.write_text(render_workflow("v0.12.1"), encoding="utf-8")
             run_cli(root, "github-pages")
             self.assertEqual(render_workflow("v0.12.1"), workflow.read_text(encoding="utf-8"))
@@ -119,7 +119,7 @@ class EcosystemQualificationTests(unittest.TestCase):
             (docs / "guides").mkdir(parents=True)
             (docs / "index.md").write_text("# Existing home\n\n[Guide](guides/legacy.md)", encoding="utf-8")
             (docs / "guides" / "legacy.md").write_text("# Legacy guide\n\n[Back](../index.md)", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "project": {"name": "Existing", "description": "Kept"},
                 "theme": {"preset": "teal", "style": "paper"},
@@ -132,7 +132,7 @@ class EcosystemQualificationTests(unittest.TestCase):
                     {"title": "Legacy", "path": "guides/legacy.md"},
                 ]}],
             }), encoding="utf-8")
-            before = {path: path.read_text(encoding="utf-8") for path in (docs / "dockit.json", docs / "layout.json")}
+            before = {path: path.read_text(encoding="utf-8") for path in (docs / "docsprout.json", docs / "layout.json")}
 
             with tempfile.TemporaryDirectory() as output_temporary:
                 result = build_site(root=root, output=Path(output_temporary) / "site", release="existing")
@@ -182,4 +182,4 @@ class EcosystemQualificationTests(unittest.TestCase):
             doctor = run_cli(root, "doctor")
             self.assertIn("Status: preview-ready", doctor.stdout)
             self.assertIn("GitHub Pages workflow: configured", doctor.stdout)
-            self.assertIn(f"DocKit version: v{__version__}", doctor.stdout)
+            self.assertIn(f"DocSprout version: v{__version__}", doctor.stdout)

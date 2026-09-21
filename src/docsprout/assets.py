@@ -1,4 +1,4 @@
-"""Shared DocKit-FP browser assets."""
+"""Shared DocSprout browser assets."""
 
 SITE_CSS = r'''
 :root{
@@ -239,13 +239,14 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 
 SITE_JS = r'''
 (()=>{
-  const root=document.documentElement,key='dockit-fp-theme',select=document.querySelector('#theme-select');
+  const root=document.documentElement,key='docsprout-theme',legacyKey='dockit-fp-theme',select=document.querySelector('#theme-select');
+  function readStored(primary,legacy){try{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}}catch(_){}return null}
   function setTheme(value){if(value==='system')delete root.dataset.theme;else root.dataset.theme=value;try{localStorage.setItem(key,value)}catch(_){}}
-  try{const value=localStorage.getItem(key);if(['light','dark','system'].includes(value)){select.value=value;setTheme(value)}}catch(_){}
+  try{const value=readStored(key,legacyKey);if(['light','dark','system'].includes(value)){select.value=value;setTheme(value)}}catch(_){}
   select?.addEventListener('change',()=>setTheme(select.value));
-  const visual=document.querySelector('#visual-theme'),visualKey='dockit-fp-visual-theme';
+  const visual=document.querySelector('#visual-theme'),visualKey='docsprout-visual-theme',legacyVisualKey='dockit-fp-visual-theme';
   function setVisualTheme(value){root.dataset.visualTheme=value;try{localStorage.setItem(visualKey,value)}catch(_){}}
-  try{const value=localStorage.getItem(visualKey);if(['classic','paper','midnight'].includes(value)){visual.value=value;setVisualTheme(value)}else if(visual){visual.value=root.dataset.visualTheme||'classic'}}catch(_){ }
+  try{const value=readStored(visualKey,legacyVisualKey);if(['classic','paper','midnight'].includes(value)){visual.value=value;setVisualTheme(value)}else if(visual){visual.value=root.dataset.visualTheme||'classic'}}catch(_){ }
   visual?.addEventListener('change',()=>setVisualTheme(visual.value));
   const version=document.querySelector('#version-select');
   version?.addEventListener('change',()=>{location.href=version.value});

@@ -3,13 +3,13 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dockit-fp"
+name = "docsprout"
 version = "1.0.0"
 description = "Versioned static documentation sites for code projects"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{name = "DocKit-FP contributors"}]
+authors = [{name = "DocSprout contributors"}]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Programming Language :: Python :: 3",
@@ -23,7 +23,8 @@ classifiers = [
 ]
 
 [project.scripts]
-dockit-fp = "dockit_fp.cli:main"
+docsprout = "docsprout.cli:main"
+dockit-fp = "docsprout.cli:main_dockit_fp"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -32,4 +33,4 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-dockit_fp = ["vendor/katex/**"]
+docsprout = ["vendor/katex/**"]

@@ -9,10 +9,10 @@ easier to repair than a broken public tag.
 ## Before either kind of site
 
 - [ ] Read the changed pages as someone new to the project.
-- [ ] Run `dockit-fp doctor` and resolve every line beginning with `ERROR`.
-- [ ] Run `dockit-fp check` and confirm the reported page total makes sense.
-- [ ] Run `dockit-fp audit --strict` and resolve every error and warning.
-- [ ] Run `dockit-fp build --output build/docs-site` and open the local site.
+- [ ] Run `docsprout doctor` and resolve every line beginning with `ERROR`.
+- [ ] Run `docsprout check` and confirm the reported page total makes sense.
+- [ ] Run `docsprout audit --strict` and resolve every error and warning.
+- [ ] Run `docsprout build --output build/docs-site` and open the local site.
 - [ ] Check one phone-sized width, one desktop width, keyboard navigation, and
       Light and Dark mode.
 - [ ] If you configure `theme.custom_css`, repeat the width, keyboard and
@@ -27,7 +27,7 @@ To distribute the same local site as a download, add `--offline-archive` to a
 normal build:
 
 ```bash
-dockit-fp build --output build/docs-site --offline-archive dist/mylibrary-docs.zip
+docsprout build --output build/docs-site --offline-archive dist/mylibrary-docs.zip
 ```
 
 This writes a deterministic ZIP and the matching
@@ -44,7 +44,7 @@ This path updates the public site from a branch such as `main`.
 3. Build the exact site locally:
 
    ```bash
-   dockit-fp build --release latest --output build/docs-site
+   docsprout build --release latest --output build/docs-site
    ```
 
 4. Commit the documentation and workflow.
@@ -60,7 +60,7 @@ below, replace `1.2.0` with your version.
 
 1. Add release `1.2.0` and source ref `v1.2.0` to `docs/versions.json`. Set
    `current` to `1.2.0`.
-2. Run `dockit-fp check`.
+2. Run `docsprout check`.
 3. Commit all release files, including the documentation, manifest and workflow,
    on a branch named `release/vX.Y.Z`:
 
@@ -82,8 +82,8 @@ below, replace `1.2.0` with your version.
 6. Run the release checks and historical build:
 
    ```bash
-   dockit-fp check-release
-   dockit-fp build-all --output build/docs-site
+   docsprout check-release
+   docsprout build-all --output build/docs-site
    ```
 
    The release check should report immutable releases. The build should contain

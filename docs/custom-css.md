@@ -2,11 +2,11 @@
 
 Custom CSS is an **advanced escape hatch** for the rare case where presets,
 themes and the documented `--dk-*` tokens are not enough. A normal polished
-DocKit site never needs it: start with a [preset and visual theme](themes.md),
+DocSprout site never needs it: start with a [preset and visual theme](themes.md),
 then exact [accent colours](themes.md#pick-an-accent-colour). Only when those
 are exhausted, add a small stylesheet.
 
-DocKit guarantees the **safe inclusion mechanism**. It does not guarantee the
+DocSprout guarantees the **safe inclusion mechanism**. It does not guarantee the
 accessibility or correctness of the CSS you write. That distinction is the
 contract of this feature.
 
@@ -16,7 +16,7 @@ only needed when a project deliberately wants a different presentation.
 
 ## Configure one stylesheet
 
-Add `theme.custom_css` to `docs/dockit.json`:
+Add `theme.custom_css` to `docs/docsprout.json`:
 
 ```json
 {
@@ -34,7 +34,7 @@ The path is repository-local, exactly like `identity.logo`. It is optional,
 must be non-empty, must end in `.css`, and the file must exist. Absolute
 paths, parent-directory traversal and any path that resolves outside the
 repository are rejected, as are symlinks or junctions that escape the
-repository root. There is no network fetch and no CSS parser: DocKit copies
+repository root. There is no network fetch and no CSS parser: DocSprout copies
 the file and a generated page references it.
 
 ## Where and how it loads
@@ -44,8 +44,8 @@ every generated page—including pages in nested folders and every historical
 release in a [versioned build](historical-docs.md)—loads it with a correct
 relative reference.
 
-The stylesheet link is placed **after** DocKit's own `site.css` and KaTeX
-styles, so your rules deliberately override DocKit's defaults. The `--dk-*`
+The stylesheet link is placed **after** DocSprout's own `site.css` and KaTeX
+styles, so your rules deliberately override DocSprout's defaults. The `--dk-*`
 tokens keep working in custom CSS because they are ordinary custom properties
 on the document root:
 
@@ -59,9 +59,9 @@ on the document root:
 }
 ```
 
-## What DocKit owns, what you own
+## What DocSprout owns, what you own
 
-DocKit guarantees the mechanics:
+DocSprout guarantees the mechanics:
 
 - safe path resolution and rejection of escaping paths;
 - deterministic inclusion of the file you configured;
@@ -81,7 +81,7 @@ custom CSS, verify:
 - keyboard focus is still visible and the page works with a keyboard alone.
 
 The maintained [visual fixture](visual-fixtures.md) is the working custom CSS
-example: it ships a small `docs/assets/custom.css` and DocKit's own
+example: it ships a small `docs/assets/custom.css` and DocSprout's own
 documentation builds it in CI.
 
 ## Before you reach for custom CSS
@@ -95,6 +95,6 @@ documentation builds it in CI.
    gap, and keep it inside the repository.
 
 If your custom CSS is editing the same selectors across many pages, consider
-reporting a DocKit issue with the effect you wanted instead: a documented
+reporting a DocSprout issue with the effect you wanted instead: a documented
 token or configuration option is easier for every project to maintain than a
 private stylesheet.

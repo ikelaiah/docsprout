@@ -5,18 +5,18 @@ unfamiliar word.
 
 Build
 : Turn source files, such as Markdown, into output files such as a website.
-  `dockit-fp build` writes a site to `build/docs-site` by default.
+  `docsprout build` writes a site to `build/docs-site` by default.
 
 CDN
-: A hosted service that sends website assets. DocKit-FP bundles its own CSS,
+: A hosted service that sends website assets. DocSprout bundles its own CSS,
   JavaScript, fonts and mathematics assets, so a built site does not need one.
 
 CLI
 : Command-line interface: a tool you run by typing commands in a terminal.
-  `dockit-fp check` is a CLI command.
+  `docsprout check` is a CLI command.
 
 Configuration
-: Small files that store choices for a tool. DocKit-FP uses JSON configuration
+: Small files that store choices for a tool. DocSprout uses JSON configuration
   for the project identity, navigation and optional release history.
 
 Git
@@ -32,7 +32,7 @@ GitHub Pages
 
 Home page
 : The page a reader sees at the site's root. `layout.json.home` selects which
-  listed Markdown page becomes the home page; `dockit.json.homepage` controls
+  listed Markdown page becomes the home page; `docsprout.json.homepage` controls
   only that selected page's presentation.
 
 `HEAD`
@@ -62,7 +62,7 @@ SHA
   value. Most beginners can use a tag instead.
 
 Source ref
-: The tag or full commit SHA that tells DocKit-FP where one release's files
+: The tag or full commit SHA that tells DocSprout where one release's files
   live in Git history.
 
 Tag

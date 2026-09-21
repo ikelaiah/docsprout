@@ -4,8 +4,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site
-from dockit_fp.cli import main
+from docsprout.build import build_site
+from docsprout.cli import main
 
 
 class ReleaseExampleTests(unittest.TestCase):
@@ -29,4 +29,4 @@ class ReleaseExampleTests(unittest.TestCase):
             self.assertEqual(0, main(["doctor", "--root", str(self.examples / "single-version")]))
 
         self.assertIn("Status: preview-ready", output.getvalue())
-        self.assertIn("Pages: DocKit-FP single-version workflow detected", output.getvalue())
+        self.assertIn("Pages: DocSprout single-version workflow detected", output.getvalue())

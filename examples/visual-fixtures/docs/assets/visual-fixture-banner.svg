@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" role="img" aria-labelledby="title description">
-  <title id="title">DocKit visual fixture banner</title>
+  <title id="title">DocSprout visual fixture banner</title>
   <desc id="description">A teal field with a document mark and the words Visual fixture.</desc>
   <rect width="1200" height="240" fill="#0f766e"/>
   <path fill="#ccfbf1" d="M80 48h88l40 40v104H80z"/>

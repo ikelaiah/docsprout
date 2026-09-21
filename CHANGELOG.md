@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **Rebrand:** DocKit / DocKit-FP is now **DocSprout**. The distribution,
+  import package and primary CLI command are `docsprout`; `python -m docsprout`
+  is the canonical module entry point.
+- New projects create `docs/docsprout.json`. Existing `docs/dockit.json`
+  files keep loading; when both files exist DocSprout fails with an actionable
+  ambiguity error instead of choosing silently.
+- Generated output uses the `.docsprout-site` ownership marker. The old
+  `.dockit-fp-site` marker is recognised and replaced when rebuilding.
+- Fresh GitHub Pages setup creates `.github/workflows/docsprout-pages.yml`.
+  An existing managed `dockit-pages.yml` is recognised and updated in place by
+  `docsprout github-pages --update`; unmanaged workflows are never overwritten.
+- Browser storage keys are now `docsprout-theme` and
+  `docsprout-visual-theme`, migrating automatically from the old
+  `dockit-fp-*` keys.
+- Offline archives use the `docsprout-docs-<release>` root prefix, and brand
+  assets plus repository URLs move to
+  `https://github.com/ikelaiah/docsprout`.
+
+### Compatibility
+
+- `dockit-fp` remains a deprecated console-script alias and
+  `python -m dockit_fp` remains a deprecated module entry point for at least
+  one minor release. `from dockit_fp import __version__` keeps working.
+- The `--dk-*` CSS token family, routes, JSON schemas, configuration field
+  names and command behavior unrelated to the rebrand are unchanged.
+
 ## 1.0.0
 
 The stable contract release. DocKit v1.0.0 commits to the small, offline-first

@@ -5,8 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
-from dockit_fp.config import load_config
-from dockit_fp.errors import DocKitError
+from docsprout.config import load_config
+from docsprout.errors import DocSproutError
 
 
 class ConfigurationDiagnosticsTests(unittest.TestCase):
@@ -14,7 +14,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
         docs = root / "docs"
         docs.mkdir()
         (docs / "index.md").write_text("# Home", encoding="utf-8")
-        (docs / "dockit.json").write_text(json.dumps(document), encoding="utf-8")
+        (docs / "docsprout.json").write_text(json.dumps(document), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
 
     def test_explains_how_to_fix_an_invalid_accent_colour(self) -> None:
@@ -26,7 +26,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"theme\.accent.*Use a #RRGGBB colour"):
+            with self.assertRaisesRegex(DocSproutError, r"theme\.accent.*Use a #RRGGBB colour"):
                 load_config(root)
 
     def test_names_the_section_and_next_step_for_an_empty_navigation_group(self) -> None:
@@ -38,7 +38,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Guides", "pages": []}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"section 'Guides'.*Add at least one page"):
+            with self.assertRaisesRegex(DocSproutError, r"section 'Guides'.*Add at least one page"):
                 load_config(root)
 
     def test_explains_how_to_fix_a_missing_navigation_document(self) -> None:
@@ -50,7 +50,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Install", "path": "install.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"navigation page 'install\.md'.*Create docs/install\.md or correct its path"):
+            with self.assertRaisesRegex(DocSproutError, r"navigation page 'install\.md'.*Create docs/install\.md or correct its path"):
                 load_config(root)
 
     def test_loads_a_colour_preset_and_supported_project_identity(self) -> None:
@@ -95,7 +95,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             with self.subTest(home=home), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, {"schema_version": 1, "home": home, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]})
-                with self.assertRaisesRegex(DocKitError, message):
+                with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
     def test_loads_a_repository_local_identity_logo(self) -> None:
@@ -139,7 +139,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                     asset.parent.mkdir()
                     asset.write_bytes(b"not an image")
 
-                with self.assertRaisesRegex(DocKitError, message):
+                with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
     def test_loads_a_supported_visual_theme(self) -> None:
@@ -181,7 +181,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"layout\.content_width.*compact, comfortable, wide"):
+            with self.assertRaisesRegex(DocSproutError, r"layout\.content_width.*compact, comfortable, wide"):
                 load_config(root)
 
     def test_loads_homepage_cards_and_section_switches(self) -> None:
@@ -228,7 +228,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"homepage\.capabilities\[0\]\.title.*Use a non-empty string"):
+            with self.assertRaisesRegex(DocSproutError, r"homepage\.capabilities\[0\]\.title.*Use a non-empty string"):
                 load_config(root)
 
     def test_names_an_invalid_homepage_section_field_and_correction(self) -> None:
@@ -244,7 +244,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"homepage\.sections\.banner.*Use true or false"):
+            with self.assertRaisesRegex(DocSproutError, r"homepage\.sections\.banner.*Use true or false"):
                 load_config(root)
 
     def test_rejects_an_unknown_homepage_section_with_the_supported_names(self) -> None:
@@ -260,7 +260,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"homepage\.sections\.introducton.*Use one of"):
+            with self.assertRaisesRegex(DocSproutError, r"homepage\.sections\.introducton.*Use one of"):
                 load_config(root)
 
     def test_names_unlisted_modern_markdown_and_how_to_include_it(self) -> None:
@@ -273,7 +273,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             )
             (root / "docs" / "reference.md").write_text("# Reference", encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, r"unlisted Markdown document 'reference\.md'.*Add it to navigation"):
+            with self.assertRaisesRegex(DocSproutError, r"unlisted Markdown document 'reference\.md'.*Add it to navigation"):
                 load_config(root)
 
     def test_explicit_error_policy_retains_strict_unlisted_markdown_validation(self) -> None:
@@ -286,7 +286,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             )
             (root / "docs" / "private.md").write_text("# Private", encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, r"unlisted Markdown document 'private\.md'"):
+            with self.assertRaisesRegex(DocSproutError, r"unlisted Markdown document 'private\.md'"):
                 load_config(root)
 
     def test_exclude_policy_allows_unlisted_markdown_without_publishing_it(self) -> None:
@@ -312,7 +312,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "unlisted": "include", "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"unlisted.*'error' or 'exclude'"):
+            with self.assertRaisesRegex(DocSproutError, r"unlisted.*'error' or 'exclude'"):
                 load_config(root)
 
     def test_explains_the_schema_compatibility_policy(self) -> None:
@@ -324,7 +324,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"schema version 1.*migration"):
+            with self.assertRaisesRegex(DocSproutError, r"schema version 1.*migration"):
                 load_config(root)
 
     def test_rejects_an_unknown_theme_field_with_a_typo_suggestion(self) -> None:
@@ -336,7 +336,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
             )
 
-            with self.assertRaisesRegex(DocKitError, r"Unknown field 'theme\.presett'\. Did you mean 'theme\.preset'\?"):
+            with self.assertRaisesRegex(DocSproutError, r"Unknown field 'theme\.presett'\. Did you mean 'theme\.preset'\?"):
                 load_config(root)
 
     def test_rejects_unknown_fields_across_all_documented_schema_one_objects(self) -> None:
@@ -354,7 +354,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             with self.subTest(document=index), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._write_config(root, document, valid_layout)
-                with self.assertRaisesRegex(DocKitError, r"Unknown field"):
+                with self.assertRaisesRegex(DocSproutError, r"Unknown field"):
                     load_config(root)
         bad_layouts = (
             {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}], "extras": True},
@@ -366,7 +366,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             with self.subTest(layout=index), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, layout)
-                with self.assertRaisesRegex(DocKitError, r"Unknown field"):
+                with self.assertRaisesRegex(DocSproutError, r"Unknown field"):
                     load_config(root)
 
     def test_rejects_an_empty_navigation_page_or_section_title(self) -> None:
@@ -377,7 +377,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             with self.subTest(layout=layout), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, layout)
-                with self.assertRaisesRegex(DocKitError, message):
+                with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
     def test_rejects_non_string_project_metadata_fields(self) -> None:
@@ -393,7 +393,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                     config = load_config(root)
                     self.assertIsNone(config.site_url)
                 else:
-                    with self.assertRaisesRegex(DocKitError, rf"project\.{field}.*string"):
+                    with self.assertRaisesRegex(DocSproutError, rf"project\.{field}.*string"):
                         load_config(root)
 
     def test_allows_only_the_exact_repository_root_readme_as_an_explicit_source(self) -> None:
@@ -402,7 +402,7 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             docs = root / "docs"
             docs.mkdir()
             (root / "README.md").write_text("# Root", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             layout = {"schema_version": 1, "navigation": [{"title": "Overview", "pages": [
                 {"title": "Overview", "path": "README.md", "source": "root"},
             ]}]}
@@ -413,12 +413,12 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
 
             layout["navigation"][0]["pages"][0]["path"] = "../README.md"
             (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
-            with self.assertRaisesRegex(DocKitError, "invalid Markdown path"):
+            with self.assertRaisesRegex(DocSproutError, "invalid Markdown path"):
                 load_config(root)
 
             layout["navigation"][0]["pages"][0]["path"] = "CHANGELOG.md"
             (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
-            with self.assertRaisesRegex(DocKitError, "repository-root source only supports README.md"):
+            with self.assertRaisesRegex(DocSproutError, "repository-root source only supports README.md"):
                 load_config(root)
 
     def test_rejects_a_docs_symlink_that_resolves_outside_the_repository(self) -> None:
@@ -447,10 +447,43 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 except (OSError, subprocess.CalledProcessError) as junction_error:
                     self.skipTest(f"neither symlink nor junction creation is available: {error}; {junction_error}")
                 page_path = "outside/outside.md"
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [{"title": "Docs", "pages": [
                 {"title": "Outside", "path": page_path},
             ]}]}), encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, "outside the repository root"):
+            with self.assertRaisesRegex(DocSproutError, "outside the repository root"):
+                load_config(root)
+
+    def test_loads_a_legacy_dockit_json_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "dockit.json").write_text(
+                json.dumps({"schema_version": 1, "project": {"name": "Legacy"}}), encoding="utf-8",
+            )
+            (docs / "layout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}],
+            }), encoding="utf-8")
+
+            config = load_config(root)
+
+            self.assertEqual("Legacy", config.name)
+
+    def test_rejects_both_configuration_filenames_with_an_actionable_error(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Current"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+            (root / "docs" / "dockit.json").write_text(
+                json.dumps({"schema_version": 1, "project": {"name": "Legacy"}}), encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DocSproutError, r"both docsprout\.json and dockit\.json exist"):
                 load_config(root)

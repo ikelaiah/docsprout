@@ -3,9 +3,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site, detect_route_collisions
-from dockit_fp.errors import DocKitError
-from dockit_fp.models import Page
+from docsprout.build import build_site, detect_route_collisions
+from docsprout.errors import DocSproutError
+from docsprout.models import Page
 
 
 class RouteCollisionTests(unittest.TestCase):
@@ -24,7 +24,7 @@ class RouteCollisionTests(unittest.TestCase):
                 path = root / "docs" / page["path"]
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(f"# {page['title']}", encoding="utf-8")
-        (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+        (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
 
     def test_detects_the_alternative_home_index_docs_index_collision(self) -> None:
@@ -44,7 +44,7 @@ class RouteCollisionTests(unittest.TestCase):
                 ]}],
             }), encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, r"Generated route collision: 'docs-index.html'.*'index\.md'.*'docs-index\.md'"):
+            with self.assertRaisesRegex(DocSproutError, r"Generated route collision: 'docs-index.html'.*'index\.md'.*'docs-index\.md'"):
                 build_site(root=root, output=root / "site", release="dev")
 
     def test_detects_a_root_readme_and_docs_readme_duplicate(self) -> None:
@@ -55,7 +55,7 @@ class RouteCollisionTests(unittest.TestCase):
                 {"title": "Readme copy", "path": "README.md"},
             ])
 
-            with self.assertRaisesRegex(DocKitError, r"navigation page 'README\.md'.*appears more than once"):
+            with self.assertRaisesRegex(DocSproutError, r"navigation page 'README\.md'.*appears more than once"):
                 build_site(root=root, output=root / "site", release="dev")
 
     def test_detects_case_insensitive_route_collisions(self) -> None:
@@ -67,7 +67,7 @@ class RouteCollisionTests(unittest.TestCase):
                 {"title": "Guide", "path": "guide.md"},
             ], home={"path": "guide.md"})
 
-            with self.assertRaisesRegex(DocKitError, r"Generated route collision"):
+            with self.assertRaisesRegex(DocSproutError, r"Generated route collision"):
                 build_site(root=root, output=root / "site", release="dev")
 
     def test_route_collision_detection_is_available_without_a_build(self) -> None:
@@ -75,7 +75,7 @@ class RouteCollisionTests(unittest.TestCase):
             Page("index.md", "Index"),
             Page("docs-index.md", "Docs index"),
         )
-        with self.assertRaisesRegex(DocKitError, r"docs-index\.html"):
+        with self.assertRaisesRegex(DocSproutError, r"docs-index\.html"):
             detect_route_collisions(pages, "guide.md")
 
     def test_valid_routes_still_build_with_the_established_shapes(self) -> None:

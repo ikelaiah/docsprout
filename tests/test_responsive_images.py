@@ -5,9 +5,9 @@ import subprocess
 import tempfile
 import unittest
 
-from dockit_fp.assets import SITE_CSS
-from dockit_fp.build import build_site
-from dockit_fp.versions import build_all
+from docsprout.assets import SITE_CSS
+from docsprout.build import build_site
+from docsprout.versions import build_all
 
 
 def _declarations(css: str, selector: str) -> dict[str, str]:
@@ -70,7 +70,7 @@ class ResponsiveProseImageTests(unittest.TestCase):
                 encoding="utf-8",
             )
             config["banner"] = {"path": "docs/assets/banner.svg", "alt": "Configured banner"}
-        (docs / "dockit.json").write_text(json.dumps(config), encoding="utf-8")
+        (docs / "docsprout.json").write_text(json.dumps(config), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps({
             "schema_version": 1,
             "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
@@ -114,7 +114,7 @@ class ResponsiveProseImageTests(unittest.TestCase):
             page = (root / "site" / "index.html").read_text(encoding="utf-8")
             self.assertIn('class="banner" src="assets/banner.svg"', page)
 
-    def test_custom_css_can_override_the_default_after_dockit_styles(self) -> None:
+    def test_custom_css_can_override_the_default_after_docsprout_styles(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             custom = ".prose img{max-width:none;height:auto}"

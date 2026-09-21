@@ -1,4 +1,4 @@
-"""The public `dockit-fp` command-line interface."""
+"""The public `docsprout` command-line interface."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ import importlib
 import json
 from pathlib import Path
 import shutil
+import sys
 import tempfile
 import threading
 
@@ -18,10 +19,15 @@ from . import build as build_module
 from .audit import audit_project, format_json as format_audit_json, format_text as format_audit_text
 from .archive import write_offline_archive
 from . import __version__
-from .config import load_config
+from .config import CONFIG_FILENAME, load_config, resolve_config_path
 from .discovery import discover_repository, initial_navigation
-from .errors import DocKitError
-from .github_pages import WORKFLOW_RELATIVE_PATH, inspect_workflow, render_workflow
+from .errors import DocSproutError
+from .github_pages import (
+    CANONICAL_WORKFLOW_RELATIVE_PATH,
+    LEGACY_WORKFLOW_RELATIVE_PATH,
+    inspect_workflow,
+    render_workflow,
+)
 from .versions import build_all, check_release, load_manifest
 
 
@@ -31,18 +37,19 @@ def _root_argument(parser: argparse.ArgumentParser) -> None:
 
 def _init(root: Path) -> list[str]:
     docs = root / "docs"
+    resolve_config_path(docs)
     discovery = discover_repository(root)
     docs.mkdir(parents=True, exist_ok=True)
     created: list[str] = []
-    if not discovery.has_dockit_config:
+    if not discovery.has_config:
         project = {"name": discovery.project_name, "description": f"Documentation for {discovery.project_name}"}
         if discovery.github_remote_url:
             project["repository_url"] = discovery.github_remote_url
-        (docs / "dockit.json").write_text(json.dumps({
+        (docs / CONFIG_FILENAME).write_text(json.dumps({
             "schema_version": 1, "project": project,
             "theme": {"accent": "#0f766e", "accent_secondary": "#0891b2"},
         }, indent=2) + "\n", encoding="utf-8")
-        created.append("docs/dockit.json")
+        created.append(f"docs/{CONFIG_FILENAME}")
     navigation = initial_navigation(discovery)
     if not navigation:
         index = docs / "index.md"
@@ -65,13 +72,13 @@ def _init(root: Path) -> list[str]:
         detected.append("root README.md")
     if discovery.documents:
         detected.append(f"{len(discovery.documents)} Markdown document(s) under docs/")
-    if discovery.has_dockit_config or discovery.has_layout:
-        detected.append("existing DocKit configuration")
+    if discovery.has_config or discovery.has_layout:
+        detected.append("existing DocSprout configuration")
     messages = [f"Initialised {docs}", f"Detected: {', '.join(detected)}."]
     if created:
         messages.append(f"Created: {', '.join(created)}.")
     else:
-        messages.append("Existing DocKit configuration was left authoritative; no files were changed.")
+        messages.append("Existing DocSprout configuration was left authoritative; no files were changed.")
     messages.append("Published automatically: README.md and Markdown under docs/ only.")
     if discovery.ancillary_documents:
         messages.append(f"Available for explicit inclusion: {', '.join(discovery.ancillary_documents)}.")
@@ -83,69 +90,98 @@ def _init(root: Path) -> list[str]:
         )
         messages.append(f"Navigation sections: {sections}.")
     messages.extend((
-        "DocKit is ready.",
+        "DocSprout is ready.",
         "  Write documentation: README.md and docs/*.md",
         "  Add, rename, group or reorder pages:  docs/layout.json",
-        "  Change colours, logo and presentation:  docs/dockit.json",
-        "  Preview:  dockit-fp serve",
+        f"  Change colours, logo and presentation:  docs/{CONFIG_FILENAME}",
+        "  Preview:  docsprout serve",
     ))
     return messages
 
 
 def _check(root: Path):
-    with tempfile.TemporaryDirectory(prefix="dockit-fp-check-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="docsprout-check-") as temporary:
         result = build_site(root=root, output=Path(temporary) / "site", release="preview")
     return result
 
 
 def _github_pages(root: Path, *, update: bool) -> list[str]:
-    """Prepare only DocKit-owned configuration and its Pages caller workflow."""
+    """Prepare only DocSprout-owned configuration and its Pages caller workflow."""
     discovery = discover_repository(root)
     if not discovery.is_git_repository:
-        raise DocKitError(
+        raise DocSproutError(
             "github-pages: this folder is not a Git repository. Run the command from a repository you plan to push to GitHub."
         )
-    workflow = root / WORKFLOW_RELATIVE_PATH
     version = f"v{__version__}"
-    inspection = inspect_workflow(workflow, version)
-    if inspection.state == "unmanaged":
-        raise DocKitError(
-            f"{WORKFLOW_RELATIVE_PATH} already exists and is not managed by DocKit. No files were changed."
+    canonical_path = root / CANONICAL_WORKFLOW_RELATIVE_PATH
+    legacy_path = root / LEGACY_WORKFLOW_RELATIVE_PATH
+    canonical = inspect_workflow(canonical_path, version)
+    legacy = inspect_workflow(legacy_path, version)
+    for inspection in (canonical, legacy):
+        if inspection.state == "unsafe":
+            raise DocSproutError(
+                f"{inspection.path} contains a symlinked path component. Use a regular repository-local path; no files were changed."
+            )
+    if canonical.state != "absent" and legacy.state != "absent":
+        raise DocSproutError(
+            f"Both {CANONICAL_WORKFLOW_RELATIVE_PATH} and {LEGACY_WORKFLOW_RELATIVE_PATH} exist. "
+            "DocSprout will not create a second deployment workflow: keep the canonical "
+            f"{CANONICAL_WORKFLOW_RELATIVE_PATH} and remove {LEGACY_WORKFLOW_RELATIVE_PATH}."
         )
-    if inspection.state == "malformed":
-        raise DocKitError(
-            f"{WORKFLOW_RELATIVE_PATH} is marked as DocKit-managed but is malformed. Repair it manually; no files were changed."
+    if canonical.state == "unmanaged":
+        raise DocSproutError(
+            f"{CANONICAL_WORKFLOW_RELATIVE_PATH} already exists and is not managed by DocSprout. No files were changed."
         )
-    if inspection.state == "unsafe":
-        raise DocKitError(
-            f"{WORKFLOW_RELATIVE_PATH} contains a symlinked path component. Use a regular repository-local path; no files were changed."
+    if canonical.state == "malformed":
+        raise DocSproutError(
+            f"{CANONICAL_WORKFLOW_RELATIVE_PATH} is marked as DocSprout-managed but is malformed. Repair it manually; no files were changed."
         )
+    if legacy.state == "unmanaged":
+        raise DocSproutError(
+            f"{LEGACY_WORKFLOW_RELATIVE_PATH} already exists and is not managed by DocSprout. "
+            f"DocSprout will not overwrite it or create {CANONICAL_WORKFLOW_RELATIVE_PATH} alongside it. "
+            "Remove or rename it first; no files were changed."
+        )
+    if legacy.state == "malformed":
+        raise DocSproutError(
+            f"{LEGACY_WORKFLOW_RELATIVE_PATH} is marked as DocSprout-managed but is malformed. Repair it manually; no files were changed."
+        )
+    if canonical.state != "absent":
+        workflow, inspection = canonical_path, canonical
+    elif legacy.state != "absent":
+        workflow, inspection = legacy_path, legacy
+    else:
+        workflow, inspection = canonical_path, canonical
+    relative_workflow = workflow.relative_to(root).as_posix()
     if update:
         if inspection.state == "absent":
-            raise DocKitError(f"{WORKFLOW_RELATIVE_PATH} does not exist. Run 'dockit-fp github-pages' first.")
+            raise DocSproutError(f"{CANONICAL_WORKFLOW_RELATIVE_PATH} does not exist. Run 'docsprout github-pages' first.")
         if inspection.state == "current":
             return ["GitHub Pages workflow is already current. No changes required."]
         workflow.write_text(render_workflow(version), encoding="utf-8")
-        return [f"Updated {WORKFLOW_RELATIVE_PATH} from {inspection.version} to {version}."]
+        messages = [f"Updated {relative_workflow} from {inspection.version} to {version}."]
+        if workflow == legacy_path:
+            messages.append(f"Kept the existing managed path; new projects use {CANONICAL_WORKFLOW_RELATIVE_PATH}.")
+        return messages
     if inspection.state == "outdated":
         return [
-            f"{WORKFLOW_RELATIVE_PATH} is managed by DocKit but uses {inspection.version}; current DocKit is {version}.",
-            "Run 'dockit-fp github-pages --update' to update only that workflow.",
+            f"{relative_workflow} is managed by DocSprout but uses {inspection.version}; current DocSprout is {version}.",
+            "Run 'docsprout github-pages --update' to update only that workflow.",
         ]
-    if discovery.has_dockit_config or discovery.has_layout:
+    if discovery.has_config or discovery.has_layout:
         try:
             load_config(root)
-        except DocKitError as error:
-            raise DocKitError(f"github-pages: existing DocKit configuration is invalid: {error}. No files were changed.") from error
+        except DocSproutError as error:
+            raise DocSproutError(f"github-pages: existing DocSprout configuration is invalid: {error}. No files were changed.") from error
     initialisation = _init(root)
     result = _check(root)
     if inspection.state == "absent":
         workflow.parent.mkdir(parents=True, exist_ok=True)
         workflow.write_text(render_workflow(version), encoding="utf-8")
     created = next((message for message in initialisation if message.startswith("Created:")), None)
-    messages = ["DocKit is ready for GitHub Pages."]
+    messages = ["DocSprout is ready for GitHub Pages."]
     if created:
-        messages.extend((created, f"Created: {WORKFLOW_RELATIVE_PATH}."))
+        messages.extend((created, f"Created: {relative_workflow}."))
     else:
         messages.append("No changes required.")
     messages.append(f"Home: {result.home_document}")
@@ -153,7 +189,7 @@ def _github_pages(root: Path, *, update: bool) -> list[str]:
         messages.append(f"GitHub remote: {discovery.github_remote_url}")
     else:
         messages.append("GitHub remote: not connected to GitHub yet; add a remote before pushing.")
-    messages.extend(("Next:", "  git add .", '  git commit -m "Add DocKit documentation"', "  git push"))
+    messages.extend(("Next:", "  git add .", '  git commit -m "Add DocSprout documentation"', "  git push"))
     return messages
 
 
@@ -215,7 +251,7 @@ class _PreviewBuilder:
                 self._reload_renderer()
             try:
                 build_module.build_site(root=self.root, output=self.output, release=self.release)
-            except DocKitError:
+            except DocSproutError:
                 self._snapshot = snapshot
                 self._renderer_snapshot = renderer_snapshot
                 raise
@@ -235,7 +271,7 @@ class _PreviewRequestHandler(SimpleHTTPRequestHandler):
         try:
             if self._preview.rebuild_if_changed():
                 print("Rebuilt documentation preview.")
-        except DocKitError as error:
+        except DocSproutError as error:
             print(f"Preview rebuild failed: {error}")
 
     def do_GET(self) -> None:
@@ -256,7 +292,7 @@ def _watch_preview(preview: _PreviewBuilder, stopped: threading.Event) -> None:
         try:
             if preview.rebuild_if_changed():
                 print("Rebuilt documentation preview.")
-        except DocKitError as error:
+        except DocSproutError as error:
             print(f"Preview rebuild failed: {error}")
 
 
@@ -292,7 +328,7 @@ def _doctor(root: Path) -> list[str]:
     try:
         config = load_config(root)
         messages.append(f"Documentation: {'legacy discovery' if config.legacy else 'modern configuration'} ({len(config.pages)} page(s))")
-    except DocKitError as error:
+    except DocSproutError as error:
         messages.append(f"ERROR: {error}")
     if (root / "docs" / "versions.json").exists():
         try:
@@ -307,40 +343,48 @@ def _doctor(root: Path) -> list[str]:
                     current = next(entry for entry in manifest.versions if entry.release == manifest.current)
                     messages.append(f"Release refs: verified; current {current.source_ref} matches HEAD")
                     messages.append("Next: follow the pre-publish checklist before publishing.")
-                except DocKitError as error:
+                except DocSproutError as error:
                     messages.append(f"ERROR: Release refs: {error}")
-        except DocKitError as error:
+        except DocSproutError as error:
             messages.append(f"ERROR: {error}")
     else:
         messages.append("Versions: no versions.json (single-release preview only)")
         messages.append("Status: preview-ready")
-        messages.append("Next: run dockit-fp serve.")
-    managed = inspect_workflow(root / WORKFLOW_RELATIVE_PATH, f"v{__version__}")
+        messages.append("Next: run docsprout serve.")
+    canonical_workflow = inspect_workflow(root / CANONICAL_WORKFLOW_RELATIVE_PATH, f"v{__version__}")
+    if canonical_workflow.state != "absent":
+        managed, workflow_path = canonical_workflow, CANONICAL_WORKFLOW_RELATIVE_PATH
+    else:
+        managed, workflow_path = inspect_workflow(root / LEGACY_WORKFLOW_RELATIVE_PATH, f"v{__version__}"), LEGACY_WORKFLOW_RELATIVE_PATH
     if managed.state == "current":
-        messages.append(f"GitHub Pages workflow: configured; DocKit version: {managed.version}")
+        messages.append(f"GitHub Pages workflow: configured; DocSprout version: {managed.version}")
+        if workflow_path == LEGACY_WORKFLOW_RELATIVE_PATH:
+            messages.append(
+                f"Note: {workflow_path} is the pre-rebrand managed path; new projects use {CANONICAL_WORKFLOW_RELATIVE_PATH}."
+            )
     elif managed.state == "outdated":
-        messages.append(f"GitHub Pages workflow: update available ({managed.version} → v{__version__}); run dockit-fp github-pages --update")
+        messages.append(f"GitHub Pages workflow: update available ({managed.version} → v{__version__}); run docsprout github-pages --update")
     elif managed.state == "unmanaged":
-        messages.append(f"WARNING: {WORKFLOW_RELATIVE_PATH} is not managed by DocKit")
+        messages.append(f"WARNING: {workflow_path} is not managed by DocSprout")
     elif managed.state == "malformed":
-        messages.append(f"WARNING: {WORKFLOW_RELATIVE_PATH} is marked DocKit-managed but malformed")
+        messages.append(f"WARNING: {workflow_path} is marked DocSprout-managed but malformed")
     elif managed.state == "unsafe":
-        messages.append(f"WARNING: {WORKFLOW_RELATIVE_PATH} contains a symlinked path component")
+        messages.append(f"WARNING: {workflow_path} contains a symlinked path component")
     else:
         workflows = sorted((root / ".github" / "workflows").glob("*.y*ml"))
         workflow_text = "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in workflows)
         if "publish-docs.yml@" in workflow_text or "./.github/workflows/publish-docs.yml" in workflow_text:
             mode = "single-version" if "versioned: false" in workflow_text else "historical"
-            messages.append(f"Pages: DocKit-FP {mode} workflow detected")
+            messages.append(f"Pages: DocSprout {mode} workflow detected")
             if "publish-docs.yml@main" in workflow_text:
-                messages.append("WARNING: Pages workflow uses moving ref @main; pin a released DocKit-FP tag.")
+                messages.append("WARNING: Pages workflow uses moving ref @main; pin a released DocSprout tag.")
         else:
-            messages.append("Pages: no DocKit-FP workflow detected; see the GitHub Pages guide.")
+            messages.append("Pages: no DocSprout workflow detected; see the GitHub Pages guide.")
     return messages
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="dockit-fp", description="Build offline-friendly Markdown documentation sites for code projects.")
+def main(argv: list[str] | None = None, *, prog: str = "docsprout") -> int:
+    parser = argparse.ArgumentParser(prog=prog, description="Build offline-friendly Markdown documentation sites for code projects.")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     for name, help_text in (("build", "build current documentation"), ("build-all", "build every immutable release"), ("check", "validate documentation"), ("audit", "report publication-readiness diagnostics"), ("check-release", "validate release refs"), ("init", "adopt or create documentation safely"), ("serve", "validate, build, and preview documentation locally"), ("github-pages", "prepare safe GitHub Pages deployment"), ("doctor", "diagnose project setup")):
@@ -388,7 +432,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1 if result.errors or (args.strict and result.warnings) else 0
         elif args.command == "serve":
             if not 1 <= args.port <= 65535:
-                raise DocKitError("serve: port must be between 1 and 65535")
+                raise DocSproutError("serve: port must be between 1 and 65535")
             _serve(root, args.host, args.port)
         elif args.command == "github-pages":
             print("\n".join(_github_pages(root, update=args.update)))
@@ -399,7 +443,13 @@ def main(argv: list[str] | None = None) -> int:
             messages = _doctor(root)
             print("\n".join(messages))
             return 1 if any(message.startswith("ERROR:") for message in messages) else 0
-    except DocKitError as error:
-        print(f"dockit-fp: {error}")
+    except DocSproutError as error:
+        print(f"{prog}: {error}")
         return 2 if args.command == "audit" else 1
     return 0
+
+
+def main_dockit_fp() -> int:
+    """Console-script entry point for the deprecated ``dockit-fp`` alias."""
+    print("dockit-fp: deprecated command; use 'docsprout' instead.", file=sys.stderr)
+    return main(prog="dockit-fp")

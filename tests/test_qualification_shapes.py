@@ -1,6 +1,6 @@
 """Qualification: representative repository shapes build publishable sites.
 
-One small, explicit fixture per real-world repository shape that DocKit
+One small, explicit fixture per real-world repository shape that DocSprout
 claims to support. Every test asserts meaningful generated output, not just a
 successful exit.
 """
@@ -12,14 +12,14 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site
-from dockit_fp.errors import DocKitError
+from docsprout.build import build_site
+from docsprout.errors import DocSproutError
 
 
 def _project(root: Path, *, name: str = "Demo") -> None:
     docs = root / "docs"
     docs.mkdir(parents=True)
-    (docs / "dockit.json").write_text(
+    (docs / "docsprout.json").write_text(
         json.dumps({"schema_version": 1, "project": {"name": name}}), encoding="utf-8",
     )
 
@@ -103,7 +103,7 @@ class RepositoryShapeQualificationTests(unittest.TestCase):
             self.assertFalse((output / "private.html").exists())
 
             _layout(root, [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}], unlisted="error")
-            with self.assertRaisesRegex(DocKitError, "unlisted Markdown document"):
+            with self.assertRaisesRegex(DocSproutError, "unlisted Markdown document"):
                 build_site(root=root, output=root / "site", release="qualification")
 
     def test_qualifies_nested_documentation(self) -> None:

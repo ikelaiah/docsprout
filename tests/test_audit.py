@@ -5,8 +5,8 @@ from pathlib import Path
 import tempfile
 from contextlib import redirect_stdout
 
-from dockit_fp.cli import main
-from dockit_fp import __version__
+from docsprout.cli import main
+from docsprout import __version__
 
 
 def _write_project(root: Path, pages: dict[str, str], *, layout_pages: list[str] | None = None, home: dict | None = None) -> None:
@@ -24,13 +24,13 @@ def _write_project(root: Path, pages: dict[str, str], *, layout_pages: list[str]
     layout: dict[str, object] = {"schema_version": 1, "unlisted": "exclude", "navigation": navigation}
     if home is not None:
         layout["home"] = home
-    (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Demo"}}', encoding="utf-8")
+    (docs / "docsprout.json").write_text('{"schema_version": 1, "project": {"name": "Demo"}}', encoding="utf-8")
     (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
 
 
 class AuditTests(unittest.TestCase):
     def test_intentionally_bad_fixture_exercises_every_audit_rule(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         root = Path(__file__).resolve().parents[1] / "examples" / "audit-fixture"
 
@@ -42,7 +42,7 @@ class AuditTests(unittest.TestCase):
         )
 
     def test_audit_reports_no_findings_for_a_clean_project(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -54,7 +54,7 @@ class AuditTests(unittest.TestCase):
         self.assertEqual((), result.findings)
 
     def test_audit_reports_page_anchor_unpublished_asset_and_path_errors(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -70,7 +70,7 @@ class AuditTests(unittest.TestCase):
         self.assertEqual([3, 4, 5, 6, 7], [finding.line for finding in findings])
 
     def test_audit_accepts_root_readme_valid_assets_and_non_document_urls(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -85,7 +85,7 @@ class AuditTests(unittest.TestCase):
         self.assertEqual((), result.findings)
 
     def test_audit_warns_for_empty_image_alt_heading_jump_and_duplicate_anchor(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -96,7 +96,7 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(["DK101", "DK102", "DK103"], [finding.code for finding in findings])
 
     def test_audit_ignores_markdown_looking_content_in_code_fences(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -105,7 +105,7 @@ class AuditTests(unittest.TestCase):
             self.assertEqual((), audit_project(root).findings)
 
     def test_audit_reports_unsafe_url_schemes_instead_of_treating_them_as_external(self) -> None:
-        from dockit_fp.audit import audit_project
+        from docsprout.audit import audit_project
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -137,7 +137,7 @@ class AuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             (root / "docs").mkdir()
-            (root / "docs" / "dockit.json").write_text("{}", encoding="utf-8")
+            (root / "docs" / "docsprout.json").write_text("{}", encoding="utf-8")
             output = io.StringIO()
             with redirect_stdout(output):
                 self.assertEqual(2, main(["audit", "--root", str(root)]))

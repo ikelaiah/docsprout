@@ -1,7 +1,7 @@
 """Qualification: accessibility fundamentals of generated sites.
 
 Objective, structural assertions over the maintained visual fixture and
-DocKit's own built documentation: keyboard-operable native controls, visible
+DocSprout's own built documentation: keyboard-operable native controls, visible
 focus, accessible names, the search keyboard contract, heading structure,
 callout labels, reduced-motion, scroller containment and the shared semantic
 theme-token contract for Classic/Paper/Midnight in Light/Dark/System.
@@ -17,8 +17,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.assets import SITE_CSS, SITE_JS
-from dockit_fp.build import build_site
+from docsprout.assets import SITE_CSS, SITE_JS
+from docsprout.build import build_site
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 NATIVE_INTERACTIVE = {"a", "button", "input", "select", "summary", "details"}
@@ -75,10 +75,10 @@ class AccessibilityQualificationTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         fixture = REPO_ROOT / "examples" / "visual-fixtures"
         cls.fixture = _Site(fixture)
-        cls.dockit = _Site(REPO_ROOT)
+        cls.docsprout = _Site(REPO_ROOT)
 
     def test_controls_are_native_keyboard_operable_elements(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     self.assertNotRegex(page, INTERACTIVE_ATTRIBUTE, route)
@@ -111,7 +111,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
         self.assertIn("results.hidden=false", self.fixture.js)
 
     def test_mobile_navigation_is_a_keyboard_operable_details_element(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     self.assertIn('<details class="mobile-nav">', page, route)
@@ -142,7 +142,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
         first = self.fixture.files["index.html"]
         self.assertIn("<small>Next</small>", first)
         self.assertIn('class="page-next"', first)
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     self.assertRegex(page, r'<nav class="page-navigation" aria-label="Page navigation">', route)
@@ -150,7 +150,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
                         self.assertNotIn("javascript:", link.group(2), route)
 
     def test_headings_keep_single_h1_structure_and_usable_toc_links(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     main = page[page.index("<main"):page.index("</main>")]
@@ -166,7 +166,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
                         self.assertTrue(_slug(identifier), f"{route}: unsluggified heading id {identifier!r}")
 
     def test_links_are_usable_and_safe(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     for _before, href, _after, label in LINK.findall(page):
@@ -181,7 +181,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
                         self.assertTrue(attributes["src"], f"{route}: img without src")
 
     def test_callouts_carry_a_text_label_not_only_colour(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     for admonition in re.findall(r'<aside class="admonition [a-z]+">(.*?)</aside>', page):
@@ -250,7 +250,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
             self.assertIn(f"var({token})", css, f"public token {token} is defined but never used")
 
     def test_every_generated_page_has_document_structure(self) -> None:
-        for name, site in (("fixture", self.fixture), ("DocKit", self.dockit)):
+        for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
                     self.assertTrue(page.startswith("<!doctype html>"), route)
@@ -266,9 +266,9 @@ class AccessibilityQualificationTests(unittest.TestCase):
             self.assertIn(cross_check, SITE_JS)
         self.assertIn(".copy-code", SITE_CSS)
 
-    def test_dockit_own_site_builds_the_shared_accessibility_contract(self) -> None:
-        self.assertTrue(self.dockit.files)
-        home = self.dockit.files["index.html"]
+    def test_docsprout_own_site_builds_the_shared_accessibility_contract(self) -> None:
+        self.assertTrue(self.docsprout.files)
+        home = self.docsprout.files["index.html"]
         for shared in (
             'aria-label="Search documentation, commands, and versions"',
             '<details class="mobile-nav">',
@@ -278,4 +278,4 @@ class AccessibilityQualificationTests(unittest.TestCase):
             '<nav class="sidebar" aria-label="Documentation navigation">',
         ):
             self.assertIn(shared, home)
-        self.assertEqual(self.fixture.css, self.dockit.css)
+        self.assertEqual(self.fixture.css, self.docsprout.css)

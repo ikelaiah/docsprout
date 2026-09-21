@@ -1,6 +1,6 @@
-# Qualification evidence for DocKit v1.0.0
+# Qualification evidence for DocSprout v1.0.0
 
-DocKit v1.0.0 is the stable qualification release. The claims below are the
+DocSprout v1.0.0 is the stable qualification release. The claims below are the
 contract that CI and the maintained fixtures exercise, and every row names how
 it is verified. "Supported" means the combination is run by automated
 qualification on every pull request and release, not merely believed to work.
@@ -31,7 +31,7 @@ not claimed as completed when the required browser tooling is absent.
 - Path handling, temporary directories, subprocess invocations, encoding,
   repository discovery and generated routes are exercised on every OS.
 - Windows symlink limitations: creating a real file symlink below `docs/`
-  needs Developer Mode or elevation. DocKit's escape resistance (document
+  needs Developer Mode or elevation. DocSprout's escape resistance (document
   sources that resolve outside the repository are rejected) is qualified on
   Windows through an unprivileged directory junction; real symlinks are
   covered on Linux and macOS. CI never hides a failure behind this limitation;
@@ -43,11 +43,13 @@ not claimed as completed when the required browser tooling is absent.
 - Both package forms are built on every release: the wheel and the source
   distribution (`sdist`).
 - Artifact inspection verifies the module set, bundled KaTeX CSS/JS/fonts,
-  the `dockit-fp = dockit_fp.cli:main` console entry point, metadata version,
-  `Requires-Python` and the absence of runtime dependencies.
+  the `docsprout = docsprout.cli:main` console entry point and the deprecated
+  `dockit-fp = docsprout.cli:main_dockit_fp` alias, metadata version, the
+  `dockit_fp` compatibility shim, `Requires-Python` and the absence of runtime
+  dependencies.
 - The wheel and the sdist are each installed into a fresh virtual environment
   and the whole CLI journey below is run **from a directory outside the
-  repository**, so DocKit works as users receive it — never only inside its
+  repository**, so DocSprout works as users receive it — never only inside its
   source tree.
 - Built sites are scanned to prove generated output embeds no project paths.
 
@@ -57,18 +59,22 @@ Every command below is exercised through the installed package on a new
 project and on an existing repository, asserting meaningful output and
 generated files:
 
-- `dockit-fp init` — safe adoption; existing Markdown and configuration are
+- `docsprout init` — safe adoption; existing Markdown and configuration are
   untouched.
-- `dockit-fp check` — buildability gate with section/page/excluded counts.
-- `dockit-fp audit` — read-only publication diagnostics, text and JSON.
-- `dockit-fp build` — complete site with search index, KaTeX assets and
+- `docsprout check` — buildability gate with section/page/excluded counts.
+- `docsprout audit` — read-only publication diagnostics, text and JSON.
+- `docsprout build` — complete site with search index, KaTeX assets and
   release metadata.
-- `dockit-fp serve` — deterministic smoke test: starts on localhost, serves a
+- `docsprout serve` — deterministic smoke test: starts on localhost, serves a
   generated page and assets over HTTP, then terminates cleanly.
-- `dockit-fp github-pages` — safe Git-repository preparation (below).
-- `dockit-fp doctor` — project diagnosis for preview and release states.
-- `dockit-fp build-all` and `check-release` — covered by the historical
+- `docsprout github-pages` — safe Git-repository preparation (below).
+- `docsprout doctor` — project diagnosis for preview and release states.
+- `docsprout build-all` and `check-release` — covered by the historical
   release suite.
+- Rebrand compatibility — a legacy `docs/dockit.json` project loads and builds;
+  `python -m dockit_fp --version` and the `dockit-fp` console script answer
+  from the same installation; both configuration names at once fail with an
+  actionable ambiguity error.
 
 ## Repository shapes
 
@@ -95,20 +101,22 @@ publication contract (see `tests/test_qualification_shapes.py`):
 - Ordinary non-Git projects work end to end; `github-pages` refuses them
   with clear guidance.
 - Git repositories with and without a GitHub remote are qualified.
-- `dockit-fp github-pages` generates the release-pinned managed workflow;
-  reruns are idempotent; `--update` upgrades only a recognised DocKit
-  workflow; unmanaged or malformed workflows are never overwritten.
-- DocKit never commits, pushes, changes repository settings or writes outside
+- `docsprout github-pages` generates the release-pinned managed workflow;
+  reruns are idempotent; `--update` upgrades only a recognised managed
+  workflow (canonical `docsprout-pages.yml` or pre-rebrand `dockit-pages.yml`)
+  in place and never creates a second deployment workflow; unmanaged or
+  malformed workflows are never overwritten.
+- DocSprout never commits, pushes, changes repository settings or writes outside
   the managed files — tests assert the Git history and status stay untouched.
 - No GitHub API or network access is required by any local operation.
-- The generated `dockit-pages.yml` pins a released tag exactly; the pinned
+- The generated `docsprout-pages.yml` pins a released tag exactly; the pinned
   `publish-docs.yml` workflow is what the repository's own Pages deployment
   runs after every release tag.
 
 ## Accessibility qualification
 
 Automated structural checks run against the maintained visual fixture and
-DocKit's own built documentation:
+DocSprout's own built documentation:
 
 - every interactive control is a native keyboard-operable element
 - visible `:focus-visible` indicators in every theme, including forced-colors
@@ -143,8 +151,8 @@ The v0.17 matrix above is unchanged. v0.18 adds:
 - **Custom CSS contract**: `theme.custom_css` is qualified for safe path
   resolution (repository-local only, `.css` only, traversal/absolute/symlink
   escape rejected), missing-file and wrong-extension diagnostics,
-  deterministic copy, load order after DocKit's styles, correct nested-page
-  references and versioned historical builds. DocKit does not claim the
+  deterministic copy, load order after DocSprout's styles, correct nested-page
+  references and versioned historical builds. DocSprout does not claim the
   accessibility of arbitrary user CSS; only the inclusion mechanics are
   qualified.
 - **`--dk-*` public token family**: every documented public token is defined
@@ -157,9 +165,9 @@ The v0.17 matrix above is unchanged. v0.18 adds:
   `audit --format json` carry `"schema_version": 1`; consumers (browser
   search and tests) are updated in lockstep and regression-tested.
 - **`init` guidance**: the post-initialisation output teaches the mental
-  model (Markdown, `layout.json`, `dockit.json`, `serve`) and reports the
+  model (Markdown, `layout.json`, `docsprout.json`, `serve`) and reports the
   inferred sections when it created the layout; `serve` rebuilds are
-  regression-tested for `layout.json` and `dockit.json` changes.
+  regression-tested for `layout.json` and `docsprout.json` changes.
 
 ## v0.18.1 additions
 
@@ -213,7 +221,7 @@ operation requires a network connection after installation.
 - External URLs in documentation are never network-checked; `audit` reports
   this explicitly.
 - Custom CSS is author-owned: its accessibility, contrast and responsiveness
-  are not DocKit claims. The manual matrix below covers the default site; a
+  are not DocSprout claims. The manual matrix below covers the default site; a
   project that adds `theme.custom_css` should repeat the relevant checks
   with its stylesheet applied.
 - If a project uses `theme.custom_css`, the documented `--dk-*` tokens still

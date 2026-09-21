@@ -1,7 +1,7 @@
 # Choose colours and a visual theme
 
-You do not need CSS to give a DocKit site its own identity. Start with one
-colour preset and one visual style in `docs/dockit.json`:
+You do not need CSS to give a DocSprout site its own identity. Start with one
+colour preset and one visual style in `docs/docsprout.json`:
 
 ```json
 {
@@ -26,11 +26,11 @@ You choose the site's starting **Style**:
 - **Paper** (`paper`) gives long guides a warm reading surface;
 - **Midnight** (`midnight`) starts with a dark technical look.
 
-Visitors can switch the Style too. DocKit remembers both choices in
+Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
 
 The maintained
-[single-version example](https://github.com/ikelaiah/dockit-fp/tree/v1.0.0/examples/single-version)
+[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.0.0/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
@@ -70,7 +70,7 @@ hexadecimal values:
 Test custom colours in both Light and Dark mode. Links, selected navigation and
 keyboard focus must remain easy to see. A preset is safer when you are unsure.
 The maintained
-[minimal example](https://github.com/ikelaiah/dockit-fp/tree/v1.0.0/examples/minimal)
+[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.0.0/examples/minimal)
 uses the exact teal values shown above; its built links, selected navigation
 and focus state use that accent.
 
@@ -126,7 +126,7 @@ escape hatch](custom-css.md) and by any tooling that reads generated styles:
 
 These fifteen tokens are the documented customisation contract for 1.x.
 Classic, Paper and Midnight each define them in Light, Dark and System modes;
-the contract is regression-tested. **Internal** variables that DocKit uses but
+the contract is regression-tested. **Internal** variables that DocSprout uses but
 does not document—radii, fonts, spacing scales, shadow, control heights and
 anything else whose name begins with `--dk-`—are not part of the contract and
 may change between releases. Pre-1.0 note: v0.18 renamed the earlier generic
@@ -136,13 +136,13 @@ tokens (`--bg`, `--text`, `--interactive`, …) to this family; see the
 ## Custom CSS: the advanced escape hatch
 
 Custom CSS is optional, advanced and repository-local. It loads after
-DocKit's styles so it can deliberately override them, and DocKit guarantees
+DocSprout's styles so it can deliberately override them, and DocSprout guarantees
 the safe inclusion mechanics—but the accessibility of the CSS you write is
 your responsibility. Ordinary sites need [presets and exact
 colours](themes.md#pick-an-accent-colour) only. See
 [Custom CSS (advanced)](custom-css.md) for the complete contract and the
 maintained example.
 
-Run `dockit-fp check` after every configuration change. The maintained
+Run `docsprout check` after every configuration change. The maintained
 [visual fixtures](visual-fixtures.md) explain how to review phone, tablet,
 desktop, keyboard and colour-mode behaviour.

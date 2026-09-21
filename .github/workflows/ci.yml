@@ -64,10 +64,10 @@ jobs:
       - name: Install and qualify the wheel
         run: |
           python -m venv /tmp/venv-wheel
-          /tmp/venv-wheel/bin/python -m pip install --no-deps "$GITHUB_WORKSPACE/dist/dockit_fp-${{ steps.version.outputs.value }}-py3-none-any.whl"
+          /tmp/venv-wheel/bin/python -m pip install --no-deps "$GITHUB_WORKSPACE/dist/docsprout-${{ steps.version.outputs.value }}-py3-none-any.whl"
           mkdir -p /tmp/qualification-work
         env:
-          DOCKIT_QUALIFICATION_SRC: ${{ github.workspace }}
+          DOCSPROUT_QUALIFICATION_SRC: ${{ github.workspace }}
       - name: Qualify the installed wheel
         working-directory: /tmp/qualification-work
         run: /tmp/venv-wheel/bin/python "$GITHUB_WORKSPACE/tests/qualification_installed.py" --expected-version "${{ steps.version.outputs.value }}"
@@ -75,7 +75,7 @@ jobs:
         working-directory: /tmp/qualification-work
         run: |
           python -m venv /tmp/venv-sdist
-          /tmp/venv-sdist/bin/python -m pip install "$GITHUB_WORKSPACE/dist/dockit_fp-${{ steps.version.outputs.value }}.tar.gz"
+          /tmp/venv-sdist/bin/python -m pip install "$GITHUB_WORKSPACE/dist/docsprout-${{ steps.version.outputs.value }}.tar.gz"
       - name: Qualify the installed sdist
         working-directory: /tmp/qualification-work
         run: /tmp/venv-sdist/bin/python "$GITHUB_WORKSPACE/tests/qualification_installed.py" --expected-version "${{ steps.version.outputs.value }}"
@@ -89,7 +89,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install .
-      - run: dockit-fp check
-      - run: dockit-fp audit --strict
-      - run: dockit-fp build --output /tmp/docs-site
+      - run: docsprout check
+      - run: docsprout audit --strict
+      - run: docsprout build --output /tmp/docs-site
       - run: python -c "from pathlib import Path; assert (Path('/tmp/docs-site/index.html').is_file() and (Path('/tmp/docs-site/assets/katex/katex.min.js').is_file()))"

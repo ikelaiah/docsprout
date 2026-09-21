@@ -1,6 +1,6 @@
 # Machine-readable contracts
 
-DocKit produces deterministic generated output for browsers and for tools.
+DocSprout produces deterministic generated output for browsers and for tools.
 This page documents which output is a public contract, and which parts are
 deliberately **not** stable.
 
@@ -13,10 +13,10 @@ defaults.
 
 | File/object | Stable fields |
 | --- | --- |
-| `dockit.json` | `schema_version`, `project`, `theme`, `layout`, `banner`, `identity`, `homepage` |
+| `docsprout.json` | `schema_version`, `project`, `theme`, `layout`, `banner`, `identity`, `homepage` |
 | `project` | `name`, `description`, `repository_url`, `site_url` |
 | `theme` | `preset`, `style`, `accent`, `accent_secondary`, `custom_css` |
-| `layout` in `dockit.json` | `content_width` (`compact`, `comfortable`, `wide`) |
+| `layout` in `docsprout.json` | `content_width` (`compact`, `comfortable`, `wide`) |
 | `banner` | `path`, `alt` |
 | `identity` | `logo`, `footer`, `links` |
 | `homepage` | `capabilities`, `sections` (`capabilities`, `banner`, `introduction`, `release_context`) |
@@ -46,7 +46,7 @@ The stable command names are `init`, `serve`, `check`, `audit`, `build`,
 Successful commands exit 0. A documentation or release validation error exits
 1; `audit` uses exit 1 for errors (or strict warnings) and exit 0 for
 non-strict warnings; invalid `audit` configuration exits 2. `--version` exits
-0 and prints `dockit-fp <version>`. Argparse usage errors are the usual exit
+0 and prints `docsprout <version>`. Argparse usage errors are the usual exit
 2. Human-readable sentences may improve without being a compatibility change.
 
 ## Reusable workflow inputs
@@ -55,7 +55,7 @@ non-strict warnings; invalid `audit` configuration exits 2. `--version` exits
 inputs: boolean `versioned` (default `true`) and string `release` (default
 `preview`). Versioned builds require immutable `docs/versions.json` refs;
 single-version builds use the `release` label. Caller workflows must pin a
-released DocKit tag, never `main`.
+released DocSprout tag, never `main`.
 
 ## Generated routes
 
@@ -123,7 +123,7 @@ configured `docs/versions.json` manifest:
 Do not confuse this output with the input manifest `docs/versions.json`,
 which has the same versioned shape and is the release-history configuration.
 
-### `dockit-fp audit --format json`
+### `docsprout audit --format json`
 
 Deterministic CI-friendly diagnostics. Root fields:
 
@@ -163,8 +163,12 @@ needed.
 
 **Stable for 1.x:**
 
-- documented configuration files and fields (`dockit.json`, `layout.json`,
+- documented configuration files and fields (`docsprout.json`, `layout.json`,
   `versions.json` and their schema versions);
+- the pre-rebrand `docs/dockit.json` filename, which keeps loading while both
+  names never coexist silently;
+- the deprecated `dockit-fp` console script and `python -m dockit_fp` module
+  entry point;
 - CLI commands, options and their exit-code semantics;
 - the documented `--dk-*` public token family;
 - the custom CSS inclusion mechanism (`theme.custom_css`);
@@ -180,17 +184,17 @@ variables that happen to share the prefix are not included.
 - private Python modules, classes and functions;
 - exact human-readable CLI prose (commands and options are stable, sentences
   are not);
-- the internal visual variables DocKit uses but does not document (for
+- the internal visual variables DocSprout uses but does not document (for
   example radii, fonts, spacing scales and control heights), even when their
   names begin with `--dk-`.
 
 ## The Python API boundary
 
-DocKit-FP is primarily a CLI/application package. `dockit_fp.__version__` is
+DocSprout is primarily a CLI/application package. `docsprout.__version__` is
 public and may be used for version inspection. Everything else in the
-`dockit_fp` package—modules, classes, functions, data structures—is an
+`docsprout` package—modules, classes, functions, data structures—is an
 implementation detail unless this documentation explicitly marks it public.
-Do not import internal modules from your own tools; pin the `dockit-fp`
+Do not import internal modules from your own tools; pin the `docsprout`
 release and use the CLI and machine formats instead.
 
 ## External checks

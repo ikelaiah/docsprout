@@ -1,4 +1,4 @@
-"""Read-only publication-readiness diagnostics for DocKit projects."""
+"""Read-only publication-readiness diagnostics for DocSprout projects."""
 
 from __future__ import annotations
 
@@ -180,7 +180,7 @@ def audit_project(root: Path) -> AuditResult:
 
 def format_text(result: AuditResult) -> str:
     """Return concise, stable human-readable audit output."""
-    lines = ["DocKit documentation audit", ""]
+    lines = ["DocSprout documentation audit", ""]
     for severity, label in (("error", "ERRORS"), ("warning", "WARNINGS")):
         findings = [finding for finding in result.findings if finding.severity == severity]
         if not findings:

@@ -3,7 +3,7 @@ import tempfile
 import unittest
 import zipfile
 
-from dockit_fp.archive import write_offline_archive
+from docsprout.archive import write_offline_archive
 
 
 class OfflineArchiveTests(unittest.TestCase):
@@ -19,4 +19,4 @@ class OfflineArchiveTests(unittest.TestCase):
             self.assertEqual(64, len(digest))
             self.assertIn(digest, archive.with_suffix(".zip.sha256").read_text(encoding="ascii"))
             with zipfile.ZipFile(archive) as bundle:
-                self.assertEqual(["dockit-fp-docs-1.0.0/index.html"], bundle.namelist())
+                self.assertEqual(["docsprout-docs-1.0.0/index.html"], bundle.namelist())

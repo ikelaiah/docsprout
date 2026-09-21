@@ -3,10 +3,10 @@
 Before publishing, run:
 
 ```bash
-dockit-fp audit
+docsprout audit
 ```
 
-`check` asks, **“Can DocKit safely build this site?”** `audit` asks, **“What
+`check` asks, **“Can DocSprout safely build this site?”** `audit` asks, **“What
 objective documentation problems should I fix?”** Run `check` after changing
 configuration or navigation; use this guide for the audit rules and report
 formats. Audit is read-only: it never rewrites Markdown, navigation or
@@ -19,7 +19,7 @@ published site. Warnings point out a small number of likely accessibility or
 structure mistakes. Warnings do not fail the default command:
 
 ```bash
-dockit-fp audit --strict
+docsprout audit --strict
 ```
 
 Use `--strict` in a CI job when warnings should also block publication. The
@@ -29,7 +29,7 @@ findings that fail that policy, and `2` for command or configuration errors.
 For tools and CI systems, request deterministic JSON:
 
 ```bash
-dockit-fp audit --format json
+docsprout audit --format json
 ```
 
 The JSON report is a versioned machine contract: it begins with
@@ -63,8 +63,8 @@ offline, deterministic builds remain the default.
 Keep the buildability gate and choose the audit policy deliberately:
 
 ```bash
-dockit-fp check
-dockit-fp audit --strict --format json
+docsprout check
+docsprout audit --strict --format json
 ```
 
 Start by fixing errors. Treat warnings as prompts to inspect the document, not

@@ -1,41 +1,41 @@
 # Publish with GitHub Pages
 
-DocKit can prepare a normal Git repository for GitHub Pages without requiring
+DocSprout can prepare a normal Git repository for GitHub Pages without requiring
 the GitHub CLI, a token, a network connection, or copied workflow YAML. You
 keep control of Git commits, pushes and repository settings.
 
 ## GitHub Pages in one command
 
 Once in the GitHub repository, enable **Settings → Pages → Source → GitHub
-Actions**. DocKit cannot change that repository setting because it does not use
+Actions**. DocSprout cannot change that repository setting because it does not use
 GitHub credentials.
 
 Then, from the top of the existing Git repository, run:
 
 ```bash
-dockit-fp github-pages
+docsprout github-pages
 ```
 
-For a repository with Markdown but no DocKit setup, this safely reuses the
-same conservative discovery as `dockit-fp init`. It creates only missing files:
+For a repository with Markdown but no DocSprout setup, this safely reuses the
+same conservative discovery as `docsprout init`. It creates only missing files:
 
 ```text
-docs/dockit.json
+docs/docsprout.json
 docs/layout.json
-.github/workflows/dockit-pages.yml
+.github/workflows/docsprout-pages.yml
 ```
 
-Existing Markdown remains unchanged. For an existing DocKit project, its
+Existing Markdown remains unchanged. For an existing DocSprout project, its
 layout, explicit `home`, navigation, identity and theme remain authoritative.
 The command validates the result before reporting the next steps:
 
 ```bash
 git add .
-git commit -m "Add DocKit documentation"
+git commit -m "Add DocSprout documentation"
 git push
 ```
 
-DocKit prepares GitHub; the maintainer controls Git. It does not commit or push.
+DocSprout prepares GitHub; the maintainer controls Git. It does not commit or push.
 If the repository has no GitHub remote yet, setup still succeeds; add a
 GitHub remote before the push. The generated workflow runs after a push to the
 repository's GitHub default branch and can also be started manually from that
@@ -44,21 +44,36 @@ from feature branches do not deploy Pages.
 
 ### Safe reruns and updates
 
-`dockit-fp github-pages` is safe to rerun. When the configuration and managed
+`docsprout github-pages` is safe to rerun. When the configuration and managed
 workflow are current, it makes no repository changes.
 
-The generated workflow carries a DocKit ownership marker and pins the reusable
+The generated workflow carries a DocSprout ownership marker and pins the reusable
 workflow to the installed release, such as `@v1.0.0`. It never follows
 `@main`. If a recognised managed workflow is older, ordinary setup reports the
 version and leaves it unchanged. Update only that workflow deliberately:
 
 ```bash
-dockit-fp github-pages --update
+docsprout github-pages --update
 ```
 
-If `.github/workflows/dockit-pages.yml` exists but is not recognisably
-DocKit-managed, DocKit refuses to overwrite it. A malformed managed workflow
+If `.github/workflows/docsprout-pages.yml` exists but is not recognisably
+DocSprout-managed, DocSprout refuses to overwrite it. A malformed managed workflow
 also requires manual repair. Neither case changes other repository files.
+
+### Pre-rebrand workflows
+
+A repository prepared before the DocSprout rename may already own a managed
+`.github/workflows/dockit-pages.yml`. DocSprout recognises it through its
+ownership marker: ordinary setup reports the pinned version, and
+
+```bash
+docsprout github-pages --update
+```
+
+updates that recognised workflow in place. It never writes a second
+`docsprout-pages.yml` next to an existing managed legacy workflow, and it never
+overwrites an unmanaged file at either path. When both managed paths exist,
+setup stops with a clear error so you can remove one deliberately.
 
 ## Advanced: manual and historical workflows
 
@@ -86,13 +101,13 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: ikelaiah/dockit-fp/.github/workflows/publish-docs.yml@v1.0.0
+    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.0.0
     with:
       versioned: false
       release: latest
 ```
 
-The maintained [single-version example](https://github.com/ikelaiah/dockit-fp/tree/v1.0.0/examples/single-version)
+The maintained [single-version example](https://github.com/ikelaiah/docsprout/tree/v1.0.0/examples/single-version)
 uses this form.
 
 ## Historical site for versioned projects
@@ -114,18 +129,18 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: ikelaiah/dockit-fp/.github/workflows/publish-docs.yml@v1.0.0
+    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.0.0
 ```
 
 Check a historical release locally after creating its tag and before pushing:
 
 ```bash
-dockit-fp check
-dockit-fp check-release
-dockit-fp build-all --output build/docs-site
+docsprout check
+docsprout check-release
+docsprout build-all --output build/docs-site
 ```
 
-The maintained [historical example](https://github.com/ikelaiah/dockit-fp/tree/v1.0.0/examples/historical)
+The maintained [historical example](https://github.com/ikelaiah/docsprout/tree/v1.0.0/examples/historical)
 uses this form. Follow the [pre-publish checklist](pre-publish-checklist.md)
 for the exact release order.
 
@@ -135,4 +150,4 @@ for the exact release order.
 - Confirm the workflow is under `.github/workflows/` and ends in `.yml` or
   `.yaml`.
 - For the generated workflow, push the repository's default branch.
-- Open the failed Actions step and run `dockit-fp check` locally before retrying.
+- Open the failed Actions step and run `docsprout check` locally before retrying.

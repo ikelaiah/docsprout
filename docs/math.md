@@ -1,6 +1,6 @@
 # Mathematics
 
-DocKit bundles the MIT-licensed [KaTeX](https://katex.org/) runtime, stylesheet
+DocSprout bundles the MIT-licensed [KaTeX](https://katex.org/) runtime, stylesheet
 and fonts with every generated site. Math works offline, in GitHub Pages, and
 in downloaded documentation archives—no CDN is used.
 
@@ -33,4 +33,4 @@ The same common LaTeX syntax renders on GitHub, which uses MathJax. KaTeX and
 MathJax do not have identical macro coverage; keep project notation within the
 well-supported KaTeX subset for consistent repository and site rendering.
 
-KaTeX source and licence are included at `src/dockit_fp/vendor/katex/`.
+KaTeX source and licence are included at `src/docsprout/vendor/katex/`.

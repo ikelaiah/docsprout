@@ -3,8 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site
-from dockit_fp.errors import DocKitError
+from docsprout.build import build_site
+from docsprout.errors import DocSproutError
 
 
 class BuildSiteTests(unittest.TestCase):
@@ -15,7 +15,7 @@ class BuildSiteTests(unittest.TestCase):
             (docs / "images").mkdir(parents=True)
             (docs / "index.md").write_text("# Home\n\n![Architecture](images/architecture.svg)\n", encoding="utf-8")
             (docs / "images" / "architecture.svg").write_text("<svg/>", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
@@ -40,7 +40,7 @@ class BuildSiteTests(unittest.TestCase):
             )
             (docs / "images" / "diagram.svg").write_text("<svg/>", encoding="utf-8")
             (docs / "assets" / "site.css").write_text("documentation asset", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "navigation": [{"title": "Docs", "pages": [
@@ -64,13 +64,13 @@ class BuildSiteTests(unittest.TestCase):
             docs.mkdir()
             (root / "outside.svg").write_text("<svg/>", encoding="utf-8")
             (docs / "index.md").write_text("# Home\n\n![Outside](../outside.svg)\n", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
             }), encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, "unsafe local link"):
+            with self.assertRaisesRegex(DocSproutError, "unsafe local link"):
                 build_site(root=root, output=root / "site", release="dev")
 
     def test_builds_the_maintained_minimal_example(self) -> None:
@@ -115,7 +115,7 @@ class BuildSiteTests(unittest.TestCase):
             (docs / "assets" / "logo.svg").write_text(
                 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"/>', encoding="utf-8"
             )
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "project": {"name": "Logo Demo"},
                 "identity": {"logo": "docs/assets/logo.svg"},
@@ -144,7 +144,7 @@ class BuildSiteTests(unittest.TestCase):
             (docs / "guides" / "pascal.md").write_text(
                 "# Pascal\n\n```pascal\nWriteLn('hello');\n```", encoding="utf-8"
             )
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "project": {"name": "Demo-FP", "description": "Demo docs", "repository_url": "https://example.test/demo"},
                 "theme": {"accent": "#0f766e", "accent_secondary": "#0891b2"},
@@ -174,9 +174,9 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('class="capability-strip"', home)
             self.assertIn('data-card-count="4"', home)
             self.assertIn('data-homepage="true"', home)
-            self.assertIn('<script>try{const root=document.documentElement,theme=localStorage.getItem(\'dockit-fp-theme\')', home)
+            self.assertIn("<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);", home)
             self.assertLess(
-                home.index("localStorage.getItem('dockit-fp-visual-theme')"),
+                home.index("readStored('docsprout-visual-theme','dockit-fp-visual-theme')"),
                 home.index('<link rel="stylesheet" href="assets/site.css">'),
             )
             self.assertIn('class="header-controls"', home)
@@ -260,7 +260,7 @@ class BuildSiteTests(unittest.TestCase):
             docs = root / "docs"
             docs.mkdir()
             (docs / "index.md").write_text("# Home\n\nA short introduction.", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "project": {"name": "Three Cards"},
                 "homepage": {"capabilities": [
@@ -305,7 +305,7 @@ class BuildSiteTests(unittest.TestCase):
             readme = root / "README.md"
             readme.write_text("# Root documentation\n\n[Guide](docs/guide.md)", encoding="utf-8")
             (docs / "guide.md").write_text("# Guide\n\n[Back](../README.md)", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [
                 {"title": "Overview", "pages": [{"title": "Overview", "path": "README.md", "source": "root"}]},
                 {"title": "Guides", "pages": [{"title": "Guide", "path": "guide.md"}]},
@@ -324,7 +324,7 @@ class BuildSiteTests(unittest.TestCase):
             docs.mkdir()
             (docs / "index.md").write_text("# Documentation index", encoding="utf-8")
             (docs / "guide.md").write_text("# Getting started", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "home": {"path": "guide.md"}, "navigation": [{"title": "Docs", "pages": [
                 {"title": "Index", "path": "index.md"}, {"title": "Guide", "path": "guide.md"},
             ]}]}), encoding="utf-8")
@@ -342,7 +342,7 @@ class BuildSiteTests(unittest.TestCase):
             (docs / "index.md").write_text("# Home", encoding="utf-8")
             (docs / "guide.md").write_text("# Guide", encoding="utf-8")
             (docs / "private.md").write_text("# Private", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Docs", "pages": [
                 {"title": "Home", "path": "index.md"}, {"title": "Guide", "path": "guide.md"},
             ]}]}), encoding="utf-8")
@@ -361,7 +361,7 @@ class BuildSiteTests(unittest.TestCase):
             docs.mkdir()
             (root / "README.md").write_text("# Repository overview", encoding="utf-8")
             (docs / "index.md").write_text("# Docs overview", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [
                 {"title": "Overview", "pages": [{"title": "Repository", "path": "README.md", "source": "root"}]},
                 {"title": "Documentation", "pages": [{"title": "Docs", "path": "index.md"}]},
@@ -394,7 +394,7 @@ class BuildSiteTests(unittest.TestCase):
             docs.mkdir()
             (docs / "index.md").write_text("# Home\n\nWelcome to <safe> docs.\n\n## Details\n\nKeep this content.", encoding="utf-8")
             (docs / "guide.md").write_text("# Guide\n\nWelcome to the guide.", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1,
                 "project": {"name": "Demo"},
                 "homepage": {
@@ -426,11 +426,11 @@ class BuildSiteTests(unittest.TestCase):
             (docs / "README.md").write_text("# Old\n\n[Broken](other.md#absent)", encoding="utf-8")
             (docs / "other.md").write_text("# Present", encoding="utf-8")
 
-            with self.assertRaisesRegex(DocKitError, "heading fragment"):
+            with self.assertRaisesRegex(DocSproutError, "heading fragment"):
                 build_site(root=root, output=root / "site", release="1.0.0")
 
             (docs / "README.md").write_text("# Old\n\n[Unsafe](javascript:alert(1))", encoding="utf-8")
-            with self.assertRaisesRegex(DocKitError, "unsafe URL"):
+            with self.assertRaisesRegex(DocSproutError, "unsafe URL"):
                 build_site(root=root, output=root / "site", release="1.0.0")
 
     def test_escapes_configuration_values_in_the_html_shell(self) -> None:
@@ -439,7 +439,7 @@ class BuildSiteTests(unittest.TestCase):
             docs = root / "docs"
             docs.mkdir()
             (docs / "index.md").write_text("# Safe", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1, "project": {"name": "<script>x</script>", "description": "\" onload=alert(1)"},
             }), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [{"title": "<bad>", "pages": [{"title": "<bad>", "path": "index.md"}]}]}), encoding="utf-8")

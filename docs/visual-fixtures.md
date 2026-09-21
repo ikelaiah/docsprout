@@ -4,7 +4,7 @@ The maintained project in `examples/visual-fixtures` exercises typography,
 ordered and nested lists, inline code, definition lists, fenced Pascal, wide
 tables, callouts, search, theme controls, page navigation, a long document,
 the reading-progress indicator, responsive Markdown images and a home-page banner. Its checked-in
-`docs/dockit.json` configures `docs/assets/visual-fixture-banner.svg`, so every
+`docs/docsprout.json` configures `docs/assets/visual-fixture-banner.svg`, so every
 fixture build includes the banner above the opening content without a manual
 file edit.
 
@@ -12,7 +12,7 @@ Build it locally:
 
 ```powershell
 $env:PYTHONPATH='src'
-python -m dockit_fp build `
+python -m docsprout build `
   --root examples/visual-fixtures `
   --output build/visual-fixtures
 ```
@@ -36,7 +36,7 @@ version, visual-theme and colour controls. Every focus indicator must be
 visible and every control must retain an accessible name.
 
 The fixture sets `layout.content_width` to `wide` so table and code behavior is
-easy to inspect. The maintained minimal example uses `compact`; DocKit's own
+easy to inspect. The maintained minimal example uses `compact`; DocSprout's own
 site uses the omitted `comfortable` default. Together, those checked-in builds
 cover the semantic width contract. The checked-in banner is the canonical visual
 banner state; use a separate temporary project when you need to inspect the
@@ -44,5 +44,5 @@ optional no-banner default.
 
 The fixture is also the maintained [custom CSS](custom-css.md) example: its
 `docs/assets/custom.css` uses the documented `--dk-*` tokens, every built page
-loads it after DocKit's styles, and CI builds the fixture on every change, so
+loads it after DocSprout's styles, and CI builds the fixture on every change, so
 the safe inclusion mechanism is always exercised.

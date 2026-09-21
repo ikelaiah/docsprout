@@ -1,7 +1,7 @@
 """Qualification: verify the built wheel and sdist contain the complete product.
 
 Run by CI after `python -m build`. Checks the declared version, module and
-vendor-asset coverage, the console entry point, and sdist completeness without
+vendor-asset coverage, the console entry points, and sdist completeness without
 installing anything.
 """
 
@@ -15,17 +15,17 @@ import zipfile
 
 
 def _wheel_name(version: str) -> str:
-    return f"dockit_fp-{version}-py3-none-any.whl"
+    return f"docsprout-{version}-py3-none-any.whl"
 
 
 def _sdist_name(version: str) -> str:
-    return f"dockit_fp-{version}.tar.gz"
+    return f"docsprout-{version}.tar.gz"
 
 
 def _check_wheel(path: Path, version: str, failures: list[str]) -> int:
     with zipfile.ZipFile(path) as bundle:
         names = set(bundle.namelist())
-        prefix = f"dockit_fp-{version}.dist-info/"
+        prefix = f"docsprout-{version}.dist-info/"
         expected_modules = (
             "__init__.py", "__main__.py", "archive.py", "assets.py", "audit.py",
             "build.py", "cli.py", "config.py", "discovery.py", "errors.py",
@@ -33,13 +33,16 @@ def _check_wheel(path: Path, version: str, failures: list[str]) -> int:
             "safety.py", "versions.py",
         )
         for module in expected_modules:
-            if f"dockit_fp/{module}" not in names:
-                failures.append(f"wheel missing dockit_fp/{module}")
-        katex = [name for name in names if name.startswith("dockit_fp/vendor/katex/")]
+            if f"docsprout/{module}" not in names:
+                failures.append(f"wheel missing docsprout/{module}")
+        for shim in ("__init__.py", "__main__.py"):
+            if f"dockit_fp/{shim}" not in names:
+                failures.append(f"wheel missing compatibility shim dockit_fp/{shim}")
+        katex = [name for name in names if name.startswith("docsprout/vendor/katex/")]
         for required in (
             "katex.min.js", "katex.min.css", "LICENSE", "fonts/KaTeX_Main-Regular.woff2",
         ):
-            if f"dockit_fp/vendor/katex/{required}" not in names:
+            if f"docsprout/vendor/katex/{required}" not in names:
                 failures.append(f"wheel missing KaTeX asset {required}")
         if len(katex) < 10:
             failures.append(f"wheel has only {len(katex)} KaTeX asset(s); expected the full bundled set")
@@ -47,33 +50,38 @@ def _check_wheel(path: Path, version: str, failures: list[str]) -> int:
             if meta not in names:
                 failures.append(f"wheel missing {meta}")
         entry_points = bundle.read(f"{prefix}entry_points.txt").decode("utf-8")
-        if "dockit-fp = dockit_fp.cli:main" not in entry_points:
-            failures.append("wheel entry point does not expose the dockit-fp command")
+        if "docsprout = docsprout.cli:main" not in entry_points:
+            failures.append("wheel entry point does not expose the docsprout command")
+        if "dockit-fp = docsprout.cli:main_dockit_fp" not in entry_points:
+            failures.append("wheel entry point does not expose the deprecated dockit-fp alias")
         metadata = bundle.read(f"{prefix}METADATA").decode("utf-8")
         if f"Version: {version}" not in metadata:
             failures.append("wheel METADATA version does not match the project")
+        if "Name: docsprout" not in metadata:
+            failures.append("wheel METADATA name is not docsprout")
         if "Requires-Python: >=3.10" not in metadata:
             failures.append("wheel METADATA requires-python does not match pyproject")
         for classifier in ("3.10", "3.11", "3.12", "3.13", "3.14"):
             if f"Programming Language :: Python :: {classifier}" not in metadata:
                 failures.append(f"wheel METADATA lacks the Python {classifier} classifier")
         if "Requires-Dist:" in metadata:
-            failures.append("wheel declares runtime dependencies; DocKit must stay dependency-free")
-        return sum(1 for name in names if name.startswith("dockit_fp/") and name.endswith(".py"))
+            failures.append("wheel declares runtime dependencies; DocSprout must stay dependency-free")
+        return sum(1 for name in names if name.startswith("docsprout/") and name.endswith(".py"))
 
 
 def _check_sdist(path: Path, version: str, failures: list[str]) -> int:
     with tarfile.open(path) as bundle:
         names = set(bundle.getnames())
-        prefix = f"dockit_fp-{version}/"
+        prefix = f"docsprout-{version}/"
         for required in (
-            "pyproject.toml", "README.md", "src/dockit_fp/__init__.py", "src/dockit_fp/cli.py",
-            "src/dockit_fp/vendor/katex/katex.min.js", "src/dockit_fp/vendor/katex/katex.min.css",
-            "src/dockit_fp/vendor/katex/fonts/KaTeX_Main-Regular.woff2", "src/dockit_fp/vendor/katex/LICENSE",
+            "pyproject.toml", "README.md", "src/docsprout/__init__.py", "src/docsprout/cli.py",
+            "src/dockit_fp/__init__.py", "src/dockit_fp/__main__.py",
+            "src/docsprout/vendor/katex/katex.min.js", "src/docsprout/vendor/katex/katex.min.css",
+            "src/docsprout/vendor/katex/fonts/KaTeX_Main-Regular.woff2", "src/docsprout/vendor/katex/LICENSE",
         ):
             if prefix + required not in names:
                 failures.append(f"sdist missing {required}")
-        package_py = [name for name in names if name.startswith(prefix + "src/dockit_fp/") and name.endswith(".py")]
+        package_py = [name for name in names if name.startswith(prefix + "src/docsprout/") and name.endswith(".py")]
         if len(package_py) < 16:
             failures.append(f"sdist has only {len(package_py)} package modules")
         return len(package_py)

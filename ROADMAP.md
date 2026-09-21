@@ -1,6 +1,6 @@
-# DocKit roadmap
+# DocSprout roadmap
 
-DocKit is for code projects that want polished, versioned Markdown documentation
+DocSprout is for code projects that want polished, versioned Markdown documentation
 without maintaining a site generator. It remains Pascal-friendly, but does not
 require Pascal source code. This roadmap is a guide to direction, not a promise
 of dates. Feedback from maintainers will set the order within each milestone.
@@ -40,7 +40,7 @@ The next release closes the gap between the attractive default home page and a
 project's own story.
 
 - [x] Make the homepage capability cards configurable, reorderable and
-      removable through `dockit.json`.
+      removable through `docsprout.json`.
 - [x] Let a project choose whether the homepage shows the capability strip,
       banner, introduction and release context.
 - [x] Provide copyable homepage recipes for a library, application and API
@@ -91,7 +91,7 @@ wrong.
 
 Safe existing-repository adoption, conservative README/docs discovery, sensible
 initial navigation, explicit power-user control, safe root README support, and
-`dockit-fp serve`.
+`docsprout serve`.
 
 ## v0.12 — Beautiful by Default
 
@@ -105,20 +105,20 @@ configuration.
       navigation without changing their existing schemas or core behavior.
 - [ ] Verify Paper and Midnight against the shared semantic design contract in
       Light, Dark and System modes.
-- [ ] Exercise the result with DocKit-FP's own docs and the maintained visual
+- [ ] Exercise the result with DocSprout's own docs and the maintained visual
       fixture at phone, tablet and desktop widths.
 - [ ] Preserve keyboard navigation, focus visibility, accessible names,
       reduced-motion behavior and offline/local assets.
 
-## v0.13 — Explicit Home & DocKit Identity
+## v0.13 — Explicit Home & DocSprout Identity
 
 Select the published home page explicitly and make the public product identity
 language-neutral while preserving existing technical identifiers.
 
 ## v0.14 — GitHub in One Command
 
-- [x] Prepare conservative DocKit configuration and a managed Pages workflow
-      with `dockit-fp github-pages`.
+- [x] Prepare conservative DocSprout configuration and a managed Pages workflow
+      with `docsprout github-pages`.
 - [x] Keep commits, pushes, repository settings and workflow upgrades under
       maintainer control.
 - [x] Pin generated workflows, prevent feature-branch deployment and refuse
@@ -129,12 +129,12 @@ language-neutral while preserving existing technical identifiers.
 - [x] Add a deterministic, offline documentation audit for publication-ready
       page links, anchors and local assets.
 - [x] Report a small set of actionable accessibility and structure warnings
-      without turning DocKit into a writing-style linter.
+      without turning DocSprout into a writing-style linter.
 - [x] Keep `check` as the buildability gate and make strict audit opt-in.
 
 ## v0.16 — Documentation Refinement
 
-- [x] Align the guides, examples, generated layouts and DocKit's own site on
+- [x] Align the guides, examples, generated layouts and DocSprout's own site on
       explicit `home` and `unlisted` configuration.
 - [x] Make the beginner path follow the generated configuration and separate
       `home`, `homepage`, `check`, `audit` and Pages responsibilities clearly.
@@ -144,7 +144,7 @@ language-neutral while preserving existing technical identifiers.
 ## v0.16.1 — Documentation Examples & Dogfooding
 
 - [x] Pair documented identity and theme configuration with a visible,
-      repository-local DocKit example.
+      repository-local DocSprout example.
 - [x] Keep a built visual fixture for the optional home-page banner.
 - [x] Protect canonical visual examples with focused documentation and build
       regression tests.
@@ -177,17 +177,17 @@ remains necessary. See [Qualification evidence](docs/qualification.md).
 
 The final pre-1.0 simplification and contract-candidate release. Theme:
 **minimal CLI + obvious declarative configuration.** Commands perform
-actions; `layout.json`, `dockit.json` and `versions.json` describe the site.
+actions; `layout.json`, `docsprout.json` and `versions.json` describe the site.
 See [release notes](CHANGELOG.md#0180) and [Qualification evidence]
 (docs/qualification.md).
 
 - [x] Keep the command surface operational; making pages, sections, titles,
       order, home and publication ordinary `layout.json` edits with a
-      compact canonical example, and appearance/identity `dockit.json`
+      compact canonical example, and appearance/identity `docsprout.json`
       edits.
 - [x] Teach the mental model from `init` (Markdown / `layout.json` /
-      `dockit.json` / `serve`) and keep `serve` the centre of authoring,
-      with rebuild regression coverage for `layout.json` and `dockit.json`.
+      `docsprout.json` / `serve`) and keep `serve` the centre of authoring,
+      with rebuild regression coverage for `layout.json` and `docsprout.json`.
 - [x] Offer the three customisation levels: presets and exact colours,
       documented intermediate configuration, and the deliberately bounded
       repository-local custom CSS escape hatch with tested safe inclusion.
@@ -222,6 +222,15 @@ and Pages workflow are now documented as the stable 1.x contract.
       versioned builds and Pages publication.
 - [x] Ship only after all Five Promises have qualification evidence.
 
+## Unreleased — DocSprout rebrand
+
+- [x] Rename the product, distribution, package, CLI command and primary
+      configuration to DocSprout while preserving the 1.x compatibility
+      aliases (`dockit-fp`, `python -m dockit_fp`, `docs/dockit.json`) for at
+      least one minor release.
+- [x] Keep routes, JSON schemas, configuration field names and the `--dk-*`
+      token family unchanged.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to
@@ -231,8 +240,8 @@ the existing responsive breakpoints and include a regression test or fixture.
 
 ## Non-goals
 
-DocKit will not become a Pascal source parser or API extractor. PasWeave
-remains the companion tool for that job. DocKit also will not require a
+DocSprout will not become a Pascal source parser or API extractor. PasWeave
+remains the companion tool for that job. DocSprout also will not require a
 hosted service, JavaScript framework or CDN to build a useful documentation
 site.
 

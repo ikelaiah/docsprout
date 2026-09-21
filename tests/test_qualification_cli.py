@@ -8,8 +8,8 @@ import time
 import unittest
 import urllib.request
 
-from dockit_fp import __version__
-from dockit_fp.github_pages import WORKFLOW_RELATIVE_PATH, render_workflow
+from docsprout import __version__
+from docsprout.github_pages import CANONICAL_WORKFLOW_RELATIVE_PATH, render_workflow
 
 from tests.helper import cli_environment, run_cli
 
@@ -27,8 +27,8 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             root = Path(temporary)
 
             init = run_cli(root, "init")
-            self.assertIn("Created: docs/dockit.json, docs/index.md, docs/layout.json.", init.stdout)
-            self.assertIn("Preview:  dockit-fp serve", init.stdout)
+            self.assertIn("Created: docs/docsprout.json, docs/index.md, docs/layout.json.", init.stdout)
+            self.assertIn("Preview:  docsprout serve", init.stdout)
             self.assertIn("Navigation sections: Getting started (1 page).", init.stdout)
 
             check = run_cli(root, "check")
@@ -60,7 +60,7 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
 
             doctor = run_cli(root, "doctor")
             self.assertIn("Status: preview-ready", doctor.stdout)
-            self.assertIn("Next: run dockit-fp serve.", doctor.stdout)
+            self.assertIn("Next: run docsprout serve.", doctor.stdout)
 
     def test_existing_repository_journey_publishes_only_the_listed_documents(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -75,7 +75,7 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             (docs / "release-notes.md").write_text("# Release notes\n\nInternal draft.", encoding="utf-8")
             (docs / "images" / "mark.svg").write_text("<svg/>", encoding="utf-8")
             (root / "CHANGELOG.md").write_text("# Changes", encoding="utf-8")
-            (docs / "dockit.json").write_text(json.dumps({
+            (docs / "docsprout.json").write_text(json.dumps({
                 "schema_version": 1, "project": {"name": "Existing"}, "identity": {"footer": "Kept"},
             }), encoding="utf-8")
             (docs / "layout.json").write_text(json.dumps({
@@ -91,11 +91,11 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             }), encoding="utf-8")
             before = {
                 path: path.read_text(encoding="utf-8")
-                for path in (readme, docs / "guides" / "advanced.md", docs / "layout.json", docs / "dockit.json")
+                for path in (readme, docs / "guides" / "advanced.md", docs / "layout.json", docs / "docsprout.json")
             }
 
             adopted = run_cli(root, "init")
-            self.assertIn("Existing DocKit configuration was left authoritative", adopted.stdout)
+            self.assertIn("Existing DocSprout configuration was left authoritative", adopted.stdout)
             self.assertEqual(before, {path: path.read_text(encoding="utf-8") for path in before})
 
             check = run_cli(root, "check")
@@ -126,7 +126,7 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             run_cli(root, "init")
             port = _free_port()
             server = subprocess.Popen(
-                [sys.executable, "-u", "-m", "dockit_fp", "serve", "--root", str(root), "--port", str(port)],
+                [sys.executable, "-u", "-m", "docsprout", "serve", "--root", str(root), "--port", str(port)],
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
                 env=cli_environment(),
             )
@@ -167,15 +167,15 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             ).stdout
 
             prepared = run_cli(root, "github-pages")
-            self.assertIn("DocKit is ready for GitHub Pages.", prepared.stdout)
+            self.assertIn("DocSprout is ready for GitHub Pages.", prepared.stdout)
             self.assertIn("Home: README.md", prepared.stdout)
             self.assertIn("git add .", prepared.stdout)
             workflow = self._expected_workflow()
-            self.assertEqual(workflow, (root / WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
+            self.assertEqual(workflow, (root / CANONICAL_WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
 
             rerun = run_cli(root, "github-pages")
             self.assertIn("No changes required.", rerun.stdout)
-            self.assertEqual(workflow, (root / WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
+            self.assertEqual(workflow, (root / CANONICAL_WORKFLOW_RELATIVE_PATH).read_text(encoding="utf-8"))
             header_after = subprocess.run(
                 ["git", "rev-parse", "HEAD"], cwd=root, check=True, capture_output=True, text=True,
             ).stdout

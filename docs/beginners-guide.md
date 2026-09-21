@@ -1,4 +1,4 @@
-# Your first DocKit site
+# Your first DocSprout site
 
 This guide starts from an ordinary code project and ends with a documentation
 site running on your computer. The example name is Pascal-flavoured, but the
@@ -21,46 +21,46 @@ You do **not** need Git, a GitHub account, a web server or Pascal knowledge for
 this guide. When this page says “project folder”, it means the top-level folder
 that normally contains `README.md` or `src/`.
 
-## 1. Install DocKit
+## 1. Install DocSprout
 
 Open a terminal in your project folder and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/dockit-fp/archive/refs/tags/v1.0.0.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.0.0.zip"
 ```
 
 Then check that the command is available:
 
 ```bash
-dockit-fp --help
+docsprout --help
 ```
 
 You should see a list of commands such as `build`, `check`, `init` and `serve`.
 
-> [!NOTE] If your terminal says `dockit-fp` was not found, close and reopen the
-> terminal. You can also run `python -m dockit_fp --help`.
+> [!NOTE] If your terminal says `DocSprout` was not found, close and reopen the
+> terminal. You can also run `python -m docsprout --help`.
 
 ## 2. Adopt the Markdown you already have
 
 Run this from the same project folder:
 
 ```bash
-dockit-fp init
+docsprout init
 ```
 
 You should see a message beginning with `Initialised`. The command detects a
 root `README.md`, Markdown inside `docs/`, Git/GitHub details, and common
 ancillary Markdown. It never rewrites, moves or copies existing Markdown. It
-creates only missing DocKit configuration:
+creates only missing DocSprout configuration:
 
 ```text
 docs/
-├── dockit.json   # project name and colours
+├── docsprout.json   # project name and colours
 ├── layout.json   # pages and navigation order
 └── index.md      # only when there was no README or docs page
 ```
 
-By default, DocKit publishes only `README.md` and `docs/**/*.md`. It tells you
+By default, DocSprout publishes only `README.md` and `docs/**/*.md`. It tells you
 about `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md` and
 `CODE_OF_CONDUCT.md`, but leaves them private until you choose to add them.
 Only the repository-root `README.md` has special root-source support. Other
@@ -71,14 +71,14 @@ Markdown you want to publish should live under `docs/`.
 Run:
 
 ```bash
-dockit-fp serve
+docsprout serve
 ```
 
 Open <http://127.0.0.1:8000>. The command validates and builds first, then
 starts a local-only preview server. It watches `README.md` and `docs/`, rebuilding
 after a saved change; reload the browser to see the new page without restarting
 the command. Press `Ctrl+C` to stop it. Use
-`dockit-fp serve --port 8000` or `dockit-fp serve --host 127.0.0.1` when you
+`docsprout serve --port 8000` or `docsprout serve --host 127.0.0.1` when you
 need a specific local address.
 
 > [!IMPORTANT] You have finished the beginner path. The site works locally.
@@ -102,7 +102,7 @@ Read the quick start to make your first map.
 The first `#` is the page title. A line beginning with `##` is a section title.
 That is enough Markdown to begin.
 
-Next, open `docs/dockit.json`. `init` has already inferred safe metadata where
+Next, open `docs/docsprout.json`. `init` has already inferred safe metadata where
 it could, including a GitHub repository URL. Change the project name and description if needed. Leave
 `schema_version` unchanged:
 
@@ -133,7 +133,7 @@ Install Star Mapper, then run `star-mapper import first-light.csv`.
 You should see `Created sky-map.html`.
 ```
 
-Open `docs/layout.json`. It is now maintainer-owned: DocKit never silently
+Open `docs/layout.json`. It is now maintainer-owned: DocSprout never silently
 adds Markdown, reorders sections, renames entries or removes pages after this
 file exists. The root-README project from step 2 starts with this generated
 layout. Keep the existing `home` entry unchanged while adding the page.
@@ -226,7 +226,7 @@ Every common change is an edit to a JSON file, not a command:
 | Reorder pages | Move page objects up or down inside their `pages` list |
 | Move a page to another section | Cut its object and paste it into another section |
 | Change the home page | Change the top-level `"home"` object in `layout.json` |
-| Change colours, theme or logo | Edit `docs/dockit.json` (`theme`, `identity.logo`) |
+| Change colours, theme or logo | Edit `docs/docsprout.json` (`theme`, `identity.logo`) |
 | Remove a page from the site | Remove its page object from `layout.json` |
 
 The displayed title is independent of the filename, and the written order of
@@ -239,7 +239,7 @@ For a fuller explanation of `home`, navigation and legacy layouts, see
 ## 6. Choose the home page and appearance
 
 The **home page** is the page readers see at the site root. `layout.json.home`
-selects that existing published Markdown page; `dockit.json.homepage` changes
+selects that existing published Markdown page; `docsprout.json.homepage` changes
 only its cards, banner and visible sections. They are different settings.
 
 The root README shown above is already a valid home-page choice. If you want
@@ -247,24 +247,24 @@ The root README shown above is already a valid home-page choice. If you want
 object and keep its matching navigation entry. Then choose colours, a **Style**
 (`Classic`, `Paper` or `Midnight`) and a **Mode** (`System`, `Light` or `Dark`)
 in [Themes](themes.md). [Customize the home page](homepage-recipes.md) has
-complete `dockit.json` examples.
+complete `docsprout.json` examples.
 
 ## 7. Check and audit
 
 Run:
 
 ```bash
-dockit-fp check
-dockit-fp audit
+docsprout check
+docsprout audit
 ```
 
-`check` answers “Can DocKit safely build this site?” `audit` answers “What
+`check` answers “Can DocSprout safely build this site?” `audit` answers “What
 objective documentation problems should I fix?” If `check` fails, read its last
 line first; it normally names the file and next correction. Use
-`dockit-fp audit --strict` when warnings should also fail a CI job, and
-`dockit-fp doctor` for a setup summary.
+`docsprout audit --strict` when warnings should also fail a CI job, and
+`docsprout doctor` for a setup summary.
 
-Run `dockit-fp serve` again and reload the browser. **Quick start** should now
+Run `docsprout serve` again and reload the browser. **Quick start** should now
 appear in the navigation.
 
 ## Where to go next
@@ -273,7 +273,7 @@ appear in the navigation.
   [Write documentation people can use](writing-great-docs.md).
 - Learn the three configuration files in [Configuration](configuration.md).
 - Copy a small working project from the
-  [minimal example](https://github.com/ikelaiah/dockit-fp/tree/v1.0.0/examples/minimal).
+  [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.0.0/examples/minimal).
 - When you truly want a public site, choose the simpler or historical path in
   [GitHub Pages](github-pages.md).
 - Look up unfamiliar words in the [glossary](glossary.md).

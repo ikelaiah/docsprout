@@ -5,7 +5,7 @@
    aria-labelledby="title description"
    version="1.1"
    id="svg20"
-   sodipodi:docname="dockit-banner.svg"
+   sodipodi:docname="docsprout-banner.svg"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -30,9 +30,9 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg20" />
   <title
-     id="title">DocKit documentation banner</title>
+     id="title">DocSprout documentation banner</title>
   <desc
-     id="description">A purple DocKit banner showing layered document pages, a search field, and the words Build documentation people can use.</desc>
+     id="description">A purple DocSprout banner showing layered document pages, a search field, and the words Build documentation people can use.</desc>
   <defs
      id="defs5">
     <linearGradient

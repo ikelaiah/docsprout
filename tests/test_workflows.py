@@ -12,15 +12,15 @@ class PublishingWorkflowTests(unittest.TestCase):
         self.assertIn("versioned:", workflow)
         self.assertIn("default: true", workflow)
         self.assertIn("release:", workflow)
-        self.assertIn("DOCKIT_RELEASE: ${{ inputs.release }}", workflow)
-        self.assertIn('dockit-fp build --release "$DOCKIT_RELEASE" --output build/docs-site', workflow)
+        self.assertIn("DOCSPROUT_RELEASE: ${{ inputs.release }}", workflow)
+        self.assertIn('docsprout build --release "$DOCSPROUT_RELEASE" --output build/docs-site', workflow)
         self.assertIn("if: inputs.versioned", workflow)
         self.assertIn("if: ${{ ! inputs.versioned }}", workflow)
 
-    def test_reusable_workflow_installs_the_pinned_dockit_release(self) -> None:
+    def test_reusable_workflow_installs_the_pinned_docsprout_release(self) -> None:
         workflow = (self.root / ".github" / "workflows" / "publish-docs.yml").read_text(encoding="utf-8")
 
-        self.assertIn("git+https://github.com/ikelaiah/dockit-fp.git@v1.0.0", workflow)
+        self.assertIn("git+https://github.com/ikelaiah/docsprout.git@v1.0.0", workflow)
         self.assertNotIn("python -m pip install .", workflow)
 
     def test_workflows_use_checkout_v7_node_24_major(self) -> None:

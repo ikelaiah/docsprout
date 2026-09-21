@@ -14,7 +14,7 @@ import tempfile
 
 from .build import build_site
 from .config import MANIFEST_FIELDS, VERSION_FIELDS, _reject_unknown_fields
-from .errors import DocKitError
+from .errors import DocSproutError
 from .safety import prepare_output
 
 MOVING_REFS = {"head", "main", "master", "develop", "development", "latest"}
@@ -61,30 +61,30 @@ def load_manifest(root: Path) -> VersionManifest:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise DocKitError(f"{path}: invalid version manifest: {error}") from error
+        raise DocSproutError(f"{path}: invalid version manifest: {error}") from error
     if not isinstance(data, dict) or data.get("schema_version") != 1:
-        raise DocKitError(f"{path}: field 'schema_version' must be 1")
+        raise DocSproutError(f"{path}: field 'schema_version' must be 1")
     _reject_unknown_fields(data, MANIFEST_FIELDS, "versions", path)
     current, entries = data.get("current"), data.get("versions")
     if not isinstance(current, str) or not isinstance(entries, list) or not entries:
-        raise DocKitError(f"{path}: fields 'current' and non-empty 'versions' are required")
+        raise DocSproutError(f"{path}: fields 'current' and non-empty 'versions' are required")
     versions: list[Version] = []
     for index, entry in enumerate(entries):
         if not isinstance(entry, dict) or not isinstance(entry.get("release"), str) or not isinstance(entry.get("source_ref"), str):
-            raise DocKitError(f"{path}: versions[{index}] needs string release and source_ref")
+            raise DocSproutError(f"{path}: versions[{index}] needs string release and source_ref")
         _reject_unknown_fields(entry, VERSION_FIELDS, f"versions[{index}]", path)
         release, source_ref = entry["release"], entry["source_ref"]
         if not RELEASE_NAME.fullmatch(release):
-            raise DocKitError(
+            raise DocSproutError(
                 f"{path}: versions[{index}].release must be a safe name using letters, numbers, dots, underscores, or hyphens"
             )
         if not _valid_source_ref(source_ref):
-            raise DocKitError(f"{path}: versions[{index}].source_ref must be a safe tag or full commit SHA")
+            raise DocSproutError(f"{path}: versions[{index}].source_ref must be a safe tag or full commit SHA")
         versions.append(Version(release, source_ref))
     releases = [entry.release for entry in versions]
     source_refs = [entry.source_ref for entry in versions]
     if len(set(releases)) != len(releases) or len(set(source_refs)) != len(source_refs) or current not in releases:
-        raise DocKitError(f"{path}: releases and source refs must be unique, and releases must include current {current!r}")
+        raise DocSproutError(f"{path}: releases and source refs must be unique, and releases must include current {current!r}")
     return VersionManifest(current, tuple(versions))
 
 
@@ -92,7 +92,7 @@ def _run_git(root: Path, *arguments: str, binary: bool = False) -> str | bytes:
     completed = subprocess.run(["git", *arguments], cwd=root, capture_output=True, text=not binary)
     if completed.returncode:
         detail = completed.stderr.decode() if binary else completed.stderr
-        raise DocKitError(f"Git {' '.join(arguments)} failed: {detail.strip()}")
+        raise DocSproutError(f"Git {' '.join(arguments)} failed: {detail.strip()}")
     return completed.stdout
 
 
@@ -110,31 +110,31 @@ def check_release(root: Path) -> VersionManifest:
     manifest = load_manifest(root)
     for entry in manifest.versions:
         if entry.source_ref.lower() in MOVING_REFS:
-            raise DocKitError(
+            raise DocSproutError(
                 f"docs/versions.json: published release {entry.release!r} must not use moving source_ref {entry.source_ref!r}; use a tag or full commit SHA."
             )
         if not COMMIT.fullmatch(entry.source_ref) and not _is_immutable(root, entry.source_ref):
-            raise DocKitError(
+            raise DocSproutError(
                 f"docs/versions.json: source_ref {entry.source_ref!r} for release {entry.release!r} does not exist. "
                 f"Create the tag with 'git tag {entry.source_ref}' before publishing."
             )
         try:
             _run_git(root, "rev-parse", "--verify", f"{entry.source_ref}^{{commit}}")
-        except DocKitError as error:
-            raise DocKitError(
+        except DocSproutError as error:
+            raise DocSproutError(
                 f"Cannot build documentation version {entry.release}: source_ref {entry.source_ref!r} does not resolve to a Git object."
             ) from error
     current = next(entry for entry in manifest.versions if entry.release == manifest.current)
     current_commit = str(_run_git(root, "rev-parse", "--verify", f"{current.source_ref}^{{commit}}")).strip()
     head_commit = str(_run_git(root, "rev-parse", "--verify", "HEAD^{commit}")).strip()
     if current_commit != head_commit:
-        raise DocKitError(
+        raise DocSproutError(
             f"docs/versions.json: current release {current.release!r} source_ref {current.source_ref!r} does not match HEAD. "
             "Tag the commit being published or check out the declared release commit."
         )
     changed_docs = str(_run_git(root, "status", "--porcelain", "--untracked-files=all", "--", "docs")).strip()
     if changed_docs:
-        raise DocKitError("Documentation differs from HEAD. Commit docs changes before publishing the current release.")
+        raise DocSproutError("Documentation differs from HEAD. Commit docs changes before publishing the current release.")
     return manifest
 
 
@@ -145,7 +145,7 @@ def _archive_to(root: Path, source_ref: str, destination: Path) -> None:
         for member in bundle.getmembers():
             target = (destination / member.name).resolve()
             if not target.is_relative_to(destination.resolve()):
-                raise DocKitError(f"Git archive contains unsafe path {member.name!r}")
+                raise DocSproutError(f"Git archive contains unsafe path {member.name!r}")
         if sys.version_info >= (3, 12):
             bundle.extractall(destination, filter="data")
         else:
@@ -159,7 +159,7 @@ def build_all(*, root: Path, output: Path) -> BuildAllResult:
     output = output.resolve()
     prepare_output(output)
     page_count = 0
-    with tempfile.TemporaryDirectory(prefix="dockit-fp-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="docsprout-") as temporary:
         staging = Path(temporary)
         targets = tuple((item.release, f"{item.release}/index.html") for item in manifest.versions)
         for item in manifest.versions:

@@ -1,6 +1,6 @@
 import unittest
 
-from dockit_fp.markdown import render_markdown
+from docsprout.markdown import render_markdown
 
 
 class MarkdownTests(unittest.TestCase):

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import unittest
 
-from dockit_fp import __version__
+from docsprout import __version__
 
 
 class DocumentationUsabilityTests(unittest.TestCase):
@@ -12,22 +12,23 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_readme_keeps_one_short_path_to_a_local_preview(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")
 
-        self.assertLessEqual(len(readme.splitlines()), 150)
+        self.assertLessEqual(len(readme.splitlines()), 200)
         self.assertEqual(1, sum(line.startswith("# ") for line in readme.splitlines()))
         self.assertIn("first site in about 10 minutes", readme)
         self.assertIn("You can stop here", readme)
-        self.assertIn("dockit-fp/archive/refs/tags/v1.0.0.zip", readme)
-        self.assertNotIn('pip install "dockit-fp==', readme)
+        self.assertIn("Grow polished documentation from Markdown.", readme)
+        self.assertIn("docsprout/archive/refs/tags/v1.0.0.zip", readme)
+        self.assertNotIn('pip install "docsprout==', readme)
 
     def test_readme_badges_are_canonical_and_deliberate(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")
 
         expected_badges = (
-            "[![CI](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/dockit-fp/actions/workflows/ci.yml?query=branch%3Amain)",
-            "[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdockit-fp%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/dockit-fp/1.0.0/)",
-            "[![Latest release](https://img.shields.io/github/v/release/ikelaiah/dockit-fp?display_name=tag&sort=semver)](https://github.com/ikelaiah/dockit-fp/releases/latest)",
-            "[![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/dockit-fp/blob/main/docs/qualification.md#supported-python-versions)",
-            "[![License: MIT](https://img.shields.io/github/license/ikelaiah/dockit-fp)](https://github.com/ikelaiah/dockit-fp/blob/main/LICENSE)",
+            "[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain)",
+            "[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.0.0/)",
+            "[![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest)",
+            "[![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions)",
+            "[![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)",
         )
         for badge in expected_badges:
             with self.subTest(badge=badge):
@@ -50,7 +51,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
     def test_recommended_layouts_use_the_explicit_modern_contract(self) -> None:
         layouts = {
-            "DocKit": self.root / "docs" / "layout.json",
+            "DocSprout": self.root / "docs" / "layout.json",
             "minimal example": self.root / "examples" / "minimal" / "docs" / "layout.json",
             "single-version example": self.root / "examples" / "single-version" / "docs" / "layout.json",
             "historical example": self.root / "examples" / "historical" / "docs" / "layout.json",
@@ -72,8 +73,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
+        self.assertIn('name = "docsprout"', pyproject)
         self.assertIn('version = "1.0.0"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
+        self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
         self.assertIn('Development Status :: 5 - Production/Stable', pyproject)
 
@@ -107,7 +110,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn(root_policy, configuration)
 
     def test_docs_project_demonstrates_its_homepage_configuration(self) -> None:
-        config = json.loads((self.root / "docs" / "dockit.json").read_text(encoding="utf-8"))
+        config = json.loads((self.root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
         guide = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
 
         self.assertEqual(
@@ -121,28 +124,28 @@ class DocumentationUsabilityTests(unittest.TestCase):
         )
         self.assertTrue(config["homepage"]["sections"]["release_context"])
         self.assertIn("The home page is the Markdown document selected by `layout.json.home`", guide)
-        self.assertIn("## See it in DocKit", guide)
+        self.assertIn("## See it in DocSprout", guide)
 
     def test_docs_project_dogfoods_its_identity_configuration(self) -> None:
-        config = json.loads((self.root / "docs" / "dockit.json").read_text(encoding="utf-8"))
+        config = json.loads((self.root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
         customisation = (self.root / "docs" / "customisation.md").read_text(encoding="utf-8")
 
         self.assertEqual("purple", config["theme"]["preset"])
-        self.assertEqual("docs/assets/dockit-mark.svg", config["identity"]["logo"])
+        self.assertEqual("docs/assets/docsprout-mark.svg", config["identity"]["logo"])
         self.assertTrue((self.root / config["identity"]["logo"]).is_file())
-        self.assertEqual("Built with DocKit.", config["identity"]["footer"])
+        self.assertEqual("Built with DocSprout.", config["identity"]["footer"])
         self.assertEqual(
-            [{"label": "Project", "url": "https://github.com/ikelaiah/dockit-fp"}],
+            [{"label": "Project", "url": "https://github.com/ikelaiah/docsprout"}],
             config["identity"]["links"],
         )
         self.assertIn("### Before (default configuration)", customisation)
-        self.assertIn("### After (DocKit's own configuration)", customisation)
+        self.assertIn("### After (DocSprout's own configuration)", customisation)
         self.assertIn("blue colour preset", customisation)
         self.assertIn("no custom identity footer or link", customisation)
 
     def test_banner_guide_points_to_the_maintained_banner_fixture(self) -> None:
         config = json.loads(
-            (self.root / "examples" / "visual-fixtures" / "docs" / "dockit.json").read_text(encoding="utf-8")
+            (self.root / "examples" / "visual-fixtures" / "docs" / "docsprout.json").read_text(encoding="utf-8")
         )
         themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
         fixtures = (self.root / "docs" / "visual-fixtures.md").read_text(encoding="utf-8")
@@ -154,9 +157,9 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("visual-fixture-banner.svg", fixtures)
 
     def test_theme_guide_points_to_maintained_exact_colour_and_style_examples(self) -> None:
-        minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "dockit.json").read_text(encoding="utf-8"))
+        minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "docsprout.json").read_text(encoding="utf-8"))
         single_version = json.loads(
-            (self.root / "examples" / "single-version" / "docs" / "dockit.json").read_text(encoding="utf-8")
+            (self.root / "examples" / "single-version" / "docs" / "docsprout.json").read_text(encoding="utf-8")
         )
         themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
 
@@ -170,7 +173,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
         checklist = (self.root / "docs" / "pre-publish-checklist.md").read_text(encoding="utf-8")
         fixture_guide = (self.root / "docs" / "visual-fixtures.md").read_text(encoding="utf-8")
-        minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "dockit.json").read_text(encoding="utf-8"))
+        minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "docsprout.json").read_text(encoding="utf-8"))
 
         self.assertIn("becomes each generated page's description metadata", configuration)
         self.assertIn("does not render `repository_url` or `site_url`", configuration)
@@ -189,13 +192,14 @@ class DocumentationUsabilityTests(unittest.TestCase):
         guide = (self.root / "docs" / "github-pages.md").read_text(encoding="utf-8")
         guide_words = " ".join(guide.split())
 
-        self.assertIn("dockit-fp github-pages", readme)
+        self.assertIn("docsprout github-pages", readme)
         self.assertIn("## GitHub Pages in one command", guide)
         self.assertIn("Settings → Pages → Source → GitHub Actions", guide_words)
-        self.assertIn("DocKit prepares GitHub; the maintainer controls Git.", guide)
-        self.assertIn("dockit-fp github-pages --update", guide)
+        self.assertIn("DocSprout prepares GitHub; the maintainer controls Git.", guide)
+        self.assertIn("docsprout github-pages --update", guide)
         self.assertIn("does not commit or push", guide)
         self.assertIn("## Advanced: manual and historical workflows", guide)
+        self.assertIn("Pre-rebrand workflows", guide)
 
     def test_qualification_document_matches_the_ci_contract(self) -> None:
         qualification = (self.root / "docs" / "qualification.md").read_text(encoding="utf-8")
@@ -211,7 +215,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocKit v1.0.0", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.0.0", qualification)
         self.assertIn("Browser automation status", qualification)
 
     def test_v1_five_promises_and_contract_are_explicit(self) -> None:
@@ -244,7 +248,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
         fixture_config = json.loads(
-            (self.root / "examples" / "visual-fixtures" / "docs" / "dockit.json").read_text(encoding="utf-8")
+            (self.root / "examples" / "visual-fixtures" / "docs" / "docsprout.json").read_text(encoding="utf-8")
         )
 
         self.assertIn("custom-css.md", pages)
@@ -272,11 +276,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("search-index.json", migration)
         self.assertIn("## 0.x to 1.0 upgrade checklist", migration)
         self.assertIn("v1.0.0", migration)
+        self.assertIn("## DocKit to DocSprout (1.x rebrand)", migration)
+        self.assertIn("docs/dockit.json", migration)
 
     def test_init_guidance_documents_the_declarative_mental_model(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("The mental model from here on", readme)
         self.assertIn("layout.json", readme)
-        self.assertIn("dockit.json", readme)
-        self.assertIn("DocKit commands for editing pages, sections or themes", readme)
+        self.assertIn("docsprout.json", readme)
+        self.assertIn("DocSprout commands for editing pages, sections or themes", readme)

@@ -1,6 +1,6 @@
 # Architectural analysis
 
-DocKit-FP is the shared static-site layer for the Free Pascal ecosystem. It
+DocSprout is the shared static-site layer for the Free Pascal ecosystem. It
 renders project-owned Markdown into a documentation site; it does not parse
 Pascal source or extract API declarations.
 
@@ -20,12 +20,12 @@ and sizes differ, demonstrating real divergence rather than a shared component.
 
 ## Deliberate extraction boundary
 
-DocKit-FP centralises Markdown rendering, routing, modern/legacy navigation,
+DocSprout centralises Markdown rendering, routing, modern/legacy navigation,
 version manifests, immutable-ref builds, validation, generated CSS/JS, search,
 themes, offline bundles and Pages integration. A consuming repository keeps
 Markdown, its navigation/manifest, branding tokens, banner and Git tags.
 
-PasWeave stays upstream of this boundary. It may emit Markdown that DocKit-FP
+PasWeave stays upstream of this boundary. It may emit Markdown that DocSprout
 renders alongside handwritten pages, but neither tool depends on the other.
 
 ## v0.1 decisions
@@ -33,6 +33,6 @@ renders alongside handwritten pages, but neither tool depends on the other.
 - Python 3.10+ and the standard library only; this keeps CI and Windows support simple.
 - Strict, explicit JSON schema-version validation for modern configuration; legacy trees need only Markdown.
 - Published `build-all` materialises every declared release from its `source_ref` with `git archive`, never the current tree.
-- Output replacement is allowed only for a directory containing DocKit-FP's ownership marker.
+- Output replacement is allowed only for a directory containing DocSprout's ownership marker.
 - Markdown supports the stated safe subset and escapes source text; raw HTML is rendered as text.
 - One semantic-token design system owns structure. Projects configure accent colours and optional SVG banners without custom structural CSS.

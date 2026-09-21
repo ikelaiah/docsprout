@@ -3,7 +3,9 @@
 Every scenario mirrors the actual published configuration of a released tag
 (v0.1.0 through v0.17.0). The claim is not byte-identical output; it is that
 valid supported historical schema-1 configuration is understood by current
-DocKit, or has an explicitly documented migration requirement.
+DocSprout, or has an explicitly documented migration requirement. The corpus
+deliberately keeps the pre-rebrand ``dockit.json`` filename because loading it
+is part of the 1.x compatibility contract.
 """
 
 import json
@@ -11,9 +13,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from dockit_fp.build import build_site
-from dockit_fp.config import load_config
-from dockit_fp.versions import load_manifest
+from docsprout.build import build_site
+from docsprout.config import load_config
+from docsprout.versions import load_manifest
 
 
 CORPUS = {
