@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest a change that would make documentation easier to build or maintain
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the documentation or maintenance pain, not only the proposed feature.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like DocSprout to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do today instead?
+      description: Current workarounds, other tools, or manual steps.
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        DocSprout keeps a small stable contract: CLI commands and options, the
+        `--dk-*` tokens, schema-1 configuration and generated routes. Proposals
+        that change those need a migration path; see
+        [Machine-readable contracts](https://ikelaiah.github.io/docsprout/machine-contracts.html).

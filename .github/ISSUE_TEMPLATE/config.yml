@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Troubleshooting guide
+    url: https://github.com/ikelaiah/docsprout/blob/main/docs/troubleshooting.md
+    about: Match the exact error message to its fix before opening an issue.
+  - name: Documentation
+    url: https://ikelaiah.github.io/docsprout/
+    about: Guides for configuration, publishing, audit, releases and migration.

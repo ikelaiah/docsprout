@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "docsprout"
 version = "1.1.0"
 description = "Versioned static documentation sites for code projects"
+keywords = ["documentation", "static-site", "markdown", "github-pages"]
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -21,6 +22,13 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Documentation",
 ]
+
+[project.urls]
+Homepage = "https://ikelaiah.github.io/docsprout/"
+Documentation = "https://ikelaiah.github.io/docsprout/"
+Repository = "https://github.com/ikelaiah/docsprout"
+Changelog = "https://github.com/ikelaiah/docsprout/blob/main/CHANGELOG.md"
+Issues = "https://github.com/ikelaiah/docsprout/issues"
 
 [project.scripts]
 docsprout = "docsprout.cli:main"

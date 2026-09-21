@@ -59,6 +59,8 @@ def _check_wheel(path: Path, version: str, failures: list[str]) -> int:
             failures.append("wheel METADATA version does not match the project")
         if "Name: docsprout" not in metadata:
             failures.append("wheel METADATA name is not docsprout")
+        if "Project-URL: Repository, https://github.com/ikelaiah/docsprout" not in metadata:
+            failures.append("wheel METADATA lacks the repository Project-URL")
         if "Requires-Python: >=3.10" not in metadata:
             failures.append("wheel METADATA requires-python does not match pyproject")
         for classifier in ("3.10", "3.11", "3.12", "3.13", "3.14"):
