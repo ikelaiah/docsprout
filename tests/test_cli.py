@@ -331,7 +331,9 @@ class CliTests(unittest.TestCase):
 
             self.assertFalse((docs / "docsprout.json").exists())
             self.assertTrue((docs / "dockit.json").exists())
-            self.assertIn("Existing DocSprout configuration was left authoritative", output.getvalue())
+            self.assertIn("Existing configuration was left authoritative", output.getvalue())
+            self.assertIn("Change colours, logo and presentation:  docs/dockit.json", output.getvalue())
+            self.assertIn("rename docs/dockit.json to docs/docsprout.json", output.getvalue())
 
     def test_check_fails_with_an_ambiguity_error_when_both_configurations_exist(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -351,3 +353,34 @@ class CliTests(unittest.TestCase):
                 self.assertEqual(1, main(["check", "--root", str(root)]))
 
             self.assertIn("both docsprout.json and dockit.json exist", output.getvalue())
+
+    def test_doctor_names_the_legacy_configuration_file_and_rename_step(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "dockit.json").write_text('{"schema_version": 1, "project": {"name": "Legacy"}}', encoding="utf-8")
+            (docs / "layout.json").write_text(
+                '{"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}',
+                encoding="utf-8",
+            )
+            output = io.StringIO()
+
+            with redirect_stdout(output):
+                self.assertEqual(0, main(["doctor", "--root", str(root)]))
+
+            self.assertIn("dockit.json uses the legacy configuration name", output.getvalue())
+            self.assertIn("rename it to docs/docsprout.json", output.getvalue())
+            self.assertIn("removed in v2.0.0", output.getvalue())
+
+    def test_doctor_does_not_warn_for_the_canonical_configuration_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(0, main(["init", "--root", str(root)]))
+            output = io.StringIO()
+
+            with redirect_stdout(output):
+                self.assertEqual(0, main(["doctor", "--root", str(root)]))
+
+            self.assertNotIn("legacy configuration name", output.getvalue())

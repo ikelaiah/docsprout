@@ -19,7 +19,7 @@ from . import build as build_module
 from .audit import audit_project, format_json as format_audit_json, format_text as format_audit_text
 from .archive import write_offline_archive
 from . import __version__
-from .config import CONFIG_FILENAME, load_config, resolve_config_path
+from .config import CONFIG_FILENAME, LEGACY_CONFIG_FILENAME, load_config, resolve_config_path
 from .discovery import discover_repository, initial_navigation
 from .errors import DocSproutError
 from .github_pages import (
@@ -73,12 +73,12 @@ def _init(root: Path) -> list[str]:
     if discovery.documents:
         detected.append(f"{len(discovery.documents)} Markdown document(s) under docs/")
     if discovery.has_config or discovery.has_layout:
-        detected.append("existing DocSprout configuration")
+        detected.append("existing configuration")
     messages = [f"Initialised {docs}", f"Detected: {', '.join(detected)}."]
     if created:
         messages.append(f"Created: {', '.join(created)}.")
     else:
-        messages.append("Existing DocSprout configuration was left authoritative; no files were changed.")
+        messages.append("Existing configuration was left authoritative; no files were changed.")
     messages.append("Published automatically: README.md and Markdown under docs/ only.")
     if discovery.ancillary_documents:
         messages.append(f"Available for explicit inclusion: {', '.join(discovery.ancillary_documents)}.")
@@ -89,13 +89,19 @@ def _init(root: Path) -> list[str]:
             for section in navigation
         )
         messages.append(f"Navigation sections: {sections}.")
+    config_filename = LEGACY_CONFIG_FILENAME if discovery.has_legacy_dockit_config else CONFIG_FILENAME
     messages.extend((
         "DocSprout is ready.",
         "  Write documentation: README.md and docs/*.md",
         "  Add, rename, group or reorder pages:  docs/layout.json",
-        f"  Change colours, logo and presentation:  docs/{CONFIG_FILENAME}",
+        f"  Change colours, logo and presentation:  docs/{config_filename}",
         "  Preview:  docsprout serve",
     ))
+    if discovery.has_legacy_dockit_config:
+        messages.append(
+            f"  Migration:  rename docs/{LEGACY_CONFIG_FILENAME} to docs/{CONFIG_FILENAME}; "
+            "the legacy name is removed in v2.0.0."
+        )
     return messages
 
 
@@ -328,6 +334,11 @@ def _doctor(root: Path) -> list[str]:
     try:
         config = load_config(root)
         messages.append(f"Documentation: {'legacy discovery' if config.legacy else 'modern configuration'} ({len(config.pages)} page(s))")
+        if config.config_filename == LEGACY_CONFIG_FILENAME:
+            messages.append(
+                f"WARNING: docs/{LEGACY_CONFIG_FILENAME} uses the legacy configuration name; "
+                f"rename it to docs/{CONFIG_FILENAME} (the legacy name is removed in v2.0.0)"
+            )
     except DocSproutError as error:
         messages.append(f"ERROR: {error}")
     if (root / "docs" / "versions.json").exists():

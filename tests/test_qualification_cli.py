@@ -95,7 +95,7 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             }
 
             adopted = run_cli(root, "init")
-            self.assertIn("Existing DocSprout configuration was left authoritative", adopted.stdout)
+            self.assertIn("Existing configuration was left authoritative", adopted.stdout)
             self.assertEqual(before, {path: path.read_text(encoding="utf-8") for path in before})
 
             check = run_cli(root, "check")

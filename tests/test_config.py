@@ -487,3 +487,37 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
 
             with self.assertRaisesRegex(DocSproutError, r"both docsprout\.json and dockit\.json exist"):
                 load_config(root)
+
+    def test_legacy_dockit_json_diagnostics_use_the_legacy_file_name(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "dockit.json").write_text(
+                json.dumps({"schema_version": 1, "project": {"name": "Legacy"}, "them": {}}), encoding="utf-8",
+            )
+            (docs / "layout.json").write_text(
+                json.dumps({"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DocSproutError, r"Unknown field 'dockit\.them'"):
+                load_config(root)
+
+    def test_canonical_configuration_diagnostics_use_the_canonical_file_name(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "docsprout.json").write_text(
+                json.dumps({"schema_version": 1, "project": {"name": "Current"}, "them": {}}), encoding="utf-8",
+            )
+            (docs / "layout.json").write_text(
+                json.dumps({"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(DocSproutError, r"Unknown field 'docsprout\.them'"):
+                load_config(root)
