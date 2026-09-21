@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a command, build or generated-site problem
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Run `docsprout doctor` first and include
+        its output where it is relevant.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include the exact command and the complete message.
+      placeholder: |
+        $ docsprout check
+        docsprout: docs/layout.json: ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: DocSprout version
+      description: Output of `docsprout --version`.
+      placeholder: docsprout 1.1.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Python and operating system
+      placeholder: Python 3.13 on Windows 11
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: A small `docs/` tree, a repository link, or the steps that show the problem.
+    validations:
+      required: false
