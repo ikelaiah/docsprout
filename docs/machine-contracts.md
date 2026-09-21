@@ -153,11 +153,12 @@ deterministically by page order, then source position.
 
 Compatible additions are preferred within 1.x. A deprecation keeps the old
 surface working for at least one minor release and is documented in the
-changelog and migration guide before removal in the next major release. Schema
-or machine-format changes require a new schema version and an explicit
-migration path. A safety fix may reject behavior outside this documented
-contract, with a regression test and migration guidance when user action is
-needed.
+changelog and migration guide before removal in the next major release. The
+pre-rebrand aliases listed below are deprecated in v1.1.0 and are removed in
+v2.0.0. Schema or machine-format changes require a new schema version and an
+explicit migration path. A safety fix may reject behavior outside this
+documented contract, with a regression test and migration guidance when user
+action is needed.
 
 ## The compatibility boundary
 

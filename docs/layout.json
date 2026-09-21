@@ -60,7 +60,8 @@
         {"title": "Existing-repository adoption", "path": "decisions/0006-existing-repository-adoption.md"},
         {"title": "GitHub Pages setup", "path": "decisions/0007-github-pages-one-command.md"},
         {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
-        {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"}
+        {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
+        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"}
       ]
     }
   ]

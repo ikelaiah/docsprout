@@ -17,7 +17,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("first site in about 10 minutes", readme)
         self.assertIn("You can stop here", readme)
         self.assertIn("Grow polished documentation from Markdown.", readme)
-        self.assertIn("docsprout/archive/refs/tags/v1.0.0.zip", readme)
+        self.assertIn(f"docsprout/archive/refs/tags/v{__version__}.zip", readme)
         self.assertNotIn('pip install "docsprout==', readme)
 
     def test_readme_badges_are_canonical_and_deliberate(self) -> None:
@@ -25,7 +25,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         expected_badges = (
             "[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain)",
-            "[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.0.0/)",
+            f"[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F{__version__}%2F&label=docs)](https://ikelaiah.github.io/docsprout/{__version__}/)",
             "[![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest)",
             "[![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions)",
             "[![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)",
@@ -68,13 +68,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.0.0", __version__)
+        self.assertEqual("1.1.0", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.0.0"', pyproject)
+        self.assertIn('version = "1.1.0"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -215,7 +215,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.0.0", qualification)
+        self.assertIn(f"# Qualification evidence for DocSprout v{__version__}", qualification)
         self.assertIn("Browser automation status", qualification)
 
     def test_v1_five_promises_and_contract_are_explicit(self) -> None:

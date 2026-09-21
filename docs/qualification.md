@@ -1,13 +1,16 @@
-# Qualification evidence for DocSprout v1.0.0
+# Qualification evidence for DocSprout v1.1.0
 
-DocSprout v1.0.0 is the stable qualification release. The claims below are the
-contract that CI and the maintained fixtures exercise, and every row names how
-it is verified. "Supported" means the combination is run by automated
-qualification on every pull request and release, not merely believed to work.
+DocSprout v1.1.0 is the rebrand release: the renames described in the
+[migration guide](migration.md#dockit-to-docsprout-1x-rebrand), with the
+v1.0.0 stable contract preserved. The claims below are the contract that CI
+and the maintained fixtures exercise, and every row names how it is verified.
+"Supported" means the combination is run by automated qualification on every
+pull request and release, not merely believed to work.
 
 The v0.17 and v0.18 matrices are retained as historical evidence for the
 contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
-clean-room package rehearsal and the explicit compatibility policy.
+clean-room package rehearsal and the explicit compatibility policy; v1.1.0
+adds the rebrand compatibility evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -177,6 +180,28 @@ images at intrinsic size. Regression coverage checks the normal, single-version
 and versioned build paths, configured banners, custom-CSS ordering, themes and
 content-width settings. The maintained visual fixture carries both an
 oversized SVG and a small badge for browser review.
+
+## v1.1.0 additions
+
+The rebrand keeps the v1.0.0 contract and adds explicit evidence that the
+pre-rebrand names still work:
+
+- **Distribution and CLI**: the wheel and sdist expose `docsprout` plus the
+  deprecated `dockit-fp` alias; `python -m docsprout` is canonical and
+  `python -m dockit_fp` plus `from dockit_fp import __version__` are qualified
+  from an installed package.
+- **Configuration**: a legacy `docs/dockit.json` project passes `check` and
+  `build`; when both `docsprout.json` and `dockit.json` exist, the command
+  fails with an actionable ambiguity error instead of choosing silently.
+- **Output ownership**: the `.docsprout-site` marker is written by every
+  build, and a directory carrying the old `.dockit-fp-site` marker is
+  recognised and replaced.
+- **GitHub Pages**: fresh setup creates `docsprout-pages.yml`; a managed
+  `dockit-pages.yml` is recognised and updated in place by `--update` without
+  creating a second deployment workflow; unmanaged workflows are never
+  overwritten.
+- **Browser storage**: generated pages migrate `dockit-fp-theme` and
+  `dockit-fp-visual-theme` to the `docsprout-*` keys.
 
 ## The Five Promises
 

@@ -1,6 +1,6 @@
 # 🌱 DocSprout
 
-[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.0.0%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.0.0/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)
+[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.1.0%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.1.0/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)
 
 ![DocSprout banner — Build documentation people can use.](docs/assets/docsprout-banner.svg)
 
@@ -23,7 +23,7 @@ Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.0.0.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.0.zip"
 docsprout init
 docsprout serve
 ```
@@ -146,7 +146,9 @@ project keeps working:
 
 - `dockit-fp` remains a deprecated console-script alias and
   `python -m dockit_fp` remains a deprecated module entry point for at least
-  one minor release; use `docsprout` and `python -m docsprout` instead.
+  one minor release; use `docsprout` and `python -m docsprout` instead. The
+  aliases, the `docs/dockit.json` filename, the `.dockit-fp-site` marker and
+  the managed `dockit-pages.yml` path are scheduled for removal in v2.0.0.
 - Existing `docs/dockit.json` files keep loading. New projects create
   `docs/docsprout.json`; never keep both, because the ambiguity is an error.
 - Managed `dockit-pages.yml` workflows are recognised and updated in place.
