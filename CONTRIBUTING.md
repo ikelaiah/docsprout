@@ -8,8 +8,9 @@ Install the local checkout and run the complete suite before proposing a
 change:
 
 ```powershell
-python -m pip install -e .
+python -m pip install -e ".[dev]"
 python -m unittest discover -s tests -t . -v
+ruff check .
 ```
 
 Keep changes dependency-free unless there is a documented reason otherwise.

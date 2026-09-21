@@ -36,21 +36,19 @@ def _write_project(root: Path, *, filename: str = "docsprout.json") -> None:
 
 class RebrandCompatibilityTests(unittest.TestCase):
     def test_canonical_module_reports_the_canonical_version(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            result = subprocess.run(
-                [sys.executable, "-m", "docsprout", "--version"],
-                capture_output=True, text=True, encoding="utf-8", env=cli_environment(), timeout=60,
-            )
+        result = subprocess.run(
+            [sys.executable, "-m", "docsprout", "--version"],
+            capture_output=True, text=True, encoding="utf-8", env=cli_environment(), timeout=60,
+        )
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(f"docsprout {__version__}", result.stdout.strip())
 
     def test_deprecated_module_alias_still_answers(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            result = subprocess.run(
-                [sys.executable, "-m", "dockit_fp", "--version"],
-                capture_output=True, text=True, encoding="utf-8", env=cli_environment(), timeout=60,
-            )
+        result = subprocess.run(
+            [sys.executable, "-m", "dockit_fp", "--version"],
+            capture_output=True, text=True, encoding="utf-8", env=cli_environment(), timeout=60,
+        )
 
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(f"dockit-fp {__version__}", result.stdout.strip())
