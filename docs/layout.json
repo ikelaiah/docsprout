@@ -11,7 +11,8 @@
         {"title": "Overview", "path": "index.md"},
         {"title": "Your first site", "path": "beginners-guide.md"},
         {"title": "Write useful documentation", "path": "writing-great-docs.md"},
-        {"title": "Glossary", "path": "glossary.md"}
+        {"title": "Glossary", "path": "glossary.md"},
+        {"title": "Troubleshooting", "path": "troubleshooting.md"}
       ]
     },
     {
@@ -45,8 +46,7 @@
         {"title": "PasWeave integration", "path": "pasweave-integration.md"},
         {"title": "Architecture", "path": "architecture.md"},
         {"title": "Architecture analysis", "path": "architecture-analysis.md"},
-        {"title": "Project specification", "path": "spec.md"},
-        {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"}
+        {"title": "Project specification", "path": "spec.md"}
       ]
     },
     {
@@ -61,6 +61,7 @@
         {"title": "GitHub Pages setup", "path": "decisions/0007-github-pages-one-command.md"},
         {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
         {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
+        {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"},
         {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"}
       ]
     }

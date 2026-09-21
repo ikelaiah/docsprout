@@ -21,7 +21,8 @@ If the punctuation is wrong, `docsprout check` names the file and error.
 > both names: DocSprout fails with an ambiguity error rather than choosing one
 > silently. The
 > [migration guide](migration.md#dockit-to-docsprout-1x-rebrand) covers the
-> rename.
+> rename, and [Troubleshooting](troubleshooting.md) maps every configuration
+> error message to its fix.
 
 ## Project metadata and colours
 

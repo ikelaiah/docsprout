@@ -100,10 +100,12 @@ existing projects and advanced historical publishing.
 | --- | --- |
 | Learn how to write useful documentation | [Write documentation people can use](docs/writing-great-docs.md) |
 | Add pages and navigation | [Configuration](docs/configuration.md) |
+| Add richer content | [Authoring recipes](docs/authoring-recipes.md) |
 | Find likely publication mistakes | [Audit your documentation](docs/audit.md) |
 | Change colours, themes or home-page presentation | [Themes](docs/themes.md) and [customize the home page](docs/homepage-recipes.md) |
 | Publish with the recommended path | [GitHub Pages in one command](docs/github-pages.md#github-pages-in-one-command) |
 | Keep documentation for older releases | [GitHub Pages: historical site](docs/github-pages.md#historical-site-for-versioned-projects) |
+| Fix a failing command | [Troubleshooting](docs/troubleshooting.md) |
 | Find out what is tested and supported | [Qualification evidence](docs/qualification.md) |
 | Understand an unfamiliar term | [Glossary](docs/glossary.md) |
 

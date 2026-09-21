@@ -30,7 +30,8 @@ configuration-name transition, not a schema migration:
   `docsprout-theme` and `docsprout-visual-theme` keys.
 - The public `--dk-*` CSS custom-property names are unchanged, as are routes,
   JSON schemas, configuration field names and command behaviour unrelated to
-  the rebrand.
+  the rebrand. [Troubleshooting](troubleshooting.md) lists the exact messages
+  and fixes for the transition.
 
 Migrate gradually from local `tools/build_docs.py`, `build_all_docs.py`,
 `check_built_docs.py` and `tools/docs_assets/` copies:

@@ -41,7 +41,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         self.assertEqual("Start here", sections[0]["title"])
         self.assertEqual(
-            ["index.md", "beginners-guide.md", "writing-great-docs.md", "glossary.md"],
+            ["index.md", "beginners-guide.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
             [page["path"] for page in sections[0]["pages"]],
         )
         self.assertGreater(
@@ -239,6 +239,19 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("Schema-version-1 configuration", machine)
         self.assertIn("1.x compatibility policy", machine)
         self.assertIn("0010", decision)
+
+    def test_troubleshooting_guide_maps_messages_to_fixes(self) -> None:
+        troubleshooting = (self.root / "docs" / "troubleshooting.md").read_text(encoding="utf-8")
+
+        for message in (
+            "both docsprout.json and dockit.json exist",
+            "not owned by DocSprout",
+            "not managed by DocSprout",
+            "does not match HEAD",
+            "docsprout github-pages --update",
+        ):
+            with self.subTest(message=message):
+                self.assertIn(message, troubleshooting)
 
     def test_stable_contract_guides_and_examples_are_maintained(self) -> None:
         layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
