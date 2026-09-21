@@ -66,8 +66,15 @@ def _check_wheel(path: Path, version: str, failures: list[str]) -> int:
         for classifier in ("3.10", "3.11", "3.12", "3.13", "3.14"):
             if f"Programming Language :: Python :: {classifier}" not in metadata:
                 failures.append(f"wheel METADATA lacks the Python {classifier} classifier")
-        if "Requires-Dist:" in metadata:
-            failures.append("wheel declares runtime dependencies; DocSprout must stay dependency-free")
+        runtime_dependencies = [
+            line for line in metadata.splitlines()
+            if line.startswith("Requires-Dist:") and "extra ==" not in line
+        ]
+        if runtime_dependencies:
+            failures.append(
+                "wheel declares runtime dependencies; DocSprout must stay dependency-free: "
+                + "; ".join(runtime_dependencies)
+            )
         return sum(1 for name in names if name.startswith("docsprout/") and name.endswith(".py"))
 
 

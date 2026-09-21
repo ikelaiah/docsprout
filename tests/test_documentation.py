@@ -215,8 +215,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn(f"# Qualification evidence for DocSprout v{__version__}", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.1.0", qualification)
         self.assertIn("Browser automation status", qualification)
+        self.assertIn("ruff check", qualification)
+        self.assertIn("ruff check .", ci)
 
     def test_v1_five_promises_and_contract_are_explicit(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")

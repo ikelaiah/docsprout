@@ -45,6 +45,9 @@ not claimed as completed when the required browser tooling is absent.
 
 - Both package forms are built on every release: the wheel and the source
   distribution (`sdist`).
+- A dedicated `lint` CI job runs `ruff check` over the source, tests and
+  qualification scripts through the `dev` extra; the linter is not a runtime
+  dependency.
 - Artifact inspection verifies the module set, bundled KaTeX CSS/JS/fonts,
   the `docsprout = docsprout.cli:main` console entry point and the deprecated
   `dockit-fp = docsprout.cli:main_dockit_fp` alias, metadata version, the
