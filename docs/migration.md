@@ -92,6 +92,16 @@ segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
 
+## v1.1.2 to v1.1.3
+
+No configuration change is required. Update the package archive or source pin
+and any caller workflow pin to `v1.1.3`. This patch changes documentation and
+its regression tests only: the guides now demonstrate the home-page banner,
+require referenced assets to exist before building, cover common configuration
+and Markdown errors, document `docsprout build` options, offline archives,
+`--root` and `doctor`, and add the navigation, theme and command vocabulary to
+the glossary.
+
 ## v1.1.1 to v1.1.2
 
 No configuration change is required. Update the package archive or source pin

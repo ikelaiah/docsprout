@@ -254,6 +254,20 @@ and Pages workflow are now documented as the stable 1.x contract.
 - [x] Disambiguate repeated heading anchors, keep the audit warning, and extend
       the maintained visual fixture and regression tests.
 
+## v1.1.3 — Documentation quality pass ✅
+
+- [x] Make DocSprout's own site configure the home-page banner it documents,
+      and explain banner placement, sizing and the pre-existing-asset rule.
+- [x] Frame every asset example as "create the file first" so copy-paste cannot
+      silently break, and lock the guidance with regression tests.
+- [x] Map the most common configuration, asset and Markdown failures in
+      troubleshooting, including invalid JSON and version manifests.
+- [x] Add a build guide for `build` options, deterministic ZIP archives,
+      `--root` and `doctor`, and extend the glossary with the navigation, theme
+      and command vocabulary.
+- [x] Mark the original v0.3.0 specification as historical and give the
+      customisation guides an explicit reading order.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

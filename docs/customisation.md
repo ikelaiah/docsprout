@@ -1,6 +1,8 @@
 # Customising sections and identity
 
-Use configuration to rename sections, choose colours, add project links and use
+This is step 2 of the
+[customisation order](configuration.md#changing-colours-logo-and-presentation):
+use configuration to rename sections, choose colours, add project links and use
 a small project mark in the header.
 DocSprout keeps the page layout and accessibility behaviour working, so you do
 not need to copy or maintain its CSS.
@@ -63,8 +65,8 @@ identity asset:
 ```
 
 You can inspect the complete maintained
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.2/docs/docsprout.json)
-and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.2/docs/assets/docsprout-mark.svg).
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.3/docs/docsprout.json)
+and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.3/docs/assets/docsprout-mark.svg).
 On generated DocSprout pages, purple is the accent and highlight colour; the
 DocSprout mark appears immediately before the project name in the top header;
 `Built with DocSprout.` appears at the bottom in the footer; and the `Project`

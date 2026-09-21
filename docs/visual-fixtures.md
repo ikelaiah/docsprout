@@ -7,7 +7,8 @@ tables, callouts, search, theme controls, page navigation, a long document,
 the reading-progress indicator, responsive Markdown images and a home-page banner. Its checked-in
 `docs/docsprout.json` configures `docs/assets/visual-fixture-banner.svg`, so every
 fixture build includes the banner above the opening content without a manual
-file edit.
+file edit. The checked-in image is a 1200×240 SVG: a teal field with a light
+document mark and the words "Visual fixture".
 
 Build it locally:
 
