@@ -23,11 +23,9 @@ from pathlib import Path
 import subprocess
 import sys
 import sysconfig
-import tarfile
 import tempfile
 import time
 import urllib.request
-import zipfile
 
 import docsprout
 from docsprout.github_pages import CANONICAL_WORKFLOW_RELATIVE_PATH, render_workflow

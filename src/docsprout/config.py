@@ -264,7 +264,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     if primary is None:
         raise DocSproutError(f"{docs / CONFIG_FILENAME}: required when modern documentation configuration exists")
     data = _read_json(primary)
-    _reject_unknown_fields(data, DOCSPROUT_FIELDS, "docsprout", primary)
+    _reject_unknown_fields(data, DOCSPROUT_FIELDS, primary.stem, primary)
     homepage = _homepage_config(data, primary)
     project = data.get("project")
     if not isinstance(project, dict) or not isinstance(project.get("name"), str) or not project["name"].strip():
@@ -415,4 +415,5 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         project_links=tuple(project_links), pages=tuple(pages),
         legacy=False, home_document=home, homepage=homepage,
         custom_css=custom_css, excluded_documents=excluded_documents,
+        config_filename=primary.name,
     )

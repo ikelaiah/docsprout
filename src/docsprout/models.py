@@ -41,3 +41,4 @@ class SiteConfig:
     homepage: Homepage
     custom_css: str | None = None
     excluded_documents: tuple[str, ...] = ()
+    config_filename: str | None = None

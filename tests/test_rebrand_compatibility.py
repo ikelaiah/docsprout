@@ -110,6 +110,11 @@ class RebrandCompatibilityTests(unittest.TestCase):
             self.assertIn("docsprout.json", check.stdout)
             self.assertIn("dockit.json", check.stdout)
 
+    def test_deprecated_error_alias_points_to_the_canonical_error(self) -> None:
+        from docsprout.errors import DocKitError, DocSproutError
+
+        self.assertIs(DocKitError, DocSproutError)
+
     def test_source_checkout_keeps_the_shim_importable(self) -> None:
         self.assertTrue((SOURCE / "dockit_fp" / "__init__.py").is_file())
         self.assertTrue((SOURCE / "dockit_fp" / "__main__.py").is_file())
