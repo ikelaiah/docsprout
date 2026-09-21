@@ -121,7 +121,60 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     main_context = ' data-homepage="true"' if homepage else ' data-homepage="false"'
     theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme'),visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','midnight'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
     custom_css_link = f'<link rel="stylesheet" href="{html.escape(_relative(current_route, "assets/custom.css"), quote=True)}">' if custom_css else ""
-    return f'''<!doctype html><html lang="en" data-visual-theme="{html.escape(config.theme_style, quote=True)}" data-content-width="{html.escape(config.content_width, quote=True)}" style="{style}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="{html.escape(config.description, quote=True)}"><title>{html.escape(page.title)} — {html.escape(config.name)}</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%237c3aed' d='M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4'/%3E%3C/svg%3E">{theme_bootstrap}<link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/site.css'), quote=True)}"><link rel="stylesheet" href="{html.escape(_relative(current_route, 'assets/katex/katex.min.css'), quote=True)}">{custom_css_link}</head><body><div class="reading-progress" aria-hidden="true"><span></span></div><header class="site-header"><div class="topbar"><a class="brand" href="{html.escape(_relative(current_route, 'index.html'), quote=True)}">{brand_identity}<span>{html.escape(config.name)}</span> <em>docs</em></a><div class="search-control"><input id="search" type="search" placeholder="Search docs, commands, and versions" aria-label="Search documentation, commands, and versions" aria-controls="search-results" aria-describedby="search-help" aria-expanded="false" autocomplete="off" data-search-index="{html.escape(_relative(current_route, 'search-index.json'), quote=True)}"><kbd aria-hidden="true" title="Press / to search">/</kbd><span id="search-help" class="visually-hidden">Type to search. Use the arrow keys to move through results, Enter to open, and Escape to close.</span></div>{header_controls}</div><div id="search-results" class="search-results" role="region" aria-label="Search results" aria-live="polite" hidden></div></header><details class="mobile-nav"><summary>Browse documentation</summary>{nav}</details><div class="shell"><nav class="sidebar" aria-label="Documentation navigation">{nav}</nav><main class="prose" id="content"{main_context}>{banner_html}{release_context}{body}{page_navigation}</main><aside class="toc" aria-label="On this page">{toc}</aside></div>{footer}<script src="{html.escape(_relative(current_route, 'assets/katex/katex.min.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/math.js'), quote=True)}"></script><script src="{html.escape(_relative(current_route, 'assets/site.js'), quote=True)}"></script></body></html>'''
+    home_route = html.escape(_relative(current_route, "index.html"), quote=True)
+    search_index_route = html.escape(_relative(current_route, "search-index.json"), quote=True)
+    site_css_route = html.escape(_relative(current_route, "assets/site.css"), quote=True)
+    katex_css_route = html.escape(_relative(current_route, "assets/katex/katex.min.css"), quote=True)
+    katex_js_route = html.escape(_relative(current_route, "assets/katex/katex.min.js"), quote=True)
+    math_js_route = html.escape(_relative(current_route, "assets/math.js"), quote=True)
+    site_js_route = html.escape(_relative(current_route, "assets/site.js"), quote=True)
+    favicon = (
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E"
+        "%3Cpath fill='%237c3aed' d='M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4'/%3E%3C/svg%3E"
+    )
+    document_head = (
+        f'<!doctype html><html lang="en" data-visual-theme="{html.escape(config.theme_style, quote=True)}"'
+        f' data-content-width="{html.escape(config.content_width, quote=True)}" style="{style}"><head>'
+        '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<meta name="description" content="{html.escape(config.description, quote=True)}">'
+        f"<title>{html.escape(page.title)} — {html.escape(config.name)}</title>"
+        f'<link rel="icon" href="{favicon}">'
+        f"{theme_bootstrap}"
+        f'<link rel="stylesheet" href="{site_css_route}">'
+        f'<link rel="stylesheet" href="{katex_css_route}">'
+        f"{custom_css_link}"
+        "</head><body>"
+    )
+    site_header = (
+        '<div class="reading-progress" aria-hidden="true"><span></span></div>'
+        '<header class="site-header"><div class="topbar">'
+        f'<a class="brand" href="{home_route}">{brand_identity}<span>{html.escape(config.name)}</span> <em>docs</em></a>'
+        '<div class="search-control">'
+        '<input id="search" type="search" placeholder="Search docs, commands, and versions"'
+        ' aria-label="Search documentation, commands, and versions" aria-controls="search-results"'
+        ' aria-describedby="search-help" aria-expanded="false" autocomplete="off"'
+        f' data-search-index="{search_index_route}">'
+        '<kbd aria-hidden="true" title="Press / to search">/</kbd>'
+        '<span id="search-help" class="visually-hidden">Type to search. Use the arrow keys to move'
+        " through results, Enter to open, and Escape to close.</span></div>"
+        f"{header_controls}"
+        '</div><div id="search-results" class="search-results" role="region"'
+        ' aria-label="Search results" aria-live="polite" hidden></div></header>'
+    )
+    mobile_navigation = f'<details class="mobile-nav"><summary>Browse documentation</summary>{nav}</details>'
+    document_body = (
+        f'<div class="shell"><nav class="sidebar" aria-label="Documentation navigation">{nav}</nav>'
+        f'<main class="prose" id="content"{main_context}>{banner_html}{release_context}{body}{page_navigation}</main>'
+        f'<aside class="toc" aria-label="On this page">{toc}</aside></div>'
+    )
+    document_close = (
+        f"{footer}"
+        f'<script src="{katex_js_route}"></script>'
+        f'<script src="{math_js_route}"></script>'
+        f'<script src="{site_js_route}"></script>'
+        "</body></html>"
+    )
+    return "".join((document_head, site_header, mobile_navigation, document_body, document_close))
 
 
 def detect_route_collisions(pages: tuple[Page, ...], home: str) -> None:
