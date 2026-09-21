@@ -27,6 +27,7 @@ Pascal-friendly, but the input is ordinary Markdown, not Pascal source code.
 - **I want to know what is tested and supported.** Read the [qualification
   evidence](qualification.md).
 - **A word is unfamiliar.** Check the [glossary](glossary.md).
+- **A command failed.** Find the message in [Troubleshooting](troubleshooting.md).
 
 ## ✨ What stays simple
 
