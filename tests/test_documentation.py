@@ -68,13 +68,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.1.0", __version__)
+        self.assertEqual("1.1.1", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.1.0"', pyproject)
+        self.assertIn('version = "1.1.1"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -215,7 +215,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.1.0", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.1.1", qualification)
         self.assertIn("Browser automation status", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)

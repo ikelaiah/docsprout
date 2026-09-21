@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   documentation:
-    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.0
+    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.1
     permissions:
       contents: read
       pages: write

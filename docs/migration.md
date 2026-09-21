@@ -92,6 +92,13 @@ segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
 
+## v1.1.0 to v1.1.1
+
+No configuration change is required. Update the package archive or source pin
+and any caller workflow pin to `v1.1.1`. The patch adds the legacy-configuration
+guidance fix, a troubleshooting guide, repository health files, a dev-only
+`ruff` lint gate, and a byte-identical refactor of the document template.
+
 ## v1.0.0 to v1.1.0
 
 The rebrand release. There is no configuration or schema migration and no

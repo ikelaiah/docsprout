@@ -233,6 +233,16 @@ and Pages workflow are now documented as the stable 1.x contract.
 - [x] Qualify the pre-rebrand aliases, the configuration ambiguity error, the
       legacy ownership marker and the managed legacy workflow path.
 
+## v1.1.1 — Quality pass ✅
+
+- [x] Point `init` and `doctor` at the real configuration filename with an
+      explicit legacy rename step.
+- [x] Add a troubleshooting guide and a module-to-tests code map.
+- [x] Add security policy, code of conduct, issue/PR templates and Dependabot.
+- [x] Add a `ruff` lint gate as a dev-only extra.
+- [x] Split the 2,566-character document shell into named, byte-identical
+      parts and guard against pathologically long source lines.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

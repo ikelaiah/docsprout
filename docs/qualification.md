@@ -1,16 +1,15 @@
-# Qualification evidence for DocSprout v1.1.0
+# Qualification evidence for DocSprout v1.1.1
 
-DocSprout v1.1.0 is the rebrand release: the renames described in the
-[migration guide](migration.md#dockit-to-docsprout-1x-rebrand), with the
-v1.0.0 stable contract preserved. The claims below are the contract that CI
-and the maintained fixtures exercise, and every row names how it is verified.
+DocSprout v1.1.1 is the quality patch for the rebrand release, with the v1.0.0
+stable contract preserved. The claims below are the contract that CI and the
+maintained fixtures exercise, and every row names how it is verified.
 "Supported" means the combination is run by automated qualification on every
 pull request and release, not merely believed to work.
 
 The v0.17 and v0.18 matrices are retained as historical evidence for the
 contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
-clean-room package rehearsal and the explicit compatibility policy; v1.1.0
-adds the rebrand compatibility evidence below.
+clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
+the rebrand compatibility evidence and the quality-gate additions below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -205,6 +204,24 @@ pre-rebrand names still work:
   overwritten.
 - **Browser storage**: generated pages migrate `dockit-fp-theme` and
   `dockit-fp-visual-theme` to the `docsprout-*` keys.
+
+## v1.1.1 additions
+
+The quality patch adds gates and guidance without changing the contract:
+
+- **Legacy guidance**: `init` and `doctor` name the actual configuration file
+  on pre-rebrand projects and print the rename step; the regression suite
+  covers both the legacy and canonical outputs.
+- **Troubleshooting**: every documented failure message has a mapped fix,
+  checked for the ambiguity, ownership, workflow and release entries.
+- **Lint gate**: a dedicated CI job runs `ruff check` over the source, tests
+  and qualification scripts through the `dev` extra; the artifact check still
+  rejects any unconditional runtime dependency.
+- **Readable shell**: the document template is assembled from named fragments;
+  recursive hashes prove the generated sites are byte-identical, and a test
+  rejects any `src/docsprout` line longer than 1,000 characters.
+- **Repository health**: security policy, code of conduct, issue and pull
+  request templates and Dependabot updates are in place.
 
 ## The Five Promises
 
