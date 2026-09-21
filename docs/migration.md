@@ -91,6 +91,19 @@ segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
 
+## v1.0.0 to v1.1.0
+
+The rebrand release. There is no configuration or schema migration and no
+generated-route change:
+
+1. Update the package archive or source installation pin to `v1.1.0`.
+2. Update caller workflows to `publish-docs.yml@v1.1.0`, or run
+   `docsprout github-pages --update` where a managed caller already exists.
+3. Optionally rename `docs/dockit.json` to `docs/docsprout.json`. Never keep
+   both names: the ambiguity is an error.
+4. Keep using `docsprout`, or migrate away from the deprecated `dockit-fp` and
+   `python -m dockit_fp` aliases before v2.0.0 removes them.
+
 ## v0.17.0 to v0.18.0
 
 v0.18.0 is the final pre-1.0 simplification and contract-candidate release.

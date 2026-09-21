@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.1.0
+
+The rebrand release. DocSprout is the new name for the builder released through
+v1.0.0 as DocKit-FP. There is no configuration or schema migration: update the
+package and workflow pins to `v1.1.0` and keep building. The stable 1.x contract
+is unchanged.
+
 ### Changed
 
 - **Rebrand:** DocKit / DocKit-FP is now **DocSprout**. The distribution,
@@ -26,9 +33,19 @@
 
 - `dockit-fp` remains a deprecated console-script alias and
   `python -m dockit_fp` remains a deprecated module entry point for at least
-  one minor release. `from dockit_fp import __version__` keeps working.
+  one minor release. `from dockit_fp import __version__` keeps working. The
+  aliases, the `docs/dockit.json` filename, the `.dockit-fp-site` marker and
+  the managed `dockit-pages.yml` path are scheduled for removal in v2.0.0.
 - The `--dk-*` CSS token family, routes, JSON schemas, configuration field
   names and command behavior unrelated to the rebrand are unchanged.
+
+### Upgrading
+
+1. Install the v1.1.0 archive or pinned Git ref instead of v1.0.0.
+2. Point caller workflows at `publish-docs.yml@v1.1.0` and run
+   `docsprout github-pages --update` where a managed caller already exists.
+3. Optionally rename `docs/dockit.json` to `docs/docsprout.json`; never keep
+   both.
 
 ## 1.0.0
 

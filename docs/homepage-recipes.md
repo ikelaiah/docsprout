@@ -13,7 +13,7 @@ The examples below are `homepage` values to add to your existing
 ## See it in DocSprout
 
 DocSprout uses the same configuration on this site. Its
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.0.0/docs/docsprout.json)
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.0/docs/docsprout.json)
 contains capability cards and release context:
 
 ```json

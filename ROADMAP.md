@@ -222,7 +222,7 @@ and Pages workflow are now documented as the stable 1.x contract.
       versioned builds and Pages publication.
 - [x] Ship only after all Five Promises have qualification evidence.
 
-## Unreleased — DocSprout rebrand
+## v1.1 — DocSprout Rebrand ✅
 
 - [x] Rename the product, distribution, package, CLI command and primary
       configuration to DocSprout while preserving the 1.x compatibility
@@ -230,6 +230,8 @@ and Pages workflow are now documented as the stable 1.x contract.
       least one minor release.
 - [x] Keep routes, JSON schemas, configuration field names and the `--dk-*`
       token family unchanged.
+- [x] Qualify the pre-rebrand aliases, the configuration ambiguity error, the
+      legacy ownership marker and the managed legacy workflow path.
 
 ## Quality bar
 
