@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+## 1.1.1
+
+A quality patch for the rebrand release. No configuration, schema or route
+change: update the package and workflow pins to `v1.1.1` and keep building.
+
+### Fixed
+
+- `init` and `doctor` now name the authoritative configuration file on
+  pre-rebrand projects (`docs/dockit.json`), point the configuration hint at
+  that file, and print the explicit rename step for the v2.0.0 removal.
+- Legacy `dockit.json` diagnostics label root fields with the actual file stem
+  (`dockit.*`) instead of `docsprout.*`.
+
+### Added
+
+- `docs/troubleshooting.md` maps the exact DocSprout messages to fixes.
+- `CONTRIBUTING.md` gains a module-to-tests code map.
+- `SECURITY.md`, a Contributor Covenant code of conduct, bug/feature issue
+  forms, a pull-request checklist and weekly Dependabot updates.
+- `Homepage`, `Documentation`, `Repository`, `Changelog` and `Issues` project
+  URLs plus keywords in package metadata.
+- A `ruff` lint gate through a `dev` optional dependency, run by a dedicated
+  CI job; the runtime stays dependency-free.
+
+### Changed
+
+- The `build.py` document shell is assembled from named fragments instead of
+  one 2,566-character line; output is byte-identical across the repository
+  docs and the maintained examples. A regression test now rejects any
+  `src/docsprout` line longer than 1,000 characters.
+
 ## 1.1.0
 
 The rebrand release. DocSprout is the new name for the builder released through
