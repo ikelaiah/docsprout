@@ -4,6 +4,10 @@ Use these structures as a short starting point. They are ordinary Markdown and
 `layout.json` files: no generator-specific source edits or hosted service is
 needed.
 
+These recipes decide **page structure**. For what the home page *shows*, see
+[Customize the home page](homepage-recipes.md); the two pages share archetype
+names but edit different layers.
+
 ## Library
 
 ```text

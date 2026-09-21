@@ -16,7 +16,9 @@ only needed when a project deliberately wants a different presentation.
 
 ## Configure one stylesheet
 
-Add `theme.custom_css` to `docs/docsprout.json`:
+1. Create the stylesheet inside your repository, for example
+   `docs/assets/custom.css`.
+2. Add `theme.custom_css` to `docs/docsprout.json`:
 
 ```json
 {
@@ -31,11 +33,13 @@ Add `theme.custom_css` to `docs/docsprout.json`:
 ```
 
 The path is repository-local, exactly like `identity.logo`. It is optional,
-must be non-empty, must end in `.css`, and the file must exist. Absolute
-paths, parent-directory traversal and any path that resolves outside the
-repository are rejected, as are symlinks or junctions that escape the
-repository root. There is no network fetch and no CSS parser: DocSprout copies
-the file and a generated page references it.
+must be non-empty, must end in `.css`, and the file must exist: create the
+stylesheet first, because `docsprout check` and `docsprout build` stop with a
+validation error such as `theme.custom_css asset ... does not exist` when the
+path is wrong. Absolute paths, parent-directory traversal and any path that
+resolves outside the repository are rejected, as are symlinks or junctions that
+escape the repository root. There is no network fetch and no CSS parser:
+DocSprout copies the file and a generated page references it.
 
 ## Where and how it loads
 

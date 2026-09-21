@@ -1,5 +1,7 @@
 # Choose colours and a visual theme
 
+This page is the colour and style reference in the
+[customisation order](configuration.md#changing-colours-logo-and-presentation).
 You do not need CSS to give a DocSprout site its own identity. Start with one
 colour preset and one visual style in `docs/docsprout.json`:
 
@@ -30,7 +32,7 @@ Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
 
 The maintained
-[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.2/examples/single-version)
+[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
@@ -70,14 +72,18 @@ hexadecimal values:
 Test custom colours in both Light and Dark mode. Links, selected navigation and
 keyboard focus must remain easy to see. A preset is safer when you are unsure.
 The maintained
-[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.2/examples/minimal)
+[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/minimal)
 uses the exact teal values shown above; its built links, selected navigation
 and focus state use that accent.
 
 ## Add a banner only when it helps
 
-A home-page banner can show a project logo or useful illustration. Keep the
-image inside your repository and describe it for people who cannot see it:
+A home-page banner can show a project logo or useful illustration. It renders
+above the home page's `h1` heading, spans the content width and is capped at
+`16rem` tall, so wide artwork works best. Save the image inside your repository
+first, then reference it and describe it for people who cannot see it. The file
+must already exist: `docsprout build` stops with a validation error when it is
+missing or unsafe.
 
 ```json
 {

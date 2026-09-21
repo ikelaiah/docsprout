@@ -41,7 +41,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         self.assertEqual("Start here", sections[0]["title"])
         self.assertEqual(
-            ["index.md", "beginners-guide.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
+            ["index.md", "beginners-guide.md", "building.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
             [page["path"] for page in sections[0]["pages"]],
         )
         self.assertGreater(
@@ -68,13 +68,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.1.2", __version__)
+        self.assertEqual("1.1.3", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.1.2"', pyproject)
+        self.assertIn('version = "1.1.3"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -155,6 +155,33 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertTrue((fixture_root / config["banner"]["path"]).is_file())
         self.assertIn("[visual fixture](visual-fixtures.md)", themes)
         self.assertIn("visual-fixture-banner.svg", fixtures)
+        self.assertIn("1200×240", fixtures)
+
+    def test_docs_project_demonstrates_its_banner_configuration(self) -> None:
+        config = json.loads((self.root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
+        index = (self.root / "docs" / "index.md").read_text(encoding="utf-8")
+        configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
+        recipes = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
+
+        self.assertEqual("docs/assets/docsprout-banner.svg", config["banner"]["path"])
+        self.assertTrue((self.root / config["banner"]["path"]).is_file())
+        self.assertNotIn("docsprout-banner.svg", index)
+        self.assertIn("[`banner`](#add-a-home-page-banner)", configuration)
+        self.assertIn("`banner` is top-level, not a `homepage` value", recipes)
+
+    def test_asset_examples_require_creating_the_file_first(self) -> None:
+        pages = {
+            name: " ".join((self.root / "docs" / name).read_text(encoding="utf-8").split())
+            for name in ("configuration.md", "themes.md", "homepage-recipes.md", "custom-css.md")
+        }
+
+        self.assertIn("Save the image inside your repository", pages["configuration.md"])
+        self.assertIn("Save the image inside your repository first", pages["themes.md"])
+        self.assertIn("Save the banner image in your repository first", pages["homepage-recipes.md"])
+        self.assertIn("Create the stylesheet inside your repository", pages["custom-css.md"])
+        for name, text in pages.items():
+            with self.subTest(page=name):
+                self.assertIn("validation error", text)
 
     def test_theme_guide_points_to_maintained_exact_colour_and_style_examples(self) -> None:
         minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "docsprout.json").read_text(encoding="utf-8"))
@@ -215,7 +242,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.1.2", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.1.3", qualification)
         self.assertIn("Browser automation status", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)
@@ -251,6 +278,31 @@ class DocumentationUsabilityTests(unittest.TestCase):
                     f"{path.name}:{number} has {len(line)} characters; extract a readable helper or data fragment",
                 )
 
+    def test_build_guide_documents_options_archives_and_doctor(self) -> None:
+        guide = (self.root / "docs" / "building.md").read_text(encoding="utf-8")
+        readme = (self.root / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("docsprout build --release 1.2.0 --offline-archive", guide)
+        self.assertIn("`--root <folder>`", guide)
+        self.assertIn("Status: preview-ready", guide)
+        self.assertIn("docs/building.md", readme)
+
+    def test_historical_spec_and_glossary_stay_self_describing(self) -> None:
+        spec = (self.root / "docs" / "spec.md").read_text(encoding="utf-8")
+        analysis = (self.root / "docs" / "architecture-analysis.md").read_text(encoding="utf-8")
+        glossary = (self.root / "docs" / "glossary.md").read_text(encoding="utf-8")
+
+        self.assertIn("historical record of the original v0.3.0 objectives", " ".join(spec.split()))
+        self.assertIn("maintainer history, not adoption guidance", " ".join(analysis.split()))
+        for term in (
+            "Audit", "Banner", "Capability cards", "Check", "Doctor",
+            "`docsprout.json`", "`layout.json`", "Mode", "Navigation",
+            "Preset", "Route", "Section", "Style", "Token (`--dk-*`)",
+            "Version manifest",
+        ):
+            with self.subTest(term=term):
+                self.assertIn(f"\n{term}\n", glossary)
+
     def test_troubleshooting_guide_maps_messages_to_fixes(self) -> None:
         troubleshooting = (self.root / "docs" / "troubleshooting.md").read_text(encoding="utf-8")
 
@@ -260,6 +312,12 @@ class DocumentationUsabilityTests(unittest.TestCase):
             "not managed by DocSprout",
             "does not match HEAD",
             "docsprout github-pages --update",
+            "invalid JSON",
+            "must be a non-empty string",
+            "asset '...' does not exist",
+            "unclosed fenced code block",
+            "unsupported admonition",
+            "invalid version manifest",
         ):
             with self.subTest(message=message):
                 self.assertIn(message, troubleshooting)

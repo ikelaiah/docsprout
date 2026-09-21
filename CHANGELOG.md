@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 1.1.3
+
+A documentation-quality patch. No configuration, schema, route or token change:
+update the package and workflow pins to `v1.1.3` and rebuild. The bundled guides
+now demonstrate the home-page banner, require referenced assets to exist before
+building, map the most common configuration and Markdown errors to fixes, and
+document `docsprout build`, offline archives, `--root` and `doctor` output.
+
+### Changed
+
+- DocSprout's own documentation site now configures the home-page banner it
+  documents, and the configuration and home-page guides describe the banner's
+  placement, size limits and pre-existing-asset rule.
+- Examples that reference banner, logo or custom-CSS files now tell readers to
+  create the file first, and troubleshooting covers malformed JSON, invalid
+  field values, missing assets, unclosed Markdown blocks and invalid version
+  manifests.
+- Added a build guide covering `docsprout build` options, deterministic
+  offline archives, `--root` and `docsprout doctor` output. The glossary gained
+  the navigation, theme and command vocabulary, and the project specification
+  is marked historical.
+
 ## 1.1.2
 
 A typography release for generated sites. No configuration, schema, route or

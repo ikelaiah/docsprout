@@ -6,7 +6,8 @@ project's top-level folder.
 
 > [!TIP] Start with `docsprout doctor`. It reports the project shape, the
 > configuration filename, the release state and the GitHub Pages workflow in
-> one place.
+> one place. [Build and inspect your site](building.md#start-with-doctor)
+> explains each line.
 
 ## Configuration
 
@@ -31,6 +32,34 @@ configuration-free discovery. See [Configuration](configuration.md).
 The named field is not part of schema version 1. Fix the spelling or remove
 the field; the message suggests the closest supported name. The DocSprout
 rebrand did not rename any configuration field.
+
+### `invalid JSON: ...`
+
+A configuration file has a syntax error: a missing comma, a trailing comma or
+an unquoted key. Compare the file with the complete examples in
+[Configuration](configuration.md) and fix the punctuation; DocSprout does not
+guess intent in malformed JSON.
+
+### `field 'project.name' must be a non-empty string`
+
+Every `docs/docsprout.json` needs a project name. Add
+`"project": {"name": "Your project"}` or correct the existing value. See
+[Project metadata and colours](configuration.md#project-metadata-and-colours).
+
+### `field 'theme.preset' must be one of ...`
+
+A value is misspelled or unsupported. Presets are `blue`, `teal`, `ocean` and
+`purple`; styles are `classic`, `paper` and `midnight`; content widths are
+`compact`, `comfortable` and `wide`. See [Themes](themes.md) and
+[Reading width](configuration.md#reading-width).
+
+### `... asset '...' does not exist` or `... path is unsafe`
+
+`banner`, `identity.logo` and `theme.custom_css` must each point at a file
+that already exists inside the repository. Create the file first, then correct
+the path. See
+[Add a home-page banner](configuration.md#add-a-home-page-banner) and
+[Custom CSS](custom-css.md#configure-one-stylesheet).
 
 ### `navigation page '...' does not exist`
 
@@ -69,6 +98,18 @@ Correct the link or move the target inside `README.md` or `docs/`.
 A link points at a heading anchor that does not exist on the target page.
 Correct the fragment or add the heading.
 
+## Markdown content
+
+### `Markdown: unclosed fenced code block` or `unclosed display math block`
+
+A fenced block opened with ``` or `$$` is never closed. Add the closing fence
+or `$$` at the end of the block.
+
+### `Markdown: unsupported admonition '...'`
+
+Only `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]` and `[!WARNING]` callouts are
+supported. Correct the label or write an ordinary blockquote.
+
 ## GitHub Pages
 
 ### `github-pages: this folder is not a Git repository`
@@ -102,6 +143,13 @@ docsprout github-pages --update
 ```
 
 ## Release history
+
+### `invalid version manifest` or `field 'schema_version' must be 1`
+
+`docs/versions.json` is malformed or missing required fields. It needs
+`schema_version: 1`, a `current` release, and a non-empty `versions` list that
+includes `current` with unique releases and source refs. Compare it with
+[Create the version manifest](historical-docs.md#create-the-version-manifest).
 
 ### `source_ref ... does not exist. Create the tag`
 

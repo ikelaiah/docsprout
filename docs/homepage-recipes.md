@@ -7,17 +7,26 @@ repository-root `README.md` with `"source": "root"`. The `homepage` object in
 not choose the document. You do not need it unless you want to customise the
 landing page.
 
-The examples below are `homepage` values to add to your existing
-`docs/docsprout.json`; keep your `schema_version`, `project` and other settings.
+These recipes decide **presentation**. For page structure, see
+[Authoring recipes](authoring-recipes.md); the two pages share archetype names
+but edit different layers.
+
+The examples below are values to add to your existing `docs/docsprout.json`;
+keep your `schema_version`, `project` and other settings. All but `banner`,
+which is a top-level setting, are `homepage` values.
 
 ## See it in DocSprout
 
 DocSprout uses the same configuration on this site. Its
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.2/docs/docsprout.json)
-contains capability cards and release context:
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.3/docs/docsprout.json)
+contains a home-page banner, capability cards and release context:
 
 ```json
 {
+  "banner": {
+    "path": "docs/assets/docsprout-banner.svg",
+    "alt": "DocSprout banner — Build documentation people can use."
+  },
   "homepage": {
     "capabilities": [
       {"title": "Existing-project friendly", "description": "Start with the README and docs you already have."},
@@ -31,6 +40,10 @@ contains capability cards and release context:
 ```text
 docs/docsprout.json
         ↓
+banner
+        ↓
+the banner image above the home page heading on the DocSprout home page
+
 homepage.capabilities
         ↓
 capability cards below the opening summary on the DocSprout home page
@@ -40,7 +53,9 @@ homepage.sections.release_context
 the current release label above the DocSprout home page
 ```
 
-Open the generated [DocSprout home page](index.md) to see both effects.
+Open the generated [DocSprout home page](index.md) to see all three effects;
+[Configuration](configuration.md#add-a-home-page-banner) covers the banner's
+placement and asset rules.
 
 The built-in presentation adapts to the number of cards: two, three and four
 cards form balanced columns on a desktop, then move to two columns on a tablet
@@ -68,13 +83,16 @@ and shows the current release.
 
 ## Application
 
-Use this when the home page should lead with a product banner and story. After
-you add the image at the configured path, it shows the banner and introduction
-but hides capability cards.
+Use this when the home page should lead with a product banner and story. Save
+the banner image in your repository first (the example uses
+`docs/assets/project-banner.svg`), then add this:
 
 ```json
 {
-  "banner": {"path": "docs/assets/banner.png", "alt": "The Acme Desktop application"},
+  "banner": {
+    "path": "docs/assets/project-banner.svg",
+    "alt": "The Acme Desktop application main window"
+  },
   "homepage": {
     "capabilities": [],
     "sections": {"banner": true, "introduction": true}
@@ -82,10 +100,15 @@ but hides capability cards.
 }
 ```
 
+`banner` is top-level, not a `homepage` value. Its path must point at a file
+that already exists in your repository: `docsprout build` stops with a
+validation error if it is missing. The banner appears above the heading,
+followed by the introduction, and capability cards stay hidden. Wide artwork
+works best: the image spans the content width and is capped at `16rem` tall.
 For a checked-in banner example, build the maintained
-[visual fixture](visual-fixtures.md). Its local SVG and `banner` configuration
-produce the image above the fixture's opening content without editing the
-fixture first.
+[visual fixture](visual-fixtures.md); its local 1200×240 SVG and `banner`
+configuration produce the image above the fixture's opening content without
+editing the fixture first.
 
 ## API reference
 

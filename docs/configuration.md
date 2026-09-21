@@ -278,11 +278,40 @@ Each card needs a non-empty `title` and `description`. An empty
 | Section | Default | Effect on the selected home page |
 | --- | --- | --- |
 | `capabilities` | `true` | Shows the configured cards, or the four standard cards when `homepage.capabilities` is omitted. |
-| `banner` | `true` | Shows the configured `banner` image above the home-page content. It has no effect when no banner is configured. |
+| `banner` | `true` | Shows the configured [`banner`](#add-a-home-page-banner) image above the home-page content. It has no effect when no banner is configured. |
 | `introduction` | `true` | Keeps the first paragraph after the H1 heading. |
 | `release_context` | `false` | Hides the release label above the home-page content. |
 
 Start from a complete example in [Customize the home page](homepage-recipes.md).
+
+### Add a home-page banner
+
+A banner is one repository-local image rendered above the home page's `h1`
+heading, before the introduction and capability cards. It never appears on
+other pages.
+
+1. Save the image inside your repository, for example
+   `docs/assets/project-banner.svg`.
+2. Reference that file from the top-level `banner` object:
+
+```json
+{
+  "schema_version": 1,
+  "project": {"name": "MyLibrary-FP"},
+  "banner": {
+    "path": "docs/assets/project-banner.svg",
+    "alt": "MyLibrary-FP wordmark on a teal field"
+  }
+}
+```
+
+`path` is repository-relative, must not contain `..`, and the file must
+already exist: `docsprout build` stops with a validation error otherwise.
+DocSprout copies the image into the built site and renders it at the content
+width, capped at `16rem` tall with `object-fit: cover`, so wide artwork works
+best and important details should stay centred. The maintained
+[visual fixture](visual-fixtures.md) uses a 1200×240 SVG. To keep the setting
+but hide the image, set `homepage.sections.banner` to `false`.
 
 ## Changing colours, logo and presentation
 
@@ -299,6 +328,17 @@ Appearance and identity are `docs/docsprout.json` edits:
 
 The documented `--dk-*` tokens are the stable customisation surface for
 selectors you write yourself; see [Themes](themes.md#the-documented-dk-tokens).
+
+Customise in this order:
+
+1. Colours, visual style, logo, footer and banner — this page and
+   [Themes](themes.md).
+2. [Sections and identity](customisation.md): navigation groups, project
+   attribution and the header mark.
+3. [Customize the home page](homepage-recipes.md): cards, introduction and
+   release label.
+4. [Custom CSS](custom-css.md): only when the documented options are
+   exhausted.
 
 ## Release history can wait
 

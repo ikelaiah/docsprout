@@ -1,5 +1,12 @@
 # Spec: DocSprout 0.3.0 (originally DocKit-FP)
 
+> [!IMPORTANT] This is a historical record of the original v0.3.0 objectives.
+> It predates `serve`, `audit` and `github-pages`, the `--dk-*` token contract
+> and custom CSS. For the current contract, read
+> [Machine-readable contracts](machine-contracts.md) and
+> [Qualification evidence](qualification.md); for changes since, read
+> [Migration](migration.md).
+
 ## Objective
 
 Build a small, reusable, Free Pascal-first static documentation-site package.

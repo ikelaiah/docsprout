@@ -1,5 +1,10 @@
 # Architectural analysis
 
+This page records the cross-project analysis that led to extracting DocSprout
+from the ecosystem's library sites. It is maintainer history, not adoption
+guidance: start with [Architecture](architecture.md) for the current design and
+[Machine-readable contracts](machine-contracts.md) for the stable surface.
+
 DocSprout is the shared static-site layer for the Free Pascal ecosystem. It
 renders project-owned Markdown into a documentation site; it does not parse
 Pascal source or extract API declarations.

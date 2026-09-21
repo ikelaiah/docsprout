@@ -9,6 +9,10 @@
   "theme": {
     "preset": "purple"
   },
+  "banner": {
+    "path": "docs/assets/docsprout-banner.svg",
+    "alt": "DocSprout banner — Build documentation people can use."
+  },
   "identity": {
     "logo": "docs/assets/docsprout-mark.svg",
     "footer": "Built with DocSprout.",

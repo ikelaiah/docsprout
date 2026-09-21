@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "docsprout"
-version = "1.1.2"
+version = "1.1.3"
 description = "Versioned static documentation sites for code projects"
 keywords = ["documentation", "static-site", "markdown", "github-pages"]
 readme = "README.md"

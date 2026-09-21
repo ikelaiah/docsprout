@@ -1,7 +1,7 @@
-# Qualification evidence for DocSprout v1.1.2
+# Qualification evidence for DocSprout v1.1.3
 
-DocSprout v1.1.2 is the typography release for generated sites, with the
-v1.0.0 stable contract preserved. The claims below are the contract that CI and
+DocSprout v1.1.3 is the documentation-quality patch for generated sites, with
+the v1.0.0 stable contract preserved. The claims below are the contract that CI and
 the maintained fixtures exercise, and every row names how it is verified.
 "Supported" means the combination is run by automated qualification on every
 pull request and release, not merely believed to work.
@@ -10,7 +10,8 @@ The v0.17 and v0.18 matrices are retained as historical evidence for the
 contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
 clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
 the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
-the typography evidence below.
+the typography evidence, and v1.1.3 adds the documentation-quality evidence
+below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -243,6 +244,28 @@ token value changes:
   unit tests cover each protected case.
 - **Unique heading anchors**: repeated headings receive `-2`, `-3` suffixes;
   the audit keeps warning (DK103) when headings share anchor text.
+
+## v1.1.3 additions
+
+The documentation-quality patch changes guides, tests and the project's own
+site configuration; no schema, route or token value changes:
+
+- **Banner dogfooding**: DocSprout's own `docs/docsprout.json` configures the
+  home-page banner, and the built home page is asserted to render it above the
+  heading while other pages stay banner-free.
+- **Copy-paste safety**: every guide example that references a banner, logo or
+  custom stylesheet now instructs readers to create the file first; tests pin
+  the instruction and the validation-error rule.
+- **Error coverage**: troubleshooting maps invalid JSON, invalid field values,
+  missing assets, unclosed Markdown blocks, unsupported admonitions and invalid
+  version manifests to fixes, and the message-coverage test asserts each.
+- **Build guide**: `docsprout build` options, deterministic offline ZIP and
+  SHA-256 output, `--root` and the full `doctor` output are documented, with
+  the guide linked from navigation, README and troubleshooting.
+- **Structure and vocabulary**: the v0.3.0 specification is marked historical,
+  the customisation pages state a reading order, the two recipe pages
+  distinguish page structure from home-page presentation, and the glossary
+  covers the navigation, theme and command vocabulary.
 
 ## The Five Promises
 
