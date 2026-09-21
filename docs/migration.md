@@ -92,6 +92,17 @@ segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
 
+## v1.1.1 to v1.1.2
+
+No configuration change is required. Update the package archive or source pin
+and any caller workflow pin to `v1.1.2`. The typography release changes
+presentation only: cross-platform system font stacks, a complete heading and
+outline scale, running-text typography, a print stylesheet and typographic
+punctuation in prose. Markdown that relied on literal `--`, `---`, `...` or
+straight quotes in prose now renders them as en dash, em dash, ellipsis and
+curly quotes; put those characters in a code span when they must stay exact.
+Repeated headings now receive unique `-2`, `-3` anchor suffixes.
+
 ## v1.1.0 to v1.1.1
 
 No configuration change is required. Update the package archive or source pin

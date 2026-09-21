@@ -2,9 +2,12 @@
 
 ## Unreleased
 
-A typography layer for generated sites. No configuration, schema or token
-change: the same Markdown is rendered with cross-platform system font stacks,
-a complete heading and outline scale, and typographic punctuation.
+## 1.1.2
+
+A typography release for generated sites. No configuration, schema, route or
+token change: update the package and workflow pins to `v1.1.2` and rebuild.
+The same Markdown is rendered with cross-platform system font stacks, a
+complete heading and outline scale, and typographic punctuation.
 
 ### Added
 
