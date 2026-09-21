@@ -242,6 +242,15 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("1.x compatibility policy", machine)
         self.assertIn("0010", decision)
 
+    def test_source_modules_avoid_pathologically_long_lines(self) -> None:
+        limit = 1000
+        for path in sorted((self.root / "src" / "docsprout").glob("*.py")):
+            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+                self.assertLessEqual(
+                    len(line), limit,
+                    f"{path.name}:{number} has {len(line)} characters; extract a readable helper or data fragment",
+                )
+
     def test_troubleshooting_guide_maps_messages_to_fixes(self) -> None:
         troubleshooting = (self.root / "docs" / "troubleshooting.md").read_text(encoding="utf-8")
 
