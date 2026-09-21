@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+A typography layer for generated sites. No configuration, schema or token
+change: the same Markdown is rendered with cross-platform system font stacks,
+a complete heading and outline scale, and typographic punctuation.
+
+### Added
+
+- A cross-platform system font stack (`system-ui` first) for UI, display and
+  code text, so generated sites look native on macOS, Linux, iOS and Android
+  as well as Windows. No webfont is bundled or fetched.
+- Styled `h4`–`h6` headings and matching `toc-level-4`–`toc-level-6` outline
+  entries, so deep documents keep the same family, rhythm and keyboard target
+  as `h1`–`h3`.
+- Running-text typography: `text-wrap:pretty`, `orphans`/`widows`, automatic
+  hyphenation with a minimum word length, tabular figures in tables, and no
+  code ligatures in fenced blocks.
+- `::selection` styling from the theme accent, and a print stylesheet that
+  hides navigation, search, controls and the reading-progress bar.
+
+### Changed
+
+- Markdown prose converts `--`, `---`, `...` and straight quotes to
+  typographic characters. Inline code, fenced code, math and link targets keep
+  their exact characters.
+
+### Fixed
+
+- Repeated headings on one page now receive unique ids (`setup`, `setup-2`)
+  instead of colliding, so outline links and heading fragments stay correct.
+  The audit still warns (DK103) because links to the shared heading text remain
+  ambiguous.
+
 ## 1.1.1
 
 A quality patch for the rebrand release. No configuration, schema or route

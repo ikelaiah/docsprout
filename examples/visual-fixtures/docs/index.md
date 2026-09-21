@@ -22,6 +22,25 @@ contrast.
 2. Switch through each visual theme.
 3. Repeat in both colour modes.
 
+### Heading level three
+
+#### Heading level four
+
+##### Heading level five
+
+###### Heading level six
+
+Deep headings keep the same family and rhythm as the rest of the hierarchy.
+
+### Typographic details
+
+Prose receives typographic punctuation: "quoted phrases", apostrophes like
+don't, a spaced em dash --- like this --- an en dash -- like this -- and a
+closing ellipsis... That happens outside code, so `--flag`, `don't` and
+`a--b` stay exact. A long compound word such as
+Donaudampfschifffahrtsgesellschaftskapitän also stays inside the reading
+measure at narrow widths.
+
 ## Reference table
 
 | Element | Compact | Comfortable | Wide |

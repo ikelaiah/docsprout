@@ -1,7 +1,8 @@
 # Visual fixtures
 
 The maintained project in `examples/visual-fixtures` exercises typography,
-ordered and nested lists, inline code, definition lists, fenced Pascal, wide
+ordered and nested lists, the full `h1`–`h6` heading and outline scale,
+typographic punctuation, inline code, definition lists, fenced Pascal, wide
 tables, callouts, search, theme controls, page navigation, a long document,
 the reading-progress indicator, responsive Markdown images and a home-page banner. Its checked-in
 `docs/docsprout.json` configures `docs/assets/visual-fixture-banner.svg`, so every
