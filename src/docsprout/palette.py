@@ -31,13 +31,19 @@ EINK_LIGHT = ("#ffffff", "#f2f2ee", "#ffffff")
 EINK_DARK = ("#0d0d0d", "#181818", "#1e1e1e")
 GLASS_LIGHT = ("#e9f0f9", "#f6f9fd", "#ffffff")
 GLASS_DARK = ("#0a0f1e", "#161c2c", "#111726")
+# Glassmorphic reading surfaces include the worst-case composites the shipped
+# CSS can produce: body tints are capped at 12% accent, and translucent text
+# surfaces stay at 78-86% opacity over the darkest (light) or lightest (dark)
+# tinted background those bounds allow.
+GLASS_LIGHT_PROOF = GLASS_LIGHT + ("#cdd3db", "#edf1f6", "#f7f8fa")
+GLASS_DARK_PROOF = GLASS_DARK + ("#272f44", "#1a2031", "#151b2b")
 
 
 @dataclass(frozen=True)
 class _Context:
     selector: str
     mode: str
-    backgrounds: tuple[str, str, str]
+    backgrounds: tuple[str, ...]
     system_dark: bool = False
 
 
@@ -46,16 +52,16 @@ _CONTEXTS = (
     _Context('html[data-visual-theme="paper"]', "light", PAPER_LIGHT),
     _Context('html[data-visual-theme="midnight"][data-theme="light"]', "light", MIDNIGHT_LIGHT),
     _Context('html[data-visual-theme="e-ink"]', "light", EINK_LIGHT),
-    _Context('html[data-visual-theme="glassmorphic"]', "light", GLASS_LIGHT),
+    _Context('html[data-visual-theme="glassmorphic"]', "light", GLASS_LIGHT_PROOF),
     _Context('html[data-visual-theme="classic"][data-theme="dark"]', "dark", CLASSIC_DARK),
     _Context('html[data-visual-theme="paper"][data-theme="dark"]', "dark", PAPER_DARK),
     _Context('html[data-visual-theme="midnight"]', "dark", MIDNIGHT_DARK),
     _Context('html[data-visual-theme="e-ink"][data-theme="dark"]', "dark", EINK_DARK),
-    _Context('html[data-visual-theme="glassmorphic"][data-theme="dark"]', "dark", GLASS_DARK),
+    _Context('html[data-visual-theme="glassmorphic"][data-theme="dark"]', "dark", GLASS_DARK_PROOF),
     _Context('html[data-visual-theme="classic"]:not([data-theme])', "dark", CLASSIC_DARK, system_dark=True),
     _Context('html[data-visual-theme="paper"]:not([data-theme])', "dark", PAPER_DARK, system_dark=True),
     _Context('html[data-visual-theme="e-ink"]:not([data-theme])', "dark", EINK_DARK, system_dark=True),
-    _Context('html[data-visual-theme="glassmorphic"]:not([data-theme])', "dark", GLASS_DARK, system_dark=True),
+    _Context('html[data-visual-theme="glassmorphic"]:not([data-theme])', "dark", GLASS_DARK_PROOF, system_dark=True),
 )
 
 

@@ -46,18 +46,20 @@ of them publication-ready.
 
 ## E-ink and Glassmorphic in practice
 
-**E-ink** keeps the page flat and almost monochrome: white or near-black
-reading surfaces, strong text contrast, quiet borders and no shadows. Code
-blocks stay dark panels so syntax highlighting remains readable. It suits
-long-form reading and displays where colour is unreliable. Its dark variant is
-a dimmed night-reading surface rather than a saturated dark theme.
+**E-ink** is an ink-on-paper manual: flat white or near-black surfaces, ruled
+section headings, square corners, permanently underlined links, grid-bordered
+tables and an undecorated hero—no shadows, no gradients. Code blocks stay dark
+panels so syntax highlighting remains readable. It suits long-form reading and
+displays where colour is unreliable; its dark variant is a dimmed night-reading
+surface rather than a saturated dark theme.
 
-**Glassmorphic** layers translucent, blurred chrome—header, cards and search—
-over a cool tinted background with soft accent gradients and larger rounded
-corners. The surfaces that carry text stay at high opacity and use the same
-contrast-proven tokens as every other style; browsers without `backdrop-filter`
-fall back to the solid surface tokens, so the style never depends on the blur
-effect.
+**Glassmorphic** puts a mesh of soft accent tints behind frosted chrome: the
+header, hero, cards and search float on translucent, blurred layers with
+specular edges and larger rounded corners. The tint is capped and translucent
+surfaces stay mostly opaque, so every text combination is covered by the same
+build-time contrast proof as the other styles; browsers without
+`backdrop-filter` fall back to the solid surface tokens, so the style never
+depends on the blur effect.
 
 ## Pick an accent colour
 

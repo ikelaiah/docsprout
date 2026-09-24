@@ -14,6 +14,11 @@
   complete GitHub Actions job, portable runner guidance and static-host
   deployment.
 
+### Changed
+
+- The sidebar separates group labels from page entries: section headings are
+  quiet small-cap headers, and page links carry the visual weight.
+
 ## 1.1.4
 
 The brand-hero and contrast-proof release. Generated sites stop looking like a
