@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from .errors import DocSproutError
 from .models import Homepage, Page, SiteConfig
+from .palette import derive_palette
 
 DEFAULT_ACCENT = "#2563eb"
 DEFAULT_SECONDARY = "#0ea5e9"
@@ -228,6 +229,7 @@ def _legacy_config(docs: Path) -> SiteConfig:
         legacy=True, home_document=home,
         homepage=Homepage(None, True, True, True, False),
         excluded_documents=(),
+        palette=derive_palette(DEFAULT_ACCENT, DEFAULT_SECONDARY),
     )
 
 
@@ -288,17 +290,25 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     if not isinstance(theme_style, str) or theme_style not in THEME_STYLES:
         raise DocSproutError(f"{primary}: field 'theme.style' must be one of {', '.join(sorted(THEME_STYLES))}. Choose a supported visual theme or remove the field.")
     accent = theme.get("accent", preset_accent)
-    secondary = theme.get("accent_secondary", preset_secondary)
     if not isinstance(accent, str) or not HEX_COLOR.fullmatch(accent):
         raise DocSproutError(
             f"{primary}: field 'theme.accent' must be a #RRGGBB colour. "
             "Use a #RRGGBB colour such as #0f766e."
         )
-    if not isinstance(secondary, str) or not HEX_COLOR.fullmatch(secondary):
+    requested_secondary = theme.get("accent_secondary")
+    if requested_secondary is not None and (not isinstance(requested_secondary, str) or not HEX_COLOR.fullmatch(requested_secondary)):
         raise DocSproutError(
             f"{primary}: field 'theme.accent_secondary' must be a #RRGGBB colour. "
             "Use a #RRGGBB colour such as #0891b2."
         )
+    # One configured accent is a complete theme: when a project sets an accent
+    # without a secondary, DocSprout derives an analogous secondary from it.
+    # Curated presets keep their documented colour pair.
+    secondary_source = requested_secondary
+    if secondary_source is None and "accent" not in theme:
+        secondary_source = preset_secondary
+    palette = derive_palette(accent, secondary_source)
+    secondary = palette.accent_secondary
     layout_options = data.get("layout", {})
     if not isinstance(layout_options, dict):
         raise DocSproutError(f"{primary}: field 'layout' must be an object. Use a layout object or remove the field.")
@@ -415,5 +425,5 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         project_links=tuple(project_links), pages=tuple(pages),
         legacy=False, home_document=home, homepage=homepage,
         custom_css=custom_css, excluded_documents=excluded_documents,
-        config_filename=primary.name,
+        config_filename=primary.name, palette=palette,
     )

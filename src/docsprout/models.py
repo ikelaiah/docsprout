@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 
+from .palette import Palette
+
 
 @dataclass(frozen=True)
 class Page:
@@ -42,3 +44,4 @@ class SiteConfig:
     custom_css: str | None = None
     excluded_documents: tuple[str, ...] = ()
     config_filename: str | None = None
+    palette: Palette | None = None

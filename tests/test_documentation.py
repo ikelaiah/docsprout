@@ -68,13 +68,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.1.3", __version__)
+        self.assertEqual("1.1.4", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.1.3"', pyproject)
+        self.assertIn('version = "1.1.4"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -203,7 +203,8 @@ class DocumentationUsabilityTests(unittest.TestCase):
         minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "docsprout.json").read_text(encoding="utf-8"))
 
         self.assertIn("becomes each generated page's description metadata", configuration)
-        self.assertIn("does not render `repository_url` or `site_url`", configuration)
+        self.assertIn("becomes the home page hero's **Repository** action", configuration)
+        self.assertIn("does not render it anywhere", configuration)
         self.assertIn("| `capabilities` | `true` |", configuration)
         self.assertIn("| `banner` | `true` |", configuration)
         self.assertIn("| `introduction` | `true` |", configuration)
@@ -242,10 +243,23 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.1.3", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.1.4", qualification)
         self.assertIn("Browser automation status", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)
+
+    def test_guides_document_the_hero_and_the_contrast_proof(self) -> None:
+        themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
+        recipes = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
+        audit = (self.root / "docs" / "audit.md").read_text(encoding="utf-8")
+        decision = self.root / "docs" / "decisions" / "0012-brand-hero-and-proven-contrast.md"
+
+        self.assertIn("## One accent is enough", themes)
+        self.assertIn("WCAG AA", themes)
+        self.assertIn("## The automatic hero", recipes)
+        self.assertIn("**Get started**", recipes)
+        self.assertIn("DK104", audit)
+        self.assertTrue(decision.is_file())
 
     def test_v1_five_promises_and_contract_are_explicit(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")

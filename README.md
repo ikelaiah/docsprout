@@ -1,6 +1,6 @@
 # 🌱 DocSprout
 
-[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.1.3%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.1.3/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)
+[![CI](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ikelaiah/docsprout/actions/workflows/ci.yml?query=branch%3Amain) [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fikelaiah.github.io%2Fdocsprout%2F1.1.4%2F&label=docs)](https://ikelaiah.github.io/docsprout/1.1.4/) [![Latest release](https://img.shields.io/github/v/release/ikelaiah/docsprout?display_name=tag&sort=semver)](https://github.com/ikelaiah/docsprout/releases/latest) [![Python 3.10–3.14](https://img.shields.io/badge/python-3.10%E2%80%933.14-3776AB?logo=python&logoColor=white)](https://github.com/ikelaiah/docsprout/blob/main/docs/qualification.md#supported-python-versions) [![License: MIT](https://img.shields.io/github/license/ikelaiah/docsprout)](https://github.com/ikelaiah/docsprout/blob/main/LICENSE)
 
 ![DocSprout banner — Build documentation people can use.](docs/assets/docsprout-banner.svg)
 
@@ -23,7 +23,7 @@ Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.3.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.4.zip"
 docsprout init
 docsprout serve
 ```
@@ -117,7 +117,8 @@ existing projects and advanced historical publishing.
 - **Easy to learn.** The beginner path explains the mental model and the next
   useful edit without hiding decisions in a generator.
 - **Easy to look good.** Responsive, keyboard-friendly Classic, Paper and
-  Midnight sites work with local assets and no custom CSS required.
+  Midnight sites work with local assets and no custom CSS required, and one
+  brand colour becomes a contrast-proven theme.
 - **Easy to create from existing repositories.** `init` preserves Markdown,
   discovers ordinary and Pascal-shaped projects, and creates only missing
   configuration.

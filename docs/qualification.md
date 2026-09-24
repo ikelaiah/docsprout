@@ -1,17 +1,17 @@
-# Qualification evidence for DocSprout v1.1.3
+# Qualification evidence for DocSprout v1.1.4
 
-DocSprout v1.1.3 is the documentation-quality patch for generated sites, with
-the v1.0.0 stable contract preserved. The claims below are the contract that CI and
-the maintained fixtures exercise, and every row names how it is verified.
-"Supported" means the combination is run by automated qualification on every
-pull request and release, not merely believed to work.
+DocSprout v1.1.4 is the brand-hero and contrast-proof release for generated
+sites, with the v1.0.0 stable contract preserved. The claims below are the
+contract that CI and the maintained fixtures exercise, and every row names how
+it is verified. "Supported" means the combination is run by automated
+qualification on every pull request and release, not merely believed to work.
 
 The v0.17 and v0.18 matrices are retained as historical evidence for the
 contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
 clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
 the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
-the typography evidence, and v1.1.3 adds the documentation-quality evidence
-below.
+the typography evidence, v1.1.3 adds the documentation-quality evidence, and
+v1.1.4 adds the brand-hero and contrast evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -267,6 +267,27 @@ site configuration; no schema, route or token value changes:
   distinguish page structure from home-page presentation, and the glossary
   covers the navigation, theme and command vocabulary.
 
+## v1.1.4 additions
+
+The brand-hero and contrast-proof release changes presentation and derives new
+values; no schema, route, machine-format or token-name change:
+
+- **Automatic hero**: the built home page is asserted to render one hero with
+  its heading, opening summary, release pill and derived Get started/Repository
+  actions; non-home pages stay hero-free, and unsafe repository URLs are never
+  emitted.
+- **Capability card icons**: every card receives a deterministic decorative
+  inline SVG chosen from its title; tests count the icons and pin the
+  accessible-hidden markup.
+- **One accent is enough**: an explicit `theme.accent` without
+  `accent_secondary` derives an analogous secondary; tests cover derivation and
+  preset preservation.
+- **Contrast proof**: WCAG relative luminance and contrast ratios are computed
+  per visual style and colour mode; tests assert 4.5:1 interactive-text and
+  3:1 focus contrast against every shipped surface, the correction of a failing
+  accent, the `check` note and the `DK104` audit warning. A regression test
+  keeps the palette surface constants and the stylesheet in sync.
+
 ## The Five Promises
 
 | Promise | Qualification evidence | Result |
@@ -332,3 +353,4 @@ automated contract above.
 | 4 | Screenshot phone/tablet/desktop widths in Classic, Paper and Midnight × System, Light and Dark; nothing overlaps and no page-level horizontal scroll appears. |
 | 5 | With the OS reduced-motion preference on, search results, the reading-progress bar and theme changes do not animate. |
 | 6 | With Windows high-contrast / forced-colors enabled, focus outlines and the reading-progress indicator remain visible. |
+| 7 | At desktop and phone widths the home-page hero keeps its copy readable, the derived actions stay keyboard reachable, and a configured banner spans the content width without cutting its text. |

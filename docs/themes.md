@@ -32,7 +32,7 @@ Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
 
 The maintained
-[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/single-version)
+[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
@@ -72,18 +72,34 @@ hexadecimal values:
 Test custom colours in both Light and Dark mode. Links, selected navigation and
 keyboard focus must remain easy to see. A preset is safer when you are unsure.
 The maintained
-[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/minimal)
+[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/minimal)
 uses the exact teal values shown above; its built links, selected navigation
 and focus state use that accent.
+
+## One accent is enough
+
+You do not have to choose two colours. When you set `theme.accent` without
+`accent_secondary`, DocSprout derives an analogous secondary from it, so a
+single brand colour still produces a complete theme. Curated presets keep their
+documented colour pair.
+
+DocSprout also proves the brand colour against every reading surface it ships.
+Link (`--dk-interactive`) and focus (`--dk-focus-ring`) values are computed for
+each visual style and colour mode: the exact accent is kept wherever it meets
+WCAG AA contrast, and a verification-safe variant is substituted where it
+cannot. If your accent fails AA on the light page background,
+`docsprout check` prints a note and `docsprout audit` reports `DK104` with the
+corrected colour. Decorative surfaces keep using the exact accent you
+configured, and filled actions use an internal `--dk-on-interactive` foreground
+chosen for contrast.
 
 ## Add a banner only when it helps
 
 A home-page banner can show a project logo or useful illustration. It renders
-above the home page's `h1` heading, spans the content width and is capped at
-`16rem` tall, so wide artwork works best. Save the image inside your repository
-first, then reference it and describe it for people who cannot see it. The file
-must already exist: `docsprout build` stops with a validation error when it is
-missing or unsafe.
+as a full-width band at the top of the home-page hero, above the heading. Save
+the image inside your repository first, then reference it and describe it for
+people who cannot see it. The file must already exist: `docsprout build` stops
+with a validation error when it is missing or unsafe.
 
 ```json
 {

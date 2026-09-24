@@ -18,7 +18,7 @@ which is a top-level setting, are `homepage` values.
 ## See it in DocSprout
 
 DocSprout uses the same configuration on this site. Its
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.3/docs/docsprout.json)
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.4/docs/docsprout.json)
 contains a home-page banner, capability cards and release context:
 
 ```json
@@ -42,15 +42,15 @@ docs/docsprout.json
         ↓
 banner
         ↓
-the banner image above the home page heading on the DocSprout home page
+the banner band at the top of the DocSprout home page hero
 
 homepage.capabilities
         ↓
-capability cards below the opening summary on the DocSprout home page
+capability cards below the hero on the DocSprout home page
 
 homepage.sections.release_context
         ↓
-the current release label above the DocSprout home page
+the release pill inside the DocSprout home page hero
 ```
 
 Open the generated [DocSprout home page](index.md) to see all three effects;
@@ -61,6 +61,21 @@ The built-in presentation adapts to the number of cards: two, three and four
 cards form balanced columns on a desktop, then move to two columns on a tablet
 and one column on a phone. This is part of the default visual system, so card
 configuration remains content-only.
+
+## The automatic hero
+
+The home page opens with a hero built from the same plain Markdown: the `h1`,
+the first paragraph (unless `introduction` is `false`), the release pill and a
+call-to-action row. Both actions are derived, never configured:
+
+- **Get started** links to the first listed page that is not the home page;
+- **Repository** links to `project.repository_url` when it is an http(s) URL.
+
+Capability cards render below the hero with a decorative icon chosen from each
+card title. The accent-derived backdrop, card hover lift and icons are CSS and
+inline SVG, so they stay offline and need no MDX, JavaScript framework or
+custom HTML. A configured banner renders as a full-width band at the top of
+the hero, before the heading.
 
 ## Library
 
@@ -102,12 +117,13 @@ the banner image in your repository first (the example uses
 
 `banner` is top-level, not a `homepage` value. Its path must point at a file
 that already exists in your repository: `docsprout build` stops with a
-validation error if it is missing. The banner appears above the heading,
-followed by the introduction, and capability cards stay hidden. Wide artwork
-works best: the image spans the content width and is capped at `16rem` tall.
-For a checked-in banner example, build the maintained
+validation error if it is missing. The banner appears as a full-width band at
+the top of the hero, followed by the introduction, and capability cards stay
+hidden. Wide artwork works best: the image keeps its proportions and is only
+cropped when a taller image exceeds the `15rem` cap. For a checked-in banner
+example, build the maintained
 [visual fixture](visual-fixtures.md); its local 1200×240 SVG and `banner`
-configuration produce the image above the fixture's opening content without
+configuration produce the hero band on the fixture's opening page without
 editing the fixture first.
 
 ## API reference

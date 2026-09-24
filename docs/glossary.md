@@ -8,8 +8,9 @@ Audit
   coded errors and warnings without changing files.
 
 Banner
-: One image shown above the home page's `h1` heading. Configure it with the
-  top-level `banner` object in `docsprout.json`.
+: One image shown as a full-width band at the top of the home-page hero, above
+  the `h1` heading. Configure it with the top-level `banner` object in
+  `docsprout.json`.
 
 Build
 : Turn source files, such as Markdown, into output files such as a website.
@@ -61,6 +62,11 @@ Home page
 
 `HEAD`
 : Git's name for the exact commit currently checked out in your project folder.
+
+Hero
+: The designed opening section of the home page: the release pill, heading,
+  opening summary, derived actions and optional banner artwork. DocSprout builds
+  it from plain Markdown with no MDX or custom HTML.
 
 Immutable
 : Unable to change. A release tag should keep pointing to the same commit so old

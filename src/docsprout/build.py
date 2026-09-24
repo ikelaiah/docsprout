@@ -26,6 +26,35 @@ DEFAULT_CAPABILITIES = (
     ("Pascal-ready", "Made for FP and Lazarus docs."),
 )
 INITIAL_INTRODUCTION = re.compile(r"^(<h1\b[^>]*>.*?</h1>\s*)<p>.*?</p>\s*", re.DOTALL)
+# Decorative card icons chosen from the configured card title. Unmatched
+# titles cycle through neutral marks so every card keeps a visible anchor.
+CARD_ICONS = (
+    (("offline", "local", "air-gap", "airgap", "no cdn"), '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>'),
+    (("version", "release", "history", "changelog"), '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    (("katex", "math", "formula", "equation"), '<path d="M17 4H7l5 8-5 8h10"/>'),
+    (("pascal", "lazarus", "freepascal", "free pascal"), '<path d="m9 8-5 4 5 4M15 8l5 4-5 4"/>'),
+    (("search", "find"), '<circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/>'),
+    (("theme", "style", "colour", "color", "custom"), '<path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 0-4 2 2 0 0 1 0-4h3a5 5 0 0 0 5-5c0-3-4-5-9-5Z"/><circle cx="7.5" cy="11" r="1"/>'),
+    (("api", "reference", "sdk"), '<path d="M8 4H6v16h2M16 4h2v16h-2"/>'),
+    (("safe", "secure", "security"), '<path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6Z"/>'),
+    (("fast", "speed", "instant", "quick"), '<path d="M4 13a8 8 0 0 1 16 0"/><path d="m12 13 4-4"/><path d="M4 17h16"/>'),
+)
+NEUTRAL_CARD_ICONS = (
+    '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/>',
+    '<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
+    '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>',
+)
+
+
+def _card_icon(index: int, title: str) -> str:
+    lowered = title.lower()
+    path = next((path for keywords, path in CARD_ICONS if any(keyword in lowered for keyword in keywords)), None)
+    if path is None:
+        path = NEUTRAL_CARD_ICONS[index % len(NEUTRAL_CARD_ICONS)]
+    return (
+        '<svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none"'
+        f' stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{path}</svg>'
+    )
 
 
 @dataclass(frozen=True)
@@ -35,6 +64,7 @@ class BuildResult:
     legacy: bool
     home_document: str
     excluded_count: int = 0
+    palette_note: str | None = None
 
 
 def _route(document: str, home: str) -> str:
@@ -70,6 +100,19 @@ def _page_navigation(*, page: Page, config, current_route: str) -> str:
     return f'<nav class="page-navigation" aria-label="Page navigation">{"".join(links)}</nav>' if links else ""
 
 
+def _hero_actions(*, config, current_route: str) -> str:
+    """Derive the home-page call to action from navigation and repository metadata."""
+    links: list[str] = []
+    target = next((item for item in config.pages if item.path != config.home_document), None)
+    if target is not None:
+        href = html.escape(_relative(current_route, _route(target.path, config.home_document)), quote=True)
+        links.append(f'<a class="hero-primary" href="{href}">Get started</a>')
+    repository = config.repository_url or ""
+    if urlsplit(repository).scheme.lower() in {"http", "https"}:
+        links.append(f'<a class="hero-secondary" href="{html.escape(repository, quote=True)}">Repository</a>')
+    return f'<div class="hero-actions">{"".join(links)}</div>' if links else ""
+
+
 def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page, config, current_route: str, version_options: str, banner: str | None, logo: str | None, release: str, custom_css: bool = False) -> str:
     navigation_sections: list[str] = []
     for section in dict.fromkeys(item.section for item in config.pages):
@@ -88,25 +131,38 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     nav = "".join(navigation_sections)
     banner_html = f'<img class="banner" src="{html.escape(banner, quote=True)}" alt="{html.escape(config.banner_alt or "", quote=True)}">' if banner else ""
     style = f"--dk-accent:{config.accent};--dk-accent-secondary:{config.accent_secondary}"
+    palette_style = f"<style>{config.palette.stylesheet()}</style>" if config.palette else ""
     brand_mark = '<svg class="brand-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4"/></svg>'
     brand_identity = f'<img class="brand-logo" src="{html.escape(_relative(current_route, logo), quote=True)}" alt="" aria-hidden="true">' if logo else brand_mark
-    if page.path == config.home_document and not config.homepage.show_introduction:
+    homepage = page.path == config.home_document
+    if homepage and not config.homepage.show_introduction:
         body = INITIAL_INTRODUCTION.sub(r"\1", body)
     cards = config.homepage.capabilities if config.homepage.capabilities is not None else DEFAULT_CAPABILITIES
     capability_strip = ""
-    if page.path == config.home_document and config.homepage.show_capabilities and cards:
+    if homepage and config.homepage.show_capabilities and cards:
         card_html = "".join(
-            f"<li><strong>{html.escape(title)}</strong><span>{html.escape(description)}</span></li>"
-            for title, description in cards
+            f"<li>{_card_icon(index, title)}<strong>{html.escape(title)}</strong><span>{html.escape(description)}</span></li>"
+            for index, (title, description) in enumerate(cards)
         )
         capability_strip = f'<ul class="capability-strip" data-card-count="{len(cards)}" aria-label="{html.escape(config.name)} capabilities">{card_html}</ul>'
-    if capability_strip:
+    release_context = f'<aside class="release-context" aria-label="Release context"><strong>Release</strong><span>{html.escape(release)}</span></aside>' if homepage and config.homepage.show_release_context else ""
+    hero = ""
+    if homepage:
         title_end = body.find("</h1>")
-        insert_at = title_end + len("</h1>") if title_end >= 0 else 0
-        paragraph_start = body.find("<p>", insert_at)
-        if paragraph_start >= 0 and not body[insert_at:paragraph_start].strip():
-            insert_at = body.find("</p>", paragraph_start) + len("</p>")
-        body = body[:insert_at] + capability_strip + body[insert_at:]
+        opening_end = title_end + len("</h1>") if title_end >= 0 else 0
+        if opening_end:
+            paragraph_start = body.find("<p>", opening_end)
+            if paragraph_start >= 0 and not body[opening_end:paragraph_start].strip():
+                closing = body.find("</p>", paragraph_start)
+                if closing >= 0:
+                    opening_end = closing + len("</p>")
+        actions = _hero_actions(config=config, current_route=current_route)
+        if opening_end or actions or release_context:
+            art = f'<div class="hero-figure">{banner_html}</div>' if banner_html else ""
+            hero = f'<div class="hero{" hero-art" if banner_html else ""}">{art}<div class="hero-copy">{release_context}{body[:opening_end]}{actions}</div></div>'
+            body = body[opening_end:]
+    if capability_strip:
+        body = capability_strip + body
     toc_links = "".join(
         f'<a class="toc-level-{level}" href="#{html.escape(identifier, quote=True)}">{html.escape(text)}</a>'
         for level, text, identifier in headings if level > 1
@@ -115,9 +171,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     page_navigation = _page_navigation(page=page, config=config, current_route=current_route)
     footer_links = "".join(f'<a href="{html.escape(url, quote=True)}">{html.escape(label)}</a>' for label, url in config.project_links)
     footer = f'<footer class="site-footer"><span>{html.escape(config.footer or config.name)}</span>{footer_links}</footer>' if config.footer or footer_links else ""
-    release_context = f'<aside class="release-context" aria-label="Release context"><strong>Release</strong><span>{html.escape(release)}</span></aside>' if page.path == config.home_document and config.homepage.show_release_context else ""
     header_controls = f'''<div class="header-controls" aria-label="Site controls"><label class="header-control"><span>Version</span><select id="version-select" aria-label="Documentation version">{version_options}</select></label><label class="header-control"><span>Style</span><select id="visual-theme" aria-label="Documentation visual theme"><option value="classic">Classic</option><option value="paper">Paper</option><option value="midnight">Midnight</option></select></label><label class="header-control"><span>Mode</span><select id="theme-select" aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>'''
-    homepage = page.path == config.home_document
     main_context = ' data-homepage="true"' if homepage else ' data-homepage="false"'
     theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme'),visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','midnight'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
     custom_css_link = f'<link rel="stylesheet" href="{html.escape(_relative(current_route, "assets/custom.css"), quote=True)}">' if custom_css else ""
@@ -141,6 +195,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         f'<link rel="icon" href="{favicon}">'
         f"{theme_bootstrap}"
         f'<link rel="stylesheet" href="{site_css_route}">'
+        f"{palette_style}"
         f'<link rel="stylesheet" href="{katex_css_route}">'
         f"{custom_css_link}"
         "</head><body>"
@@ -164,7 +219,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     mobile_navigation = f'<details class="mobile-nav"><summary>Browse documentation</summary>{nav}</details>'
     document_body = (
         f'<div class="shell"><nav class="sidebar" aria-label="Documentation navigation">{nav}</nav>'
-        f'<main class="prose" id="content"{main_context}>{banner_html}{release_context}{body}{page_navigation}</main>'
+        f'<main class="prose" id="content"{main_context}>{hero}{body}{page_navigation}</main>'
         f'<aside class="toc" aria-label="On this page">{toc}</aside></div>'
     )
     document_close = (
@@ -293,4 +348,5 @@ def build_site(
     return BuildResult(
         len(entries), len({page.section for page in config.pages}), config.legacy,
         config.home_document, len(config.excluded_documents),
+        config.palette.note if config.palette else None,
     )

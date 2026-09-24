@@ -44,10 +44,11 @@ Edit `docs/docsprout.json`:
 `project.name` appears in the header and browser page title.
 `project.description` becomes each generated page's description metadata; it
 is not ordinary visible page text. `docsprout init` may add
-`project.repository_url` from a GitHub remote. DocSprout stores that value and an
-optional `project.site_url`, but does not render `repository_url` or `site_url`
-as a footer or project link. Add an `identity.links` entry when readers should
-be able to follow a visible project link.
+`project.repository_url` from a GitHub remote. An http(s) `repository_url`
+becomes the home page hero's **Repository** action; `project.site_url` is
+metadata only and DocSprout does not render it anywhere. Add an
+`identity.links` entry when readers should be able to follow a visible project
+link.
 
 The supported colour presets are `blue`, `teal`, `ocean` and `purple`. Start
 with a preset. You can choose exact colours later in [Themes](themes.md).
@@ -278,7 +279,7 @@ Each card needs a non-empty `title` and `description`. An empty
 | Section | Default | Effect on the selected home page |
 | --- | --- | --- |
 | `capabilities` | `true` | Shows the configured cards, or the four standard cards when `homepage.capabilities` is omitted. |
-| `banner` | `true` | Shows the configured [`banner`](#add-a-home-page-banner) image above the home-page content. It has no effect when no banner is configured. |
+| `banner` | `true` | Shows the configured [`banner`](#add-a-home-page-banner) image as a full-width band at the top of the home-page hero. It has no effect when no banner is configured. |
 | `introduction` | `true` | Keeps the first paragraph after the H1 heading. |
 | `release_context` | `false` | Hides the release label above the home-page content. |
 
@@ -286,9 +287,8 @@ Start from a complete example in [Customize the home page](homepage-recipes.md).
 
 ### Add a home-page banner
 
-A banner is one repository-local image rendered above the home page's `h1`
-heading, before the introduction and capability cards. It never appears on
-other pages.
+A banner is one repository-local image rendered as a full-width band at the
+top of the home-page hero, above the heading. It never appears on other pages.
 
 1. Save the image inside your repository, for example
    `docs/assets/project-banner.svg`.
@@ -308,8 +308,9 @@ other pages.
 `path` is repository-relative, must not contain `..`, and the file must
 already exist: `docsprout build` stops with a validation error otherwise.
 DocSprout copies the image into the built site and renders it at the content
-width, capped at `16rem` tall with `object-fit: cover`, so wide artwork works
-best and important details should stay centred. The maintained
+width, keeping its proportions and capping it at `15rem` tall with
+`object-fit: cover`, so wide artwork works best and important details should
+stay centred. The maintained
 [visual fixture](visual-fixtures.md) uses a 1200×240 SVG. To keep the setting
 but hide the image, set `homepage.sections.banner` to `false`.
 

@@ -2,6 +2,45 @@
 
 ## Unreleased
 
+## 1.1.4
+
+The brand-hero and contrast-proof release. Generated sites stop looking like a
+generic template: the home page opens with one designed hero, and a single
+configured accent becomes a complete, WCAG-verified theme. No schema, route,
+machine-format or documented `--dk-*` token name changes: update the package
+and workflow pins to `v1.1.4`, rebuild, and review the home page and link
+colours once.
+
+### Added
+
+- An automatic home-page hero built from the same Markdown: heading, opening
+  summary, optional release pill, derived **Get started** (first non-home page)
+  and **Repository** (`project.repository_url`) actions, an accent-derived
+  backdrop and decorative inline-SVG icons on capability cards.
+- One-hex brand theming: an explicit `theme.accent` without
+  `accent_secondary` now derives an analogous secondary instead of inheriting
+  the preset pair.
+- Build-time contrast proof: `--dk-interactive` and `--dk-focus-ring` values
+  are computed against every shipped reading surface in each visual style and
+  colour mode, with an internal `--dk-on-interactive` foreground for filled
+  actions. A failing light accent is reported by `docsprout check` and as audit
+  warning `DK104`, while the built site uses the verification-safe link colour.
+
+### Changed
+
+- A configured banner now renders as a full-width band at the top of the
+  home-page hero: it keeps its proportions and only crops when taller than the
+  `15rem` cap, instead of a standalone image above the content.
+- Capability cards use a bordered card with a decorative icon and a subtle
+  hover lift; the hero replaces the previous plain home-page heading
+  treatment.
+
+### Fixed
+
+- `repository_url` becomes the hero's Repository action only when it is an
+  http(s) URL, so an unsafe value can never be emitted as a link. `doctor`
+  reports the verified accent and any derived secondary.
+
 ## 1.1.3
 
 A documentation-quality patch. No configuration, schema, route or token change:

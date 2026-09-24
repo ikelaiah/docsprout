@@ -92,6 +92,20 @@ segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
 
+## v1.1.3 to v1.1.4
+
+No configuration change is required, but review the built result once: update
+the package archive or source pin and any caller workflow pin to `v1.1.4`. The
+brand-hero release gives the home page one designed hero built from the same
+Markdown, derives **Get started** and **Repository** actions and decorative
+card icons, and renders a configured banner as hero artwork. Link and focus
+colours are computed from `theme.accent` and proven against every reading
+surface; when an explicit accent has no `accent_secondary`, an analogous
+secondary is derived instead of inheriting the preset colour. A failing light
+accent is reported by `check` and `audit` (`DK104`) while the built site uses a
+verification-safe link colour. The documented `--dk-*` token names are
+unchanged.
+
 ## v1.1.2 to v1.1.3
 
 No configuration change is required. Update the package archive or source pin

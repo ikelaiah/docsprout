@@ -268,6 +268,23 @@ and Pages workflow are now documented as the stable 1.x contract.
 - [x] Mark the original v0.3.0 specification as historical and give the
       customisation guides an explicit reading order.
 
+## v1.1.4 — Brand hero and contrast proof ✅
+
+Give every generated site a designed opening and make one brand colour
+trustworthy across every theme and mode, without MDX, custom HTML or an
+accessibility judgement call.
+
+- [x] Render one automatic home-page hero from the existing Markdown: heading,
+      opening summary, release pill, derived `Get started`/`Repository` actions
+      and an accent-derived backdrop.
+- [x] Add decorative inline-SVG icons and a hover lift to capability cards.
+- [x] Derive an analogous `accent_secondary` when an explicit accent omits it.
+- [x] Prove link (4.5:1) and focus (3:1) contrast against every shipped surface
+      in each style and mode; correct failing values and report them from
+      `check` and `audit` (`DK104`).
+- [x] Keep every schema, route, machine format and documented `--dk-*` token
+      name unchanged, with regression tests and updated guides.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

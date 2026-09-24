@@ -97,6 +97,8 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn("Long-form reading fixture", long_form)
             self.assertTrue((Path(temporary) / "site" / "assets" / "banner.svg").is_file())
             self.assertIn('class="banner" src="assets/banner.svg"', home)
+            self.assertIn('<div class="hero hero-art"><div class="hero-figure"><img class="banner"', home)
+            self.assertIn('</div><div class="hero-copy">', home)
             custom_css = Path(temporary) / "site" / "assets" / "custom.css"
             self.assertTrue(custom_css.is_file())
             self.assertIn("var(--dk-accent)", custom_css.read_text(encoding="utf-8"))
@@ -232,13 +234,20 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('--dk-control-height:2.5rem', site_css)
             self.assertIn('.capability-strip[data-card-count="3"]', site_css)
             self.assertIn('align-items:stretch;grid-template-rows:minmax(0,1fr)', site_css)
-            self.assertIn('.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1rem 1.05rem', site_css)
+            self.assertIn('.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1.1rem 1.15rem;border:1px solid var(--dk-border);border-radius:.55rem', site_css)
             self.assertIn('.capability-strip li+li{margin-top:0}', site_css)
             self.assertIn('.header-controls', site_css)
             self.assertIn('.topbar{display:grid;grid-template-columns:auto minmax(12rem,30rem) max-content;grid-template-rows:auto var(--dk-control-height)', site_css)
             self.assertIn('.page-navigation a{min-height:0;max-width:none;padding:0;border:0;border-radius:0;background:transparent', site_css)
             self.assertIn('.page-navigation .page-next{grid-column:1;justify-self:start}', site_css)
-            self.assertIn('.prose[data-homepage="true"]>h1+p', site_css)
+            self.assertIn('.hero .hero-copy>p', site_css)
+            self.assertIn('.hero-copy{min-width:0}', site_css)
+            self.assertIn('.hero.hero-art{display:flex;flex-direction:column;padding:0}', site_css)
+            self.assertIn(
+                '.prose .hero-primary{border:1px solid color-mix(in srgb,var(--dk-interactive) 72%,#000);'
+                'background:var(--dk-interactive);color:var(--dk-on-interactive,#fff)}',
+                site_css,
+            )
             self.assertIn('.prose h1,.prose h2,.prose h3{font-family:var(--dk-font-display);font-weight:720;letter-spacing:-.032em;text-wrap:balance}', site_css)
             self.assertIn('.prose h1{max-width:none;margin-bottom:1.25rem}', site_css)
             self.assertIn('@media(prefers-reduced-motion:reduce)', site_css)
@@ -253,6 +262,63 @@ class BuildSiteTests(unittest.TestCase):
             search = json.loads((root / "site" / "search-index.json").read_text(encoding="utf-8"))
             self.assertEqual(1, search["schema_version"])
             self.assertEqual(["index.html", "guides/pascal.html"], [entry["url"] for entry in search["entries"]])
+
+    def test_home_page_renders_a_splash_hero_with_derived_actions(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Welcome\n\nA short introduction.\n\n## Next\n\nMore.", encoding="utf-8")
+            (docs / "guide.md").write_text("# Guide", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "project": {"name": "Hero Demo", "repository_url": "https://example.test/hero"},
+                "homepage": {"sections": {"release_context": True}},
+            }), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [{"title": "Start", "pages": [
+                {"title": "Welcome", "path": "index.md"}, {"title": "Guide", "path": "guide.md"},
+            ]}]}), encoding="utf-8")
+
+            build_site(root=root, output=root / "site", release="1.1.4")
+
+            home = (root / "site" / "index.html").read_text(encoding="utf-8")
+            guide = (root / "site" / "guide.html").read_text(encoding="utf-8")
+            self.assertIn('<div class="hero"><div class="hero-copy">', home)
+            hero_copy = home[home.index('class="hero-copy"'):home.index('class="hero-actions"')]
+            self.assertIn("<h1", hero_copy)
+            self.assertIn("A short introduction.", hero_copy)
+            self.assertIn('class="release-context"', hero_copy)
+            self.assertIn('<a class="hero-primary" href="guide.html">Get started</a>', home)
+            self.assertIn('<a class="hero-secondary" href="https://example.test/hero">Repository</a>', home)
+            self.assertIn('<style>:root{--dk-interactive:', home)
+            self.assertIn("--dk-on-interactive:", home)
+            self.assertIn("prefers-color-scheme:dark", home)
+            self.assertEqual(4, home.count('class="card-icon"'))
+            self.assertIn('<svg class="card-icon" viewBox="0 0 24 24" aria-hidden="true"', home)
+            self.assertGreater(home.index('class="capability-strip"'), home.index('class="hero-actions"'))
+            self.assertNotIn('<div class="hero', guide)
+            self.assertNotIn("hero-actions", guide)
+
+    def test_home_page_omits_a_repository_action_without_a_safe_url(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Welcome\n", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "project": {"name": "Hero Demo", "repository_url": "javascript:alert(1)"},
+            }), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [
+                {"title": "Start", "pages": [{"title": "Welcome", "path": "index.md"}]},
+            ]}), encoding="utf-8")
+
+            build_site(root=root, output=root / "site", release="dev")
+
+            home = (root / "site" / "index.html").read_text(encoding="utf-8")
+            self.assertNotIn("javascript:", home)
+            self.assertNotIn("hero-actions", home)
+            self.assertNotIn("hero-secondary", home)
 
     def test_marks_a_custom_three_card_homepage_for_responsive_layout(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -15,6 +15,7 @@ SITE_CSS = r'''
   --dk-raised:#fff;
   --dk-focus-ring:#087ea4;
   --dk-interactive:color-mix(in srgb,var(--dk-accent) 78%,#000);
+  --dk-on-interactive:#fff;
   --dk-content-width:46rem;
   --dk-reading-width:43rem;
   --dk-shell-width:90rem;
@@ -146,8 +147,28 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 .prose{padding-bottom:var(--dk-space-2)}
 .prose h1,.prose h2,.prose h3{scroll-margin-top:6.5rem}
 .prose h1{max-width:none;margin-bottom:1.25rem}
-.prose[data-homepage="true"]>h1{font-size:clamp(2.5rem,5vw,3.35rem);letter-spacing:-.04em}
-.prose[data-homepage="true"]>h1+p{max-width:42rem;color:var(--dk-muted);font-size:1.16rem;line-height:1.62}
+/* v1.4 — the splash hero: one designed opening on the home page. The
+   accent-derived backdrop, derived call to action and card icons are all
+   offline CSS/HTML; generated pages carry the shared semantic tokens only. */
+.hero{position:relative;isolation:isolate;margin:0 0 2.75rem;padding:clamp(1.5rem,4.5vw,3rem);border:1px solid color-mix(in srgb,var(--dk-accent) 20%,var(--dk-border));border-radius:1rem;background:var(--dk-surface);overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(48rem 22rem at 12% -12%,color-mix(in srgb,var(--dk-accent) 20%,transparent),transparent 62%),radial-gradient(38rem 20rem at 96% 4%,color-mix(in srgb,var(--dk-accent-secondary) 18%,transparent),transparent 60%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background-image:radial-gradient(color-mix(in srgb,var(--dk-accent) 26%,transparent) 1px,transparent 1px);background-size:1.15rem 1.15rem;-webkit-mask-image:linear-gradient(155deg,#000 8%,transparent 58%);mask-image:linear-gradient(155deg,#000 8%,transparent 58%)}
+.hero h1{font-size:clamp(2.4rem,5vw,3.4rem);letter-spacing:-.04em;margin-bottom:1rem;overflow-wrap:break-word}
+.hero-copy{min-width:0}
+.hero .hero-copy>p{max-width:42rem;color:var(--dk-muted);font-size:1.16rem;line-height:1.62}
+.hero .release-context{display:inline-flex;align-self:flex-start;margin:0 0 1.15rem}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.6rem}
+.prose .hero-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:2.65rem;padding:.55rem 1.2rem;border-radius:999px;font-family:var(--dk-font-display);font-size:.92rem;font-weight:700;text-decoration:none;transition:transform .16s ease,box-shadow .16s ease}
+.prose .hero-actions a:hover{text-decoration:none}
+.prose .hero-primary{border:1px solid color-mix(in srgb,var(--dk-interactive) 72%,#000);background:var(--dk-interactive);color:var(--dk-on-interactive,#fff)}
+.prose .hero-primary:hover{box-shadow:0 .45rem 1.1rem color-mix(in srgb,var(--dk-accent) 34%,transparent)}
+.prose .hero-secondary{border:1px solid var(--dk-border);background:var(--dk-raised);color:var(--dk-interactive)}
+.prose .hero-secondary:hover{border-color:color-mix(in srgb,var(--dk-accent) 44%,var(--dk-border))}
+.hero.hero-art{display:flex;flex-direction:column;padding:0}
+.hero.hero-art h1{font-size:clamp(2.2rem,4vw,2.9rem);letter-spacing:-.035em}
+.hero.hero-art .hero-copy{padding:clamp(1.5rem,4vw,2.9rem)}
+.hero-figure{overflow:hidden;border-bottom:1px solid var(--dk-border)}
+.hero-figure .banner{display:block;width:100%;height:auto;max-height:15rem;margin:0;border:0;border-radius:0;object-fit:cover;object-position:center}
 .prose h2{margin-top:3.5rem;padding-top:.25rem}
 .prose h3{margin-top:2.5rem}
 .prose p{margin:1rem 0}
@@ -165,12 +186,12 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 .prose a{font-weight:650}
 .prose :not(pre)>code{color:var(--dk-text);font-weight:650;line-height:1.4;hyphens:none;overflow-wrap:break-word}
 .banner{display:block;width:100%;max-height:16rem;margin:0 0 1.75rem;border:1px solid var(--dk-border);border-radius:.5rem;object-fit:cover}
-.prose[data-homepage="true"] .release-context{margin:0 0 1.75rem}
-.capability-strip{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;grid-template-rows:minmax(0,1fr);gap:var(--dk-space-3);margin:2rem 0 2.75rem}
+.capability-strip{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;grid-template-rows:minmax(0,1fr);gap:var(--dk-space-3);margin:0 0 2.75rem}
 .capability-strip[data-card-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
 .capability-strip[data-card-count="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
 .capability-strip[data-card-count="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
-.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1rem 1.05rem;border-top:2px solid var(--dk-accent);border-radius:0 .35rem .35rem 0;box-shadow:0 1px 0 color-mix(in srgb,var(--dk-border) 70%,transparent);line-height:1.5}
+.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1.1rem 1.15rem;border:1px solid var(--dk-border);border-radius:.55rem;background:var(--dk-raised);box-shadow:0 1px 0 color-mix(in srgb,var(--dk-border) 70%,transparent);line-height:1.5;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.card-icon{display:block;width:1.45rem;height:1.45rem;margin-bottom:.7rem;color:var(--dk-interactive)}
 .capability-strip li+li{margin-top:0}
 .capability-strip strong{font-size:.8rem;line-height:1.35}
 .capability-strip span{margin-top:.35rem;font-size:.78rem;line-height:1.5}
@@ -214,6 +235,7 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 .page-navigation a span{margin-top:.15rem;line-height:1.4}
 .page-navigation .page-next{grid-column:2;margin-left:0;justify-self:end}
 .site-footer{padding:1.25rem clamp(1rem,3vw,2rem)}
+@media(hover:hover){.capability-strip li:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--dk-accent) 42%,var(--dk-border));box-shadow:var(--dk-shadow)}}
 @media(max-width:768px){
   .topbar{display:flex;flex-wrap:wrap;align-items:center}
   .header-controls{order:2;display:flex;flex:1;min-width:0;align-items:flex-end}
@@ -246,7 +268,9 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
   .prose pre{margin-inline:-.25rem;border-radius:.35rem;padding-inline:1rem}
 }
 @media print{
-  .reading-progress,.site-header,.mobile-nav,.toc,.page-navigation{display:none}
+  .reading-progress,.site-header,.mobile-nav,.toc,.page-navigation,.hero-actions{display:none}
+  .hero::before,.hero::after{display:none}
+  .hero{border-color:#999;background:none}
   body{background:#fff;color:#000;font-size:12pt;line-height:1.5}
   .prose p,.prose li{hyphens:none}
   .shell{display:block;max-width:none;padding:0}

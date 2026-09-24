@@ -53,6 +53,15 @@ A value is misspelled or unsupported. Presets are `blue`, `teal`, `ocean` and
 `compact`, `comfortable` and `wide`. See [Themes](themes.md) and
 [Reading width](configuration.md#reading-width).
 
+### Note: `theme.accent ... fails WCAG AA contrast on light pages`
+
+The configured accent is too light to use as link text on the light page
+background. The built site already substitutes a verification-safe colour, so
+this is a prompt rather than a failure: darken `theme.accent`, or keep the
+accent and accept the corrected links. `docsprout audit` reports the same
+condition as `DK104`. See
+[One accent is enough](themes.md#one-accent-is-enough).
+
 ### `... asset '...' does not exist` or `... path is unsafe`
 
 `banner`, `identity.logo` and `theme.custom_css` must each point at a file

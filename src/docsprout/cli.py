@@ -339,6 +339,12 @@ def _doctor(root: Path) -> list[str]:
                 f"WARNING: docs/{LEGACY_CONFIG_FILENAME} uses the legacy configuration name; "
                 f"rename it to docs/{CONFIG_FILENAME} (the legacy name is removed in v2.0.0)"
             )
+        if config.palette:
+            messages.append(f"Theme: accent {config.palette.accent} verified against every shipped reading surface")
+            if config.palette.secondary_derived:
+                messages.append(f"Theme: accent_secondary derived as {config.palette.accent_secondary} from theme.accent")
+            if config.palette.note:
+                messages.append(f"WARNING: {config.palette.note}")
     except DocSproutError as error:
         messages.append(f"ERROR: {error}")
     if (root / "docs" / "versions.json").exists():
@@ -437,6 +443,8 @@ def main(argv: list[str] | None = None, *, prog: str = "docsprout") -> int:
             result = _check(root)
             excluded = f"; {result.excluded_count} unlisted document(s) excluded" if result.excluded_count else ""
             print(f"Documentation check passed: {result.section_count} section(s), {result.page_count} page(s){excluded}")
+            if result.palette_note:
+                print(f"Note: {result.palette_note}")
         elif args.command == "audit":
             result = audit_project(root)
             print(format_audit_json(result) if args.format == "json" else format_audit_text(result))
