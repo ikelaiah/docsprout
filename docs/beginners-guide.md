@@ -11,8 +11,8 @@ separate task for another day.
 
 You need:
 
-- Python 3.10–3.14 (the qualified stable range; Python 3.15 pre-release is
-  only a non-blocking forward-compatibility signal);
+- Python 3.10–3.14 (the qualified stable range; Python 3.15 is not supported
+  yet);
 - an internet connection for installation;
 - a code project, even a tiny practice project;
 - a terminal and a text editor.
@@ -37,7 +37,7 @@ docsprout --help
 
 You should see a list of commands such as `build`, `check`, `init` and `serve`.
 
-> [!NOTE] If your terminal says `DocSprout` was not found, close and reopen the
+> [!NOTE] If your terminal says `docsprout` was not found, close and reopen the
 > terminal. You can also run `python -m docsprout --help`.
 
 ## 2. Adopt the Markdown you already have
@@ -103,8 +103,9 @@ The first `#` is the page title. A line beginning with `##` is a section title.
 That is enough Markdown to begin.
 
 Next, open `docs/docsprout.json`. `init` has already inferred safe metadata where
-it could, including a GitHub repository URL. Change the project name and description if needed. Leave
-`schema_version` unchanged:
+it could, including a GitHub repository URL. Change the project name and
+description if needed. Leave `schema_version` unchanged; it is the
+configuration format version, and every current file uses `1`:
 
 ```json
 {
@@ -150,7 +151,7 @@ Before the change, the file may look like this:
   "unlisted": "exclude",
   "navigation": [
     {
-      "title": "Getting started",
+      "title": "Overview",
       "pages": [
         {
           "title": "Overview",
@@ -184,7 +185,7 @@ After adding the page, the file may look like this:
   "unlisted": "exclude",
   "navigation": [
     {
-      "title": "Getting started",
+      "title": "Overview",
       "pages": [
         {
           "title": "Overview",
@@ -244,10 +245,28 @@ only its cards, banner and visible sections. They are different settings.
 
 The root README shown above is already a valid home-page choice. If you want
 `docs/index.md` or another listed docs page instead, change only the `home`
-object and keep its matching navigation entry. Then choose colours, a **Style**
-(`Classic`, `Paper` or `Midnight`) and a **Mode** (`System`, `Light` or `Dark`)
-in [Themes](themes.md). [Customize the home page](homepage-recipes.md) has
-complete `docsprout.json` examples.
+object and keep its matching navigation entry. Before:
+
+```json
+"home": {
+  "path": "README.md",
+  "source": "root"
+}
+```
+
+After selecting the listed `quick-start.md` page, the `source` key is gone
+because only the repository-root `README.md` uses `"source": "root"`:
+
+```json
+"home": {
+  "path": "quick-start.md"
+}
+```
+
+Then choose colours, a **Style** (`Classic`, `Paper` or `Midnight`) and a
+**Mode** (`System`, `Light` or `Dark`) in [Themes](themes.md).
+[Customize the home page](homepage-recipes.md) has complete `docsprout.json`
+examples.
 
 ## 7. Check and audit
 
@@ -259,8 +278,8 @@ docsprout audit
 ```
 
 `check` answers “Can DocSprout safely build this site?” `audit` answers “What
-objective documentation problems should I fix?” If `check` fails, read its last
-line first; it normally names the file and next correction. Use
+objective documentation problems should I fix?” If `check` fails, its printed
+message names the file and the next correction. Use
 `docsprout audit --strict` when warnings should also fail a CI job, and
 `docsprout doctor` for a setup summary.
 

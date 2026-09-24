@@ -3,9 +3,17 @@
 You do not need to memorise these terms. Use this page when a guide contains an
 unfamiliar word.
 
+Admonition
+: A GitHub-style callout block such as `> [!NOTE]`. Supported labels are
+  `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]` and `[!WARNING]`.
+
 Audit
-: `docsprout audit` re-checks built content for publication mistakes and reports
-  coded errors and warnings without changing files.
+: `docsprout audit` reads your published pages and configuration, reports coded
+  errors and warnings for publication mistakes, and never changes files.
+
+Audit code
+: A stable identifier for one audit finding: `DK001`–`DK005` are errors and
+  `DK101`–`DK104` are warnings. See [Audit your documentation](audit.md).
 
 Banner
 : One image shown as a full-width band at the top of the home-page hero, above
@@ -105,6 +113,10 @@ Repository
 Route
 : The output path of a built page, such as `guides/setup.html`. Two listed
   documents must not claim the same route.
+
+Schema version
+: The version number at the top of each configuration file, written as
+  `schema_version`. Every current file uses `1`; leave it unchanged.
 
 Section
 : A titled group of navigation pages in `layout.json`.

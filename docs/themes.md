@@ -80,8 +80,10 @@ and focus state use that accent.
 
 You do not have to choose two colours. When you set `theme.accent` without
 `accent_secondary`, DocSprout derives an analogous secondary from it, so a
-single brand colour still produces a complete theme. Curated presets keep their
-documented colour pair.
+single brand colour still produces a complete theme. An explicit `accent`
+overrides the preset's accent, and the derived secondary then comes from that
+accent, not from the preset pair. Curated presets keep their documented colour
+pair when you do not set an accent.
 
 DocSprout also proves the brand colour against every reading surface it ships.
 Link (`--dk-interactive`) and focus (`--dk-focus-ring`) values are computed for

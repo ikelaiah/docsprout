@@ -50,8 +50,8 @@ plain list:
 - `Versions:` either a manifest summary with `Status: versioned release
   configured`, or `no versions.json (single-release preview only)`,
   `Status: preview-ready`;
-- `Release refs:` verification that each tag or SHA resolves and matches
-  `HEAD`;
+- `Release refs:` verification that each tag or SHA resolves; the current
+  release must also match `HEAD`;
 - `GitHub Pages workflow:` or `Pages:` the managed workflow state, an update
   hint, or a note that no DocSprout workflow was detected;
 - `ERROR:` blocking problems. The command exits `1` when any appears.

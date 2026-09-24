@@ -19,17 +19,20 @@ which is a top-level setting, are `homepage` values.
 
 DocSprout uses the same configuration on this site. Its
 [`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.4/docs/docsprout.json)
-contains a home-page banner, capability cards and release context:
+uses these exact values for its home-page banner, capability cards and release
+context:
 
 ```json
 {
   "banner": {
-    "path": "docs/assets/docsprout-banner.svg",
+    "path": "docs/assets/docsprout-mountain-banner.jpg",
     "alt": "DocSprout banner — Build documentation people can use."
   },
   "homepage": {
     "capabilities": [
       {"title": "Existing-project friendly", "description": "Start with the README and docs you already have."},
+      {"title": "Polished with little setup", "description": "Build a searchable documentation site from Markdown."},
+      {"title": "Versioned documentation", "description": "Keep released guides available side by side."},
       {"title": "Offline/local assets", "description": "Built sites work without a CDN."}
     ],
     "sections": {"release_context": true}

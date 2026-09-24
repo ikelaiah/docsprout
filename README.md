@@ -16,8 +16,8 @@ Pascal-friendly, but it does not require Pascal source code.
 ## 🚀 Make your first site in about 10 minutes
 
 You need supported Python 3.10–3.14 and internet for installation; no Git or
-GitHub account is needed for this first preview. Python 3.15 pre-release is a
-non-blocking forward-compatibility signal, not a support commitment.
+GitHub account is needed for this first preview. Python 3.15 is not supported
+yet; it is only checked early to catch future incompatibilities.
 
 Open a terminal in your project's top-level folder—the folder that normally
 contains files such as `README.md`, `src/` or `.git/`—and run:
@@ -53,7 +53,8 @@ are the only automatic candidates. `CHANGELOG.md`, `CONTRIBUTING.md`,
 never published by surprise. Once `docs/layout.json` exists it is entirely
 yours: add, remove, rename and reorder pages without DocSprout changing it.
 Newly generated layouts use `"unlisted": "exclude"`, so only listed pages are
-published; existing layouts retain their strict validation unless you opt in.
+published; existing layouts retain their strict validation unless you
+[opt in](docs/configuration.md#pages-home-page-and-navigation).
 
 ### The mental model from here on
 

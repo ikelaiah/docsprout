@@ -42,17 +42,12 @@
       ]
     },
     {
-      "title": "Pascal and project internals",
+      "title": "Maintainer reference",
       "pages": [
         {"title": "PasWeave integration", "path": "pasweave-integration.md"},
         {"title": "Architecture", "path": "architecture.md"},
         {"title": "Architecture analysis", "path": "architecture-analysis.md"},
-        {"title": "Project specification (historical)", "path": "spec.md"}
-      ]
-    },
-    {
-      "title": "Project decisions",
-      "pages": [
+        {"title": "Project specification (historical)", "path": "spec.md"},
         {"title": "Boundaries", "path": "decisions/0001-boundaries.md"},
         {"title": "History and customisation", "path": "decisions/0002-history-and-customisation.md"},
         {"title": "Release-tag publication", "path": "decisions/0003-publish-from-release-tags.md"},
@@ -63,7 +58,8 @@
         {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
         {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
         {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"},
-        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"}
+        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"},
+        {"title": "Brand hero and proven contrast", "path": "decisions/0012-brand-hero-and-proven-contrast.md"}
       ]
     }
   ]

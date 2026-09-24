@@ -21,6 +21,9 @@ git mv docs/dockit.json docs/docsprout.json   # adopt the canonical name
 git rm docs/dockit.json                        # when docsprout.json is already authoritative
 ```
 
+Without Git, rename or delete the file in your file manager instead; the result
+is the same.
+
 ### `required when modern documentation configuration exists`
 
 A `docs/layout.json` exists without its identity file. Create
@@ -66,7 +69,8 @@ condition as `DK104`. See
 
 `banner`, `identity.logo` and `theme.custom_css` must each point at a file
 that already exists inside the repository. Create the file first, then correct
-the path. See
+the path. Paths are relative to the repository root, so a logo saved in
+`docs/assets/` is written `docs/assets/logo.svg`. See
 [Add a home-page banner](configuration.md#add-a-home-page-banner) and
 [Custom CSS](custom-css.md#configure-one-stylesheet).
 
@@ -185,8 +189,9 @@ Choose a valid port, for example `docsprout serve --port 8080`.
 
 ### the preview address is already in use
 
-Another process owns the port. Choose another one with
-`docsprout serve --port 8080`.
+Another process owns the port. On some systems the command prints a Python
+traceback instead of a friendly message; the cause is still the busy port.
+Choose another one with `docsprout serve --port 8080`.
 
 ### `ERROR: docs directory is missing` from `doctor`
 

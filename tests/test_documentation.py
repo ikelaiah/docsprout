@@ -44,10 +44,14 @@ class DocumentationUsabilityTests(unittest.TestCase):
             ["index.md", "beginners-guide.md", "building.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
             [page["path"] for page in sections[0]["pages"]],
         )
+        self.assertEqual("Maintainer reference", sections[-1]["title"])
         self.assertGreater(
-            next(index for index, section in enumerate(sections) if section["title"] == "Pascal and project internals"),
+            next(index for index, section in enumerate(sections) if section["title"] == "Maintainer reference"),
             next(index for index, section in enumerate(sections) if section["title"] == "Publish safely"),
         )
+        maintained = [page["path"] for page in sections[-1]["pages"]]
+        self.assertIn("architecture.md", maintained)
+        self.assertIn("decisions/0012-brand-hero-and-proven-contrast.md", maintained)
 
     def test_recommended_layouts_use_the_explicit_modern_contract(self) -> None:
         layouts = {
@@ -163,9 +167,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
         recipes = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
 
-        self.assertEqual("docs/assets/docsprout-banner.svg", config["banner"]["path"])
+        self.assertEqual("docs/assets/docsprout-mountain-banner.jpg", config["banner"]["path"])
         self.assertTrue((self.root / config["banner"]["path"]).is_file())
-        self.assertNotIn("docsprout-banner.svg", index)
+        self.assertNotIn("docsprout-mountain-banner.jpg", index)
+        self.assertIn(f'"{config["banner"]["path"]}"', recipes)
         self.assertIn("[`banner`](#add-a-home-page-banner)", configuration)
         self.assertIn("`banner` is top-level, not a `homepage` value", recipes)
 
@@ -360,7 +365,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("Did you mean", configuration)
         self.assertIn("stable customisation contract", machine)
 
-    def test_migration_guide_covers_every_release_through_v018_and_the_10_checklist(self) -> None:
+    def test_migration_guide_covers_every_release_through_v018_and_the_1x_checklist(self) -> None:
         migration = (self.root / "docs" / "migration.md").read_text(encoding="utf-8")
 
         for release in ("v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0", "v0.6.0", "v0.7.0",
@@ -370,7 +375,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("v0.17.0 to v0.18.0", migration)
         self.assertIn("--dk-bg", migration)
         self.assertIn("search-index.json", migration)
-        self.assertIn("## 0.x to 1.0 upgrade checklist", migration)
+        self.assertIn("## 0.x to 1.x upgrade checklist", migration)
         self.assertIn("v1.0.0", migration)
         self.assertIn("## DocKit to DocSprout (1.x rebrand)", migration)
         self.assertIn("docs/dockit.json", migration)

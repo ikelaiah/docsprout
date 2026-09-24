@@ -141,6 +141,8 @@ without guessing:
 - [ ] Are new terms defined?
 - [ ] Is there one clear next step?
 
-Run `docsprout check` after adding the page. It catches broken links and pages
-that are missing from navigation. For suggested folder structures, continue to
+Run `docsprout check` after adding the page. It catches broken links, and when
+your layout keeps strict unlisted validation it also reports pages that are
+missing from navigation; layouts with `"unlisted": "exclude"` list excluded
+pages instead. For suggested folder structures, continue to
 [Authoring recipes](authoring-recipes.md).

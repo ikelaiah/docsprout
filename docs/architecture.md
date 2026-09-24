@@ -1,7 +1,9 @@
 # Architecture
 
-DocSprout has five small layers: configuration discovery, validation, safe
-Markdown rendering, static-site generation, and immutable-version orchestration.
+DocSprout has six small layers: configuration discovery, validation, safe
+Markdown rendering, static-site generation, brand and contrast derivation
+(`palette.py` proves link and focus colours against every reading surface), and
+immutable-version orchestration.
 The package carries the CSS and browser code so consuming projects do not copy
 the implementation. `build` renders a working tree for preview; `build-all`
 archives every declared Git tag or full SHA into an isolated temporary tree.

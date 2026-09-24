@@ -155,7 +155,9 @@ Deterministic CI-friendly diagnostics. Root fields:
 ```
 
 `target` is present only when a finding names one. Findings are ordered
-deterministically by page order, then source position.
+deterministically: pages in navigation order, link and image findings in source
+order within each page, then heading-structure findings, with a configured
+accent finding (`DK104`) last.
 
 ## 1.x compatibility policy
 

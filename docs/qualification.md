@@ -294,7 +294,7 @@ values; no schema, route, machine-format or token-name change:
 | --- | --- | --- |
 | **Easy to use** | Installed wheel and sdist journeys run `init`, `serve`, `check`, `audit`, `build`, `doctor` and Pages preparation from outside the source tree. | Automated pass |
 | **Easy to learn** | README, beginner guide, configuration, publishing, audit and migration paths are checked for the short preview path, declarative mental model and next-step links. | Automated documentation pass |
-| **Easy to look good** | Structural accessibility, token, responsive-image, theme/mode, content-width, custom-CSS and maintained visual-fixture tests cover phone/tablet/desktop cases without brittle screenshots. | Automated pass; browser geometry unavailable |
+| **Easy to look good** | Structural accessibility, token, responsive-image, theme/mode, content-width, hero/contrast, custom-CSS and maintained visual-fixture tests cover phone/tablet/desktop cases without brittle screenshots. | Automated pass; see Browser automation status |
 | **Easy to create from existing repositories** | Generic/Pascal-shaped, root-README, nested, Unicode, spaces, assets, explicit-home, unlisted and ancillary-file adoption fixtures pass; Pages setup is idempotent and non-mutating. | Automated pass |
 | **Easy to maintain** | Schema corpus, route collision checks, machine-format checks, workflow pin checks, deterministic archive/build tests, contributor guidance and release checks pass. | Automated pass |
 
@@ -323,11 +323,12 @@ operation requires a network connection after installation.
   `github-pages`; discovery and previews degrade gracefully without Git.
 - Browser automation is intentionally not part of CI: the remaining visual
   checks are the small manual matrix below.
-- **Browser automation status:** Chrome DevTools MCP was not available during
-  v1.0.0 qualification. Full browser geometry, console and keyboard inspection
-  therefore remains unavailable; the automated structural/fixture coverage and
-  live Pages sanity checks are reported separately and do not imply a full
-  browser review.
+- **Browser automation status:** browser automation is intentionally not part
+  of CI (Chrome DevTools MCP was not available during v1.0.0 qualification).
+  Full browser geometry, console and keyboard inspection therefore remains
+  unavailable for every release, including v1.1.4; the automated
+  structural/fixture coverage and live Pages sanity checks are reported
+  separately and do not imply a full browser review.
 - External URLs in documentation are never network-checked; `audit` reports
   this explicitly.
 - Custom CSS is author-owned: its accessibility, contrast and responsiveness

@@ -87,30 +87,30 @@ wrong.
 - [x] Add deterministic release fixtures and a clear pre-publish checklist.
 - [x] Document upgrade compatibility from every supported 0.x configuration.
 
-## v0.11 — Existing Repo Magic
+## v0.11 — Existing Repo Magic ✅
 
 Safe existing-repository adoption, conservative README/docs discovery, sensible
 initial navigation, explicit power-user control, safe root README support, and
 `docsprout serve`.
 
-## v0.12 — Beautiful by Default
+## v0.12 — Beautiful by Default ✅
 
 A minimally configured repository should produce a site that feels
 publication-ready without custom CSS, custom assets or extensive theme
 configuration.
 
-- [ ] Make the Classic homepage, header, sidebar, typography and code
+- [x] Make the Classic homepage, header, sidebar, typography and code
       presentation feel confident and publication-ready by default.
-- [ ] Refine tables, callouts, search, on-page navigation and previous/next
+- [x] Refine tables, callouts, search, on-page navigation and previous/next
       navigation without changing their existing schemas or core behavior.
-- [ ] Verify Paper and Midnight against the shared semantic design contract in
+- [x] Verify Paper and Midnight against the shared semantic design contract in
       Light, Dark and System modes.
-- [ ] Exercise the result with DocSprout's own docs and the maintained visual
+- [x] Exercise the result with DocSprout's own docs and the maintained visual
       fixture at phone, tablet and desktop widths.
-- [ ] Preserve keyboard navigation, focus visibility, accessible names,
+- [x] Preserve keyboard navigation, focus visibility, accessible names,
       reduced-motion behavior and offline/local assets.
 
-## v0.13 — Explicit Home & DocSprout Identity
+## v0.13 — Explicit Home & DocSprout Identity ✅
 
 Select the published home page explicitly and make the public product identity
 language-neutral while preserving existing technical identifiers.
@@ -178,8 +178,8 @@ remains necessary. See [Qualification evidence](docs/qualification.md).
 The final pre-1.0 simplification and contract-candidate release. Theme:
 **minimal CLI + obvious declarative configuration.** Commands perform
 actions; `layout.json`, `docsprout.json` and `versions.json` describe the site.
-See [release notes](CHANGELOG.md#0180) and [Qualification evidence]
-(docs/qualification.md).
+See [release notes](CHANGELOG.md#0180) and
+[Qualification evidence](docs/qualification.md).
 
 - [x] Keep the command surface operational; making pages, sections, titles,
       order, home and publication ordinary `layout.json` edits with a

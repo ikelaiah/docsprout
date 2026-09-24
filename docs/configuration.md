@@ -111,8 +111,8 @@ should make the selection explicit.
 `unlisted` controls what happens to Markdown under `docs/` that is not in
 navigation:
 
-- `"error"` is the default and preserves existing strict validation. A missing
-  page is reported by `docsprout check`.
+- `"error"` is the default and preserves existing strict validation. An
+  unlisted Markdown file is reported by `docsprout check`.
 - `"exclude"` publishes only listed pages. `check` succeeds and reports the
   number of unlisted documents excluded from the site.
 
@@ -141,32 +141,7 @@ There are no DocSprout commands for these operations:
 The `"title"` is independent of the filename: a file named `install-guide.md`
 can display as `Getting installed`. The navigation order is the written order
 of the objects. That is the complete model—there is no hidden state and no
-second navigation representation.
-
-This compact canonical example shows the valuable structure at a glance:
-
-```json
-{
-  "schema_version": 1,
-  "home": {"path": "index.md"},
-  "unlisted": "exclude",
-  "navigation": [
-    {
-      "title": "Getting started",
-      "pages": [
-        {"title": "Overview", "path": "index.md"},
-        {"title": "Installation", "path": "installation.md"}
-      ]
-    },
-    {
-      "title": "Guides",
-      "pages": [
-        {"title": "Configuration", "path": "guides/configuration.md"}
-      ]
-    }
-  ]
-}
-```
+second navigation representation. The example above shows the complete file.
 
 DocSprout reports configuration problems precisely. A field that was never part
 of a released schema-1 configuration is rejected with the file, the exact
@@ -281,7 +256,7 @@ Each card needs a non-empty `title` and `description`. An empty
 | `capabilities` | `true` | Shows the configured cards, or the four standard cards when `homepage.capabilities` is omitted. |
 | `banner` | `true` | Shows the configured [`banner`](#add-a-home-page-banner) image as a full-width band at the top of the home-page hero. It has no effect when no banner is configured. |
 | `introduction` | `true` | Keeps the first paragraph after the H1 heading. |
-| `release_context` | `false` | Hides the release label above the home-page content. |
+| `release_context` | `false` | Shows the release pill inside the home-page hero. |
 
 Start from a complete example in [Customize the home page](homepage-recipes.md).
 
