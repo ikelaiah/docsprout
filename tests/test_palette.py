@@ -15,6 +15,10 @@ from docsprout.palette import (
     AA_UI,
     CLASSIC_DARK,
     CLASSIC_LIGHT,
+    EINK_DARK,
+    EINK_LIGHT,
+    GLASS_DARK,
+    GLASS_LIGHT,
     MIDNIGHT_DARK,
     MIDNIGHT_LIGHT,
     PAPER_DARK,
@@ -29,11 +33,17 @@ BACKGROUNDS = {
     ":root": CLASSIC_LIGHT,
     'html[data-visual-theme="paper"]': PAPER_LIGHT,
     'html[data-visual-theme="midnight"][data-theme="light"]': MIDNIGHT_LIGHT,
+    'html[data-visual-theme="e-ink"]': EINK_LIGHT,
+    'html[data-visual-theme="glassmorphic"]': GLASS_LIGHT,
     'html[data-visual-theme="classic"][data-theme="dark"]': CLASSIC_DARK,
     'html[data-visual-theme="paper"][data-theme="dark"]': PAPER_DARK,
     'html[data-visual-theme="midnight"]': MIDNIGHT_DARK,
+    'html[data-visual-theme="e-ink"][data-theme="dark"]': EINK_DARK,
+    'html[data-visual-theme="glassmorphic"][data-theme="dark"]': GLASS_DARK,
     'html[data-visual-theme="classic"]:not([data-theme])': CLASSIC_DARK,
     'html[data-visual-theme="paper"]:not([data-theme])': PAPER_DARK,
+    'html[data-visual-theme="e-ink"]:not([data-theme])': EINK_DARK,
+    'html[data-visual-theme="glassmorphic"]:not([data-theme])': GLASS_DARK,
 }
 
 
@@ -65,6 +75,10 @@ class PaletteMathTests(unittest.TestCase):
             ('html[data-visual-theme="paper"][data-theme="dark"]', PAPER_DARK),
             ('html[data-visual-theme="midnight"]', MIDNIGHT_DARK),
             ('html[data-visual-theme="midnight"][data-theme="light"]', MIDNIGHT_LIGHT),
+            ('html[data-visual-theme="e-ink"]', EINK_LIGHT),
+            ('html[data-visual-theme="e-ink"][data-theme="dark"]', EINK_DARK),
+            ('html[data-visual-theme="glassmorphic"]', GLASS_LIGHT),
+            ('html[data-visual-theme="glassmorphic"][data-theme="dark"]', GLASS_DARK),
         )
         for selector, expected in cases:
             with self.subTest(selector=selector):
@@ -110,10 +124,16 @@ class PaletteDerivationTests(unittest.TestCase):
 
     def test_stylesheet_overrides_every_theme_without_touching_documented_tokens(self) -> None:
         css = derive_palette("#0f766e", "#0891b2").stylesheet()
-        for selector in (":root{", 'html[data-visual-theme="paper"]{', 'html[data-visual-theme="midnight"]{'):
+        for selector in (
+            ":root{",
+            'html[data-visual-theme="paper"]{',
+            'html[data-visual-theme="midnight"]{',
+            'html[data-visual-theme="e-ink"]{',
+            'html[data-visual-theme="glassmorphic"]{',
+        ):
             self.assertIn(selector, css)
         self.assertIn("@media(prefers-color-scheme:dark){", css)
-        self.assertEqual(2, css.count(":not([data-theme])"))
+        self.assertEqual(4, css.count(":not([data-theme])"))
         for documented in ("--dk-accent:", "--dk-accent-secondary:", "--dk-bg:"):
             self.assertNotIn(documented, css)
 

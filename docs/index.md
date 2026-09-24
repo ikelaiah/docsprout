@@ -14,6 +14,8 @@ Pascal-friendly, but the input is ordinary Markdown, not Pascal source code.
 - **I want a working site first.** Follow the
   [beginner's guide](beginners-guide.md). When you need the static files, or a
   ZIP to hand to someone, read [Build and inspect your site](building.md).
+- **I already have a repository and docs.** Start with
+  [Add DocSprout to an existing repository](existing-repository.md).
 - **I want to write clearer guides.** Read
   [Write documentation people can use](writing-great-docs.md).
 - **I want to add or reorder pages.** Open [Configuration](configuration.md).
@@ -21,6 +23,8 @@ Pascal-friendly, but the input is ordinary Markdown, not Pascal source code.
   [customize the home page](homepage-recipes.md).
 - **I want to publish.** Run `docsprout github-pages`, then follow [GitHub
   Pages](github-pages.md).
+- **I want the checks in my pipeline.** Read
+  [Checks in CI and CD](ci-cd.md).
 - **I want to catch broken public docs.** Run `docsprout audit` and read the
   [audit guide](audit.md).
 - **I want to know what is tested and supported.** Read the [qualification

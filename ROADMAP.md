@@ -285,6 +285,14 @@ accessibility judgement call.
 - [x] Keep every schema, route, machine format and documented `--dk-*` token
       name unchanged, with regression tests and updated guides.
 
+## v1.2 — Visual Range and Adoption Guides
+
+- [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark
+      and system modes, contrast-proven through the shared palette pipeline
+      and documented alongside the existing styles.
+- [x] Add an existing-repository adoption guide and a CI/CD guide covering the
+      portable check/audit gates and static-host deployment.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

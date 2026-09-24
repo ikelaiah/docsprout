@@ -351,7 +351,7 @@ automated contract above.
 | 1 | Tab from the address bar through search, version, style and mode controls, copy buttons, previous/next and every sidebar link; focus is always visible. |
 | 2 | `/` focuses search; type a query; ArrowDown/ArrowUp, Home, End, Enter and Escape behave as described; Tab leaves the result region predictably. |
 | 3 | At phone width the mobile navigation opens and closes with Enter/Space on the disclosure and every section link is reachable by keyboard. |
-| 4 | Screenshot phone/tablet/desktop widths in Classic, Paper and Midnight × System, Light and Dark; nothing overlaps and no page-level horizontal scroll appears. |
+| 4 | Screenshot phone/tablet/desktop widths in Classic, Paper, Midnight, E-ink and Glassmorphic × System, Light and Dark; nothing overlaps and no page-level horizontal scroll appears. |
 | 5 | With the OS reduced-motion preference on, search results, the reading-progress bar and theme changes do not animate. |
 | 6 | With Windows high-contrast / forced-colors enabled, focus outlines and the reading-progress indicator remain visible. |
 | 7 | At desktop and phone widths the home-page hero keeps its copy readable, the derived actions stay keyboard reachable, and a configured banner spans the content width without cutting its text. |

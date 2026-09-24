@@ -100,6 +100,8 @@ existing projects and advanced historical publishing.
 | Your goal | Read this |
 | --- | --- |
 | Build static files or an offline ZIP | [Build and inspect your site](docs/building.md) |
+| Add DocSprout to an existing repository | [Add to an existing repository](docs/existing-repository.md) |
+| Run checks in CI or deploy elsewhere | [Checks in CI and CD](docs/ci-cd.md) |
 | Learn how to write useful documentation | [Write documentation people can use](docs/writing-great-docs.md) |
 | Add pages and navigation | [Configuration](docs/configuration.md) |
 | Add richer content | [Authoring recipes](docs/authoring-recipes.md) |
@@ -117,9 +119,9 @@ existing projects and advanced historical publishing.
   checks, audit and publication.
 - **Easy to learn.** The beginner path explains the mental model and the next
   useful edit without hiding decisions in a generator.
-- **Easy to look good.** Responsive, keyboard-friendly Classic, Paper and
-  Midnight sites work with local assets and no custom CSS required, and one
-  brand colour becomes a contrast-proven theme.
+- **Easy to look good.** Responsive, keyboard-friendly Classic, Paper,
+  Midnight, E-ink and Glassmorphic sites work with local assets and no custom
+  CSS required, and one brand colour becomes a contrast-proven theme.
 - **Easy to create from existing repositories.** `init` preserves Markdown,
   discovers ordinary and Pascal-shaped projects, and creates only missing
   configuration.

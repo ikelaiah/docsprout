@@ -27,6 +27,10 @@ PAPER_LIGHT = ("#fdfbf7", "#f4eee3", "#fffefb")
 PAPER_DARK = ("#1c1a17", "#29251f", "#24211c")
 MIDNIGHT_DARK = ("#0d1220", "#182033", "#121a2b")
 MIDNIGHT_LIGHT = ("#f5f8ff", "#e8eefb", "#ffffff")
+EINK_LIGHT = ("#ffffff", "#f2f2ee", "#ffffff")
+EINK_DARK = ("#0d0d0d", "#181818", "#1e1e1e")
+GLASS_LIGHT = ("#e9f0f9", "#f6f9fd", "#ffffff")
+GLASS_DARK = ("#0a0f1e", "#161c2c", "#111726")
 
 
 @dataclass(frozen=True)
@@ -41,11 +45,17 @@ _CONTEXTS = (
     _Context(":root", "light", CLASSIC_LIGHT),
     _Context('html[data-visual-theme="paper"]', "light", PAPER_LIGHT),
     _Context('html[data-visual-theme="midnight"][data-theme="light"]', "light", MIDNIGHT_LIGHT),
+    _Context('html[data-visual-theme="e-ink"]', "light", EINK_LIGHT),
+    _Context('html[data-visual-theme="glassmorphic"]', "light", GLASS_LIGHT),
     _Context('html[data-visual-theme="classic"][data-theme="dark"]', "dark", CLASSIC_DARK),
     _Context('html[data-visual-theme="paper"][data-theme="dark"]', "dark", PAPER_DARK),
     _Context('html[data-visual-theme="midnight"]', "dark", MIDNIGHT_DARK),
+    _Context('html[data-visual-theme="e-ink"][data-theme="dark"]', "dark", EINK_DARK),
+    _Context('html[data-visual-theme="glassmorphic"][data-theme="dark"]', "dark", GLASS_DARK),
     _Context('html[data-visual-theme="classic"]:not([data-theme])', "dark", CLASSIC_DARK, system_dark=True),
     _Context('html[data-visual-theme="paper"]:not([data-theme])', "dark", PAPER_DARK, system_dark=True),
+    _Context('html[data-visual-theme="e-ink"]:not([data-theme])', "dark", EINK_DARK, system_dark=True),
+    _Context('html[data-visual-theme="glassmorphic"]:not([data-theme])', "dark", GLASS_DARK, system_dark=True),
 )
 
 

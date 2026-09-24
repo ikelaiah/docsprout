@@ -26,7 +26,9 @@ You choose the site's starting **Style**:
 
 - **Classic** (`classic`) is the clean, dependable default;
 - **Paper** (`paper`) gives long guides a warm reading surface;
-- **Midnight** (`midnight`) starts with a dark technical look.
+- **Midnight** (`midnight`) starts with a dark technical look;
+- **E-ink** (`e-ink`) is flat, near-monochrome and contrast-first;
+- **Glassmorphic** (`glassmorphic`) adds translucent, blurred chrome.
 
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
@@ -37,9 +39,25 @@ starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
 Classic is the showcase default: it keeps the header, navigation and reading
-surface quiet so ordinary Markdown supplies the personality. Paper and
-Midnight use the same spacing, typography and semantic states, with their own
-reading surfaces. No custom CSS is needed to make any of them publication-ready.
+surface quiet so ordinary Markdown supplies the personality. Paper, Midnight,
+E-ink and Glassmorphic use the same spacing, typography and semantic states,
+with their own reading surfaces and chrome. No custom CSS is needed to make any
+of them publication-ready.
+
+## E-ink and Glassmorphic in practice
+
+**E-ink** keeps the page flat and almost monochrome: white or near-black
+reading surfaces, strong text contrast, quiet borders and no shadows. Code
+blocks stay dark panels so syntax highlighting remains readable. It suits
+long-form reading and displays where colour is unreliable. Its dark variant is
+a dimmed night-reading surface rather than a saturated dark theme.
+
+**Glassmorphic** layers translucent, blurred chrome—header, cards and search—
+over a cool tinted background with soft accent gradients and larger rounded
+corners. The surfaces that carry text stay at high opacity and use the same
+contrast-proven tokens as every other style; browsers without `backdrop-filter`
+fall back to the solid surface tokens, so the style never depends on the blur
+effect.
 
 ## Pick an accent colour
 

@@ -21,7 +21,7 @@ THEME_PRESETS = {
     "ocean": ("#0369a1", "#0284c7"),
     "purple": ("#7c3aed", "#a855f7"),
 }
-THEME_STYLES = {"classic", "paper", "midnight"}
+THEME_STYLES = {"classic", "paper", "midnight", "e-ink", "glassmorphic"}
 CONTENT_WIDTHS = {"compact", "comfortable", "wide"}
 IDENTITY_LOGO_SUFFIXES = {".png", ".svg"}
 HOMEPAGE_SECTION_DEFAULTS = {

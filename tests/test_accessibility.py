@@ -91,7 +91,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
             "button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--dk-focus-ring);outline-offset:3px}",
             css,
         )
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "midnight", "e-ink", "glassmorphic"):
             self.assertIn(f'html[data-visual-theme="{theme}"]', css)
         self.assertIn("@media(forced-colors:active)", css)
         self.assertIn("outline-color:Highlight", css)
@@ -128,7 +128,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
         self.assertIn("<option value=\"system\">System</option>", page)
         self.assertIn("<option value=\"light\">Light</option>", page)
         self.assertIn("<option value=\"dark\">Dark</option>", page)
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "midnight", "e-ink", "glassmorphic"):
             self.assertIn(f'<option value="{theme}">{theme.capitalize()}</option>', page)
         self.assertIn('data-visual-theme="classic"', page)
         self.assertIn("prefers-color-scheme:dark", self.fixture.css)
@@ -212,6 +212,10 @@ class AccessibilityQualificationTests(unittest.TestCase):
             'html[data-visual-theme="paper"][data-theme="dark"]',
             'html[data-visual-theme="midnight"]',
             'html[data-visual-theme="midnight"][data-theme="light"]',
+            'html[data-visual-theme="e-ink"]',
+            'html[data-visual-theme="e-ink"][data-theme="dark"]',
+            'html[data-visual-theme="glassmorphic"]',
+            'html[data-visual-theme="glassmorphic"][data-theme="dark"]',
         ):
             coverage = _theme_tokens(css, selector) | base
             self.assertEqual(set(PUBLIC_TOKENS), coverage, selector)
@@ -226,8 +230,10 @@ class AccessibilityQualificationTests(unittest.TestCase):
         self.assertEqual(set(PUBLIC_TOKENS), paper_system_tokens, "paper system dark")
         self.assertIn('html[data-theme="light"]{color-scheme:light}', css)
         self.assertIn('html[data-theme="dark"]{color-scheme:dark', css)
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "midnight", "e-ink", "glassmorphic"):
             self.assertIn(f'html[data-visual-theme="{theme}"]', css, theme)
+        self.assertIn("@supports ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px)))", css)
+        self.assertIn("--dk-shadow:none", css)
 
     def test_the_classic_system_dark_variant_defines_the_full_token_contract(self) -> None:
         system_blocks = re.findall(

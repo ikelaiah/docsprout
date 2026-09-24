@@ -52,7 +52,8 @@ Every `docs/docsprout.json` needs a project name. Add
 ### `field 'theme.preset' must be one of ...`
 
 A value is misspelled or unsupported. Presets are `blue`, `teal`, `ocean` and
-`purple`; styles are `classic`, `paper` and `midnight`; content widths are
+`purple`; styles are `classic`, `paper`, `midnight`, `e-ink` and
+`glassmorphic`; content widths are
 `compact`, `comfortable` and `wide`. See [Themes](themes.md) and
 [Reading width](configuration.md#reading-width).
 

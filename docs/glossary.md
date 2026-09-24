@@ -130,8 +130,8 @@ Source ref
   live in Git history.
 
 Style
-: The site's starting visual theme: `classic`, `paper` or `midnight`. Visitors
-  can switch it.
+: The site's starting visual theme: `classic`, `paper`, `midnight`, `e-ink` or
+  `glassmorphic`. Visitors can switch it.
 
 Tag
 : A stable Git name attached to one commit, usually for a release. For example,

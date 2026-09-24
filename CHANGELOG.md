@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Added
+
+- Two more visual styles: `e-ink` (flat, near-monochrome, contrast-first) and
+  `glassmorphic` (translucent blurred chrome with a solid-token fallback),
+  each with light, dark and system modes and the same build-time contrast
+  proof as the existing styles.
+- [Add DocSprout to an existing repository](docs/existing-repository.md): the
+  adoption walkthrough for a project that already has a README or `docs/`.
+- [Checks in CI and CD](docs/ci-cd.md): the `check`/`audit` gates with a
+  complete GitHub Actions job, portable runner guidance and static-host
+  deployment.
+
 ## 1.1.4
 
 The brand-hero and contrast-proof release. Generated sites stop looking like a

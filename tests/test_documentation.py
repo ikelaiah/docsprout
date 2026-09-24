@@ -3,6 +3,7 @@ from pathlib import Path
 import unittest
 
 from docsprout import __version__
+from docsprout.config import THEME_STYLES
 
 
 class DocumentationUsabilityTests(unittest.TestCase):
@@ -41,7 +42,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         self.assertEqual("Start here", sections[0]["title"])
         self.assertEqual(
-            ["index.md", "beginners-guide.md", "building.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
+            [
+                "index.md", "beginners-guide.md", "existing-repository.md", "building.md",
+                "writing-great-docs.md", "glossary.md", "troubleshooting.md",
+            ],
             [page["path"] for page in sections[0]["pages"]],
         )
         self.assertEqual("Maintainer reference", sections[-1]["title"])
@@ -200,6 +204,17 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertEqual("paper", single_version["theme"]["style"])
         self.assertIn("[minimal example]", themes)
         self.assertIn("[single-version example]", themes)
+
+    def test_style_lists_cover_every_supported_visual_style(self) -> None:
+        pages = {
+            name: (self.root / "docs" / name).read_text(encoding="utf-8")
+            for name in ("themes.md", "configuration.md", "glossary.md", "troubleshooting.md")
+        }
+
+        for name, text in pages.items():
+            for style in sorted(THEME_STYLES):
+                with self.subTest(page=name, style=style):
+                    self.assertIn(f"`{style}`", text)
 
     def test_configuration_documents_metadata_homepage_defaults_and_archives(self) -> None:
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
