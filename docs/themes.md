@@ -24,11 +24,14 @@ configure modes.
 
 You choose the site's starting **Style**:
 
-- **Classic** (`classic`) is the clean, dependable default;
-- **Paper** (`paper`) gives long guides a warm reading surface;
-- **Midnight** (`midnight`) starts with a dark technical look;
-- **E-ink** (`e-ink`) is flat, near-monochrome and contrast-first;
-- **Glassmorphic** (`glassmorphic`) adds translucent, blurred chrome.
+- **Classic** (`classic`) is the clean, dependable default, with an accent
+  tick marking section headings;
+- **Paper** (`paper`) sets long guides on a warm, bounded reading sheet with
+  serif type and an editorial drop cap;
+- **E-ink** (`e-ink`) is flat, near-monochrome and contrast-first, with a
+  double-rule page title;
+- **Glassmorphic** (`glassmorphic`) adds translucent, blurred chrome and a
+  gradient hero title.
 
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
@@ -39,27 +42,32 @@ starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
 Classic is the showcase default: it keeps the header, navigation and reading
-surface quiet so ordinary Markdown supplies the personality. Paper, Midnight,
-E-ink and Glassmorphic use the same spacing, typography and semantic states,
-with their own reading surfaces and chrome. No custom CSS is needed to make any
+surface quiet so ordinary Markdown supplies the personality. Paper, E-ink and
+Glassmorphic share the same spacing and semantic states, with their own reading
+surfaces, typography and chrome. No custom CSS is needed to make any
 of them publication-ready.
 
 ## E-ink and Glassmorphic in practice
 
 **E-ink** is an ink-on-paper manual: flat white or near-black surfaces, ruled
-section headings, square corners, permanently underlined links, grid-bordered
-tables and an undecorated hero—no shadows, no gradients. Code blocks stay dark
-panels so syntax highlighting remains readable. It suits long-form reading and
-displays where colour is unreliable; its dark variant is a dimmed night-reading
-surface rather than a saturated dark theme.
+headings, square corners, permanently underlined links, grid-bordered
+tables and an undecorated hero—no shadows, no gradients. Brand decorations such
+as the reading-progress bar, callout rails and text selection stay ink-toned
+rather than accent-coloured. Code blocks stay dark panels so syntax highlighting
+remains readable. It suits long-form reading and displays where colour is
+unreliable; its dark variant is a dimmed night-reading surface rather than a
+saturated dark theme.
 
-**Glassmorphic** puts a mesh of soft accent tints behind frosted chrome: the
-header, hero, cards and search float on translucent, blurred layers with
-specular edges and larger rounded corners. The tint is capped and translucent
-surfaces stay mostly opaque, so every text combination is covered by the same
-build-time contrast proof as the other styles; browsers without
-`backdrop-filter` fall back to the solid surface tokens, so the style never
-depends on the blur effect.
+**Glassmorphic** puts a viewport-anchored mesh of soft accent tints behind
+frosted chrome: the header, hero, navigation panels, cards and search float on
+translucent, blurred layers with specular edges and larger rounded corners. The
+hero title carries an accent gradient where the browser supports background
+text clipping, and falls back to the solid text colour elsewhere. Titles that
+open with an emoji keep solid ink everywhere so the glyph survives. The
+mesh tint is capped per stop and translucent surfaces stay mostly opaque, so
+every text combination is covered by the same build-time contrast proof as the
+other styles; browsers without `backdrop-filter` fall back to the solid surface
+tokens, so the style never depends on the blur effect.
 
 ## Pick an accent colour
 
@@ -170,7 +178,7 @@ escape hatch](custom-css.md) and by any tooling that reads generated styles:
 | `--dk-shell-width` | full page layout width |
 
 These fifteen tokens are the documented customisation contract for 1.x.
-Classic, Paper and Midnight each define them in Light, Dark and System modes;
+Classic, Paper, E-ink and Glassmorphic each define them in Light, Dark and System modes;
 the contract is regression-tested. **Internal** variables that DocSprout uses but
 does not document—radii, fonts, spacing scales, shadow, control heights and
 anything else whose name begins with `--dk-`—are not part of the contract and

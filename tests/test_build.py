@@ -214,16 +214,14 @@ class BuildSiteTests(unittest.TestCase):
             system_classic_dark_rule = (
                 '@media(prefers-color-scheme:dark){html[data-visual-theme="classic"]'
                 ':not([data-theme]){color-scheme:dark;--dk-bg:#111827;--dk-surface:#1f2937;'
-                '--dk-text:#f3f4f6;--dk-muted:#b8c2d3;--dk-border:#3b4659;--dk-code-bg:#030712}}'
+                '--dk-text:#f3f4f6;--dk-muted:#b8c2d3;--dk-border:#3b4659;--dk-code-bg:#030712;'
+                '--dk-raised:#172033;--dk-focus-ring:#67e8f9;'
+                '--dk-interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff);'
+                '--dk-shadow:0 .75rem 2rem color-mix(in srgb,#000 55%,transparent),'
+                '0 1px 0 color-mix(in srgb,#fff 6%,transparent)}}'
             )
             self.assertIn(
                 system_classic_dark_rule,
-                site_css,
-            )
-            self.assertIn(
-                '@media(prefers-color-scheme:dark){html[data-visual-theme="classic"]'
-                ':not([data-theme]){--dk-raised:#172033;--dk-focus-ring:#67e8f9;'
-                '--dk-interactive:color-mix(in srgb,var(--dk-accent) 45%,#fff)}}',
                 site_css,
             )
             self.assertIn('--dk-content-width:46rem', site_css)
@@ -253,10 +251,12 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('@media(prefers-reduced-motion:reduce)', site_css)
             self.assertIn('.syntax-highlight .tok-property{color:#93c5fd}', site_css)
             self.assertIn('.syntax-highlight .tok-keyword{color:#c4b5fd}', site_css)
+            self.assertIn('.header-controls{width:100%;gap:.35rem}', site_css)
+            self.assertIn('.topbar select{width:100%;min-width:0}', site_css)
             self.assertIn(
-                '@media(max-width:600px){.topbar{gap:.5rem}.brand{flex:0 0 100%}'
-                '.topbar select{flex:0 1 calc(50% - .25rem);width:calc(50% - .25rem);min-width:0}'
-                '.capability-strip{grid-template-columns:1fr}}',
+                '.capability-strip,.capability-strip[data-card-count="2"],'
+                '.capability-strip[data-card-count="3"],'
+                '.capability-strip[data-card-count="4"]{grid-template-columns:1fr}',
                 site_css,
             )
             search = json.loads((root / "site" / "search-index.json").read_text(encoding="utf-8"))
@@ -319,6 +319,32 @@ class BuildSiteTests(unittest.TestCase):
             self.assertNotIn("javascript:", home)
             self.assertNotIn("hero-actions", home)
             self.assertNotIn("hero-secondary", home)
+
+    def test_emoji_led_hero_title_keeps_solid_ink(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# 📚 Welcome\n\nA short introduction.\n", encoding="utf-8")
+            (docs / "guide.md").write_text("# Guide", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "project": {"name": "Hero Demo"},
+            }), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps({"schema_version": 1, "navigation": [
+                {"title": "Start", "pages": [{"title": "Welcome", "path": "index.md"}, {"title": "Guide", "path": "guide.md"}]},
+            ]}), encoding="utf-8")
+
+            build_site(root=root, output=root / "site", release="dev")
+
+            home = (root / "site" / "index.html").read_text(encoding="utf-8")
+            self.assertIn('<div class="hero hero-emoji"><div class="hero-copy">', home)
+            self.assertIn("📚", home)
+            site_css = (root / "site" / "assets" / "site.css").read_text(encoding="utf-8")
+            self.assertIn(
+                'html[data-visual-theme="glassmorphic"] .hero-emoji h1{background:none;color:var(--dk-text)}',
+                site_css,
+            )
 
     def test_marks_a_custom_three_card_homepage_for_responsive_layout(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -21,8 +21,6 @@ from docsprout.palette import (
     GLASS_DARK_PROOF,
     GLASS_LIGHT,
     GLASS_LIGHT_PROOF,
-    MIDNIGHT_DARK,
-    MIDNIGHT_LIGHT,
     PAPER_DARK,
     PAPER_LIGHT,
     contrast_ratio,
@@ -34,12 +32,10 @@ from docsprout.palette import (
 BACKGROUNDS = {
     ":root": CLASSIC_LIGHT,
     'html[data-visual-theme="paper"]': PAPER_LIGHT,
-    'html[data-visual-theme="midnight"][data-theme="light"]': MIDNIGHT_LIGHT,
     'html[data-visual-theme="e-ink"]': EINK_LIGHT,
     'html[data-visual-theme="glassmorphic"]': GLASS_LIGHT_PROOF,
     'html[data-visual-theme="classic"][data-theme="dark"]': CLASSIC_DARK,
     'html[data-visual-theme="paper"][data-theme="dark"]': PAPER_DARK,
-    'html[data-visual-theme="midnight"]': MIDNIGHT_DARK,
     'html[data-visual-theme="e-ink"][data-theme="dark"]': EINK_DARK,
     'html[data-visual-theme="glassmorphic"][data-theme="dark"]': GLASS_DARK_PROOF,
     'html[data-visual-theme="classic"]:not([data-theme])': CLASSIC_DARK,
@@ -75,8 +71,6 @@ class PaletteMathTests(unittest.TestCase):
             ('html[data-theme="dark"]', CLASSIC_DARK),
             ('html[data-visual-theme="paper"]', PAPER_LIGHT),
             ('html[data-visual-theme="paper"][data-theme="dark"]', PAPER_DARK),
-            ('html[data-visual-theme="midnight"]', MIDNIGHT_DARK),
-            ('html[data-visual-theme="midnight"][data-theme="light"]', MIDNIGHT_LIGHT),
             ('html[data-visual-theme="e-ink"]', EINK_LIGHT),
             ('html[data-visual-theme="e-ink"][data-theme="dark"]', EINK_DARK),
             ('html[data-visual-theme="glassmorphic"]', GLASS_LIGHT),
@@ -133,7 +127,6 @@ class PaletteDerivationTests(unittest.TestCase):
         for selector in (
             ":root{",
             'html[data-visual-theme="paper"]{',
-            'html[data-visual-theme="midnight"]{',
             'html[data-visual-theme="e-ink"]{',
             'html[data-visual-theme="glassmorphic"]{',
         ):

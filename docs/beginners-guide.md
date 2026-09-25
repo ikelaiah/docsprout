@@ -263,7 +263,8 @@ because only the repository-root `README.md` uses `"source": "root"`:
 }
 ```
 
-Then choose colours, a **Style** (`Classic`, `Paper` or `Midnight`) and a
+Then choose colours, a **Style** (`Classic`, `Paper`, `E-ink` or
+`Glassmorphic`) and a
 **Mode** (`System`, `Light` or `Dark`) in [Themes](themes.md).
 [Customize the home page](homepage-recipes.md) has complete `docsprout.json`
 examples.

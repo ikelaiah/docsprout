@@ -9,6 +9,7 @@ from pathlib import Path
 import posixpath
 import re
 import shutil
+import unicodedata
 from urllib.parse import urlsplit
 
 from .assets import MATH_JS, SITE_CSS, SITE_JS
@@ -100,6 +101,26 @@ def _page_navigation(*, page: Page, config, current_route: str) -> str:
     return f'<nav class="page-navigation" aria-label="Page navigation">{"".join(links)}</nav>' if links else ""
 
 
+def _hero_title_has_emoji(body: str) -> bool:
+    """Return True when the hero heading contains a colour emoji glyph.
+
+    The glassmorphic gradient headline clips the heading text, which drops
+    colour bitmap emoji in Chromium and WebKit; emoji-led titles keep solid
+    ink so the glyph survives.
+    """
+    opening = body.find("<h1")
+    if opening < 0:
+        return False
+    start = body.find(">", opening)
+    if start < 0:
+        return False
+    end = body.find("</h1>", start)
+    if end < 0:
+        return False
+    text = re.sub(r"<[^>]*>", "", body[start + 1 : end])
+    return any(unicodedata.category(character) == "So" for character in text)
+
+
 def _hero_actions(*, config, current_route: str) -> str:
     """Derive the home-page call to action from navigation and repository metadata."""
     links: list[str] = []
@@ -159,7 +180,8 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         actions = _hero_actions(config=config, current_route=current_route)
         if opening_end or actions or release_context:
             art = f'<div class="hero-figure">{banner_html}</div>' if banner_html else ""
-            hero = f'<div class="hero{" hero-art" if banner_html else ""}">{art}<div class="hero-copy">{release_context}{body[:opening_end]}{actions}</div></div>'
+            emoji = " hero-emoji" if _hero_title_has_emoji(body) else ""
+            hero = f'<div class="hero{" hero-art" if banner_html else ""}{emoji}">{art}<div class="hero-copy">{release_context}{body[:opening_end]}{actions}</div></div>'
             body = body[opening_end:]
     if capability_strip:
         body = capability_strip + body
@@ -171,9 +193,9 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     page_navigation = _page_navigation(page=page, config=config, current_route=current_route)
     footer_links = "".join(f'<a href="{html.escape(url, quote=True)}">{html.escape(label)}</a>' for label, url in config.project_links)
     footer = f'<footer class="site-footer"><span>{html.escape(config.footer or config.name)}</span>{footer_links}</footer>' if config.footer or footer_links else ""
-    header_controls = f'''<div class="header-controls" aria-label="Site controls"><label class="header-control"><span>Version</span><select id="version-select" aria-label="Documentation version">{version_options}</select></label><label class="header-control"><span>Style</span><select id="visual-theme" aria-label="Documentation visual theme"><option value="classic">Classic</option><option value="paper">Paper</option><option value="midnight">Midnight</option><option value="e-ink">E-ink</option><option value="glassmorphic">Glassmorphic</option></select></label><label class="header-control"><span>Mode</span><select id="theme-select" aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>'''
+    header_controls = f'''<div class="header-controls" aria-label="Site controls"><label class="header-control"><span>Version</span><select id="version-select" aria-label="Documentation version">{version_options}</select></label><label class="header-control"><span>Style</span><select id="visual-theme" aria-label="Documentation visual theme"><option value="classic">Classic</option><option value="paper">Paper</option><option value="e-ink">E-ink</option><option value="glassmorphic">Glassmorphic</option></select></label><label class="header-control"><span>Mode</span><select id="theme-select" aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>'''
     main_context = ' data-homepage="true"' if homepage else ' data-homepage="false"'
-    theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme'),visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','midnight','e-ink','glassmorphic'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
+    theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme'),visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','e-ink','glassmorphic'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
     custom_css_link = f'<link rel="stylesheet" href="{html.escape(_relative(current_route, "assets/custom.css"), quote=True)}">' if custom_css else ""
     home_route = html.escape(_relative(current_route, "index.html"), quote=True)
     search_index_route = html.escape(_relative(current_route, "search-index.json"), quote=True)

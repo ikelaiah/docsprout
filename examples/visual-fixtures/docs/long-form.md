@@ -59,5 +59,5 @@ end;
 ## Closing check
 
 The final section makes the fixture tall enough to exercise reading progress and
-sticky navigation. Inspect this page in Classic, Paper and Midnight, then repeat
+sticky navigation. Inspect this page in Classic, Paper and E-ink, then repeat
 with Light, Dark and System colour choices.

@@ -33,7 +33,7 @@ errors or warnings.
 | Desktop | 1440px | Sidebar, article and on-page outline align without crowding; the hero banner spans the content width without cutting its text; card icons align on the card baseline; oversized Markdown images stay within the prose column |
 | Long document | 1024px or wider | Heading rhythm, reading progress and sticky local navigation |
 
-At each useful width, switch among Classic, Paper, Midnight, E-ink and
+At each useful width, switch among Classic, Paper, E-ink and
 Glassmorphic and repeat with Light and Dark. Use only the keyboard to focus search with `/`, move among
 results with Arrow keys/Home/End, close results with Escape, and tab through
 version, visual-theme and colour controls. Every focus indicator must be

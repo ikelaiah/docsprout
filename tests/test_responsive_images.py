@@ -167,7 +167,7 @@ class ResponsiveProseImageTests(unittest.TestCase):
                 self.assertEqual(SITE_CSS, versioned_css, release)
 
     def test_responsive_rule_survives_theme_and_content_width_settings(self) -> None:
-        for theme_style, content_width in (("paper", "compact"), ("midnight", "wide")):
+        for theme_style, content_width in (("paper", "compact"), ("glassmorphic", "wide")):
             with self.subTest(theme_style=theme_style, content_width=content_width), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._project(root, theme_style=theme_style, content_width=content_width)

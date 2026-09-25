@@ -296,7 +296,7 @@ Appearance and identity are `docs/docsprout.json` edits:
 | What you want | What you edit |
 | --- | --- |
 | Change colours | `theme.preset`, or exact `theme.accent` / `theme.accent_secondary` |
-| Change the visual style | `theme.style` (`classic`, `paper`, `midnight`, `e-ink`, `glassmorphic`) |
+| Change the visual style | `theme.style` (`classic`, `paper`, `e-ink`, `glassmorphic`) |
 | Add a logo | `identity.logo` (repository-local SVG or PNG) |
 | Change the footer | `identity.footer` and `identity.links` |
 | Add a banner | `banner` with `path` and `alt` |

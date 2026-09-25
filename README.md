@@ -120,7 +120,7 @@ existing projects and advanced historical publishing.
 - **Easy to learn.** The beginner path explains the mental model and the next
   useful edit without hiding decisions in a generator.
 - **Easy to look good.** Responsive, keyboard-friendly Classic, Paper,
-  Midnight, E-ink and Glassmorphic sites work with local assets and no custom
+  E-ink and Glassmorphic sites work with local assets and no custom
   CSS required, and one brand colour becomes a contrast-proven theme.
 - **Easy to create from existing repositories.** `init` preserves Markdown,
   discovers ordinary and Pascal-shaped projects, and creates only missing

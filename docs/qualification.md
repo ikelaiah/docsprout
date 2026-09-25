@@ -141,7 +141,7 @@ DocSprout's own built documentation:
 - code blocks and tables scroll inside their own frames; no page-level
   horizontal overflow
 - Light/Dark/System coherence and the shared semantic token contract for
-  Classic, Paper and Midnight
+  Classic, Paper, E-ink and Glassmorphic
 
 ## v0.18 additions
 
@@ -163,7 +163,7 @@ The v0.17 matrix above is unchanged. v0.18 adds:
   accessibility of arbitrary user CSS; only the inclusion mechanics are
   qualified.
 - **`--dk-*` public token family**: every documented public token is defined
-  in Classic, Paper and Midnight × Light, Dark and System; the legacy generic
+  in Classic, Paper, E-ink and Glassmorphic × Light, Dark and System; the legacy generic
   token names are proven absent; internal implementation variables are not
   part of the assertions.
 - **Route collision protection**: exact and case-insensitive route collisions
@@ -351,7 +351,7 @@ automated contract above.
 | 1 | Tab from the address bar through search, version, style and mode controls, copy buttons, previous/next and every sidebar link; focus is always visible. |
 | 2 | `/` focuses search; type a query; ArrowDown/ArrowUp, Home, End, Enter and Escape behave as described; Tab leaves the result region predictably. |
 | 3 | At phone width the mobile navigation opens and closes with Enter/Space on the disclosure and every section link is reachable by keyboard. |
-| 4 | Screenshot phone/tablet/desktop widths in Classic, Paper, Midnight, E-ink and Glassmorphic × System, Light and Dark; nothing overlaps and no page-level horizontal scroll appears. |
+| 4 | Screenshot phone/tablet/desktop widths in Classic, Paper, E-ink and Glassmorphic × System, Light and Dark; nothing overlaps and no page-level horizontal scroll appears. |
 | 5 | With the OS reduced-motion preference on, search results, the reading-progress bar and theme changes do not animate. |
 | 6 | With Windows high-contrast / forced-colors enabled, focus outlines and the reading-progress indicator remain visible. |
 | 7 | At desktop and phone widths the home-page hero keeps its copy readable, the derived actions stay keyboard reachable, and a configured banner spans the content width without cutting its text. |

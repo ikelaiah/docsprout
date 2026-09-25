@@ -130,7 +130,7 @@ Source ref
   live in Git history.
 
 Style
-: The site's starting visual theme: `classic`, `paper`, `midnight`, `e-ink` or
+: The site's starting visual theme: `classic`, `paper`, `e-ink` or
   `glassmorphic`. Visitors can switch it.
 
 Tag
