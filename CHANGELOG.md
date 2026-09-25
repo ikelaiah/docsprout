@@ -19,6 +19,15 @@
 - The sidebar separates group labels from page entries: section headings are
   quiet small-cap headers, and page links carry the visual weight.
 
+### Fixed
+
+- `docsprout serve` no longer serves stale output until restart. A source
+  saved while a rebuild was already running stays queued instead of being
+  marked as built, transient file errors (editor saves, antivirus locks) no
+  longer kill the watcher thread or fail requests, and the preview now
+  watches every module that shapes the built site (`assets`, `palette`,
+  `highlight`, `config`, `markdown`, `build`), not just two of them.
+
 ## 1.1.4
 
 The brand-hero and contrast-proof release. Generated sites stop looking like a

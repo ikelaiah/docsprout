@@ -4,10 +4,13 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import threading
+import time
 import unittest
 from unittest.mock import patch
 
-from docsprout.cli import _PreviewBuilder, main
+from docsprout import build as build_module
+from docsprout.cli import _PreviewBuilder, _watch_preview, main
 
 
 class CliTests(unittest.TestCase):
@@ -166,6 +169,71 @@ class CliTests(unittest.TestCase):
             with patch("docsprout.cli.importlib.reload") as reload:
                 self.assertTrue(preview.rebuild_if_changed())
             self.assertTrue(reload.called)
+
+    def test_preview_rebuilds_after_a_source_change_lands_during_the_build(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(0, main(["init", "--root", str(root)]))
+            preview = _PreviewBuilder(root=root, output=root / "build" / "docs-site", release="preview")
+            preview.build_initial()
+            (root / "docs" / "index.md").write_text("# First change\n\nContent.", encoding="utf-8")
+
+            original = build_module.build_site
+            saved = {"done": False}
+
+            def build_then_save(**kwargs):
+                result = original(**kwargs)
+                if not saved["done"]:
+                    saved["done"] = True
+                    (root / "docs" / "index.md").write_text("# Saved mid-build\n\nContent.", encoding="utf-8")
+                return result
+
+            with patch.object(build_module, "build_site", new=build_then_save):
+                self.assertTrue(preview.rebuild_if_changed())
+                self.assertTrue(preview.rebuild_if_changed(), "a save during the build must stay queued")
+
+            built = (root / "build" / "docs-site" / "index.html").read_text(encoding="utf-8")
+            self.assertIn("Saved mid-build", built)
+            self.assertFalse(preview.rebuild_if_changed())
+
+    def test_preview_watcher_survives_transient_source_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(0, main(["init", "--root", str(root)]))
+            preview = _PreviewBuilder(root=root, output=root / "build" / "docs-site", release="preview")
+            preview.build_initial()
+            calls: list[int] = []
+            original = preview.rebuild_if_changed
+
+            def flaky() -> bool:
+                calls.append(len(calls))
+                if len(calls) == 1:
+                    raise OSError("simulated file lock")
+                return original()
+
+            stopped = threading.Event()
+            output = io.StringIO()
+            with patch.object(preview, "rebuild_if_changed", side_effect=flaky):
+                with redirect_stdout(output):
+                    thread = threading.Thread(target=_watch_preview, args=(preview, stopped), daemon=True)
+                    thread.start()
+                    deadline = time.monotonic() + 5
+                    while len(calls) < 3 and time.monotonic() < deadline:
+                        time.sleep(0.05)
+                    stopped.set()
+                    thread.join(timeout=2)
+            self.assertGreaterEqual(len(calls), 3, "the watcher must keep polling after a transient error")
+            self.assertFalse(thread.is_alive())
+            self.assertIn("Preview rebuild failed: simulated file lock", output.getvalue())
+
+    def test_preview_watches_every_module_that_shapes_the_built_site(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            preview = _PreviewBuilder(root=root, output=root / "build" / "docs-site", release="preview")
+            self.assertEqual(
+                {"assets.py", "build.py", "config.py", "highlight.py", "markdown.py", "palette.py"},
+                {path.name for path in preview._renderer_sources},
+            )
 
     def test_preview_rebuilds_when_layout_or_docsprout_configuration_changes(self) -> None:
         for configuration in ("layout.json", "docsprout.json"):
