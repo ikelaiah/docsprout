@@ -10,7 +10,7 @@ import posixpath
 import re
 import shutil
 import unicodedata
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from .assets import MATH_JS, SITE_CSS, SITE_JS
 from .config import load_config, page_source_path, page_source_reference
@@ -44,6 +44,13 @@ NEUTRAL_CARD_ICONS = (
     '<path d="M6 2h8l4 4v16H6z"/><path d="M14 2v4h4"/>',
     '<path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 13 9 5 9-5"/>',
     '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>',
+)
+BRAND_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+    '<path d="M12 18V8" fill="none" stroke="#477949" stroke-linecap="round" stroke-width="1.2"/>'
+    '<path d="M12 10c-3.6 0-5.6-2-5.3-5.2 3.3.1 5.3 1.8 5.3 5.2ZM12 8.2c0-3.2 2-5.1 5.3-5.1.3 3.2-1.7 5.1-5.3 5.1Z" fill="#77ad6c" stroke="#477949" stroke-linejoin="round" stroke-width=".45"/>'
+    '<path d="M6.3 16h11.4l-1.1 5.1a1 1 0 0 1-1 .8H8.4a1 1 0 0 1-1-.8Z" fill="#e8cf9f" stroke="#806644" stroke-linejoin="round" stroke-width=".7"/>'
+    '<ellipse cx="12" cy="16" rx="5.7" ry="1.25" fill="#765139"/></svg>'
 )
 
 
@@ -153,7 +160,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     banner_html = f'<img class="banner" src="{html.escape(banner, quote=True)}" alt="{html.escape(config.banner_alt or "", quote=True)}">' if banner else ""
     style = f"--dk-accent:{config.accent};--dk-accent-secondary:{config.accent_secondary}"
     palette_style = f"<style>{config.palette.stylesheet()}</style>" if config.palette else ""
-    brand_mark = '<svg class="brand-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4"/></svg>'
+    brand_mark = BRAND_SVG.replace("<svg ", '<svg class="brand-mark" aria-hidden="true" focusable="false" ', 1)
     brand_identity = f'<img class="brand-logo" src="{html.escape(_relative(current_route, logo), quote=True)}" alt="" aria-hidden="true">' if logo else brand_mark
     homepage = page.path == config.home_document
     if homepage and not config.homepage.show_introduction:
@@ -204,10 +211,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     katex_js_route = html.escape(_relative(current_route, "assets/katex/katex.min.js"), quote=True)
     math_js_route = html.escape(_relative(current_route, "assets/math.js"), quote=True)
     site_js_route = html.escape(_relative(current_route, "assets/site.js"), quote=True)
-    favicon = (
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E"
-        "%3Cpath fill='%237c3aed' d='M3 1.5h6l4 4v9H3zM9 1.5v4h4M5.5 9h5M5.5 11.5h4'/%3E%3C/svg%3E"
-    )
+    favicon = "data:image/svg+xml," + quote(BRAND_SVG, safe="")
     document_head = (
         f'<!doctype html><html lang="en" data-visual-theme="{html.escape(config.theme_style, quote=True)}"'
         f' data-content-width="{html.escape(config.content_width, quote=True)}" style="{style}"><head>'

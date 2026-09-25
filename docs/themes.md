@@ -24,14 +24,14 @@ configure modes.
 
 You choose the site's starting **Style**:
 
-- **Classic** (`classic`) is the clean, dependable default, with an accent
-  tick marking section headings;
-- **Paper** (`paper`) sets long guides on a warm, bounded reading sheet with
-  serif type and an editorial drop cap;
-- **E-ink** (`e-ink`) is flat, near-monochrome and contrast-first, with a
-  double-rule page title;
-- **Glassmorphic** (`glassmorphic`) adds translucent, blurred chrome and a
-  gradient hero title.
+- **Classic** (`classic`) pairs crisp surfaces with an accent-edged hero
+  and section headings;
+- **Paper** (`paper`) sets long guides on a warm, layered reading sheet with
+  lighter serif headings, italic introductory copy and an editorial drop cap;
+- **E-ink** (`e-ink`) pairs square, flat surfaces with monospace controls,
+  a double-rule page title and still, shadow-free cards;
+- **Glassmorphic** (`glassmorphic`) adds softly lit, frosted panels, rounded
+  controls and a gradient hero title.
 
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
@@ -52,6 +52,10 @@ surface quiet so ordinary Markdown supplies the personality. Paper, E-ink and
 Glassmorphic share the same spacing and semantic states, with their own reading
 surfaces, typography and chrome. No custom CSS is needed to make any
 of them publication-ready.
+
+All four share the same component rules, with theme tokens controlling their
+corners and materials in both colour modes. Typography and decoration use local
+CSS and system fonts, with no additional downloads.
 
 ## E-ink and Glassmorphic in practice
 

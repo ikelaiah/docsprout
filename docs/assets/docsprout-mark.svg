@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DocSprout mark">
-  <path fill="#7c3aed" d="M12 6h27l13 13v39H12z"/>
-  <path fill="#fff" d="M39 6v13h13" opacity=".9"/>
-  <path fill="#fff" d="M22 28h20v5H22zm0 10h20v5H22zm0 10h13v5H22z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Potted sprout">
+  <path d="M12 18V8" fill="none" stroke="#477949" stroke-linecap="round" stroke-width="1.2"/>
+  <path d="M12 10c-3.6 0-5.6-2-5.3-5.2 3.3.1 5.3 1.8 5.3 5.2ZM12 8.2c0-3.2 2-5.1 5.3-5.1.3 3.2-1.7 5.1-5.3 5.1Z" fill="#77ad6c" stroke="#477949" stroke-linejoin="round" stroke-width=".45"/>
+  <path d="M6.3 16h11.4l-1.1 5.1a1 1 0 0 1-1 .8H8.4a1 1 0 0 1-1-.8Z" fill="#e8cf9f" stroke="#806644" stroke-linejoin="round" stroke-width=".7"/>
+  <ellipse cx="12" cy="16" rx="5.7" ry="1.25" fill="#765139"/>
 </svg>

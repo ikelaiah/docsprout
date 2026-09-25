@@ -232,12 +232,12 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('--dk-control-height:2.5rem', site_css)
             self.assertIn('.capability-strip[data-card-count="3"]', site_css)
             self.assertIn('align-items:stretch;grid-template-rows:minmax(0,1fr)', site_css)
-            self.assertIn('.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1.1rem 1.15rem;border:1px solid var(--dk-border);border-radius:.55rem', site_css)
+            self.assertIn('.capability-strip li{display:flex;flex-direction:column;align-self:stretch;min-height:0;padding:1.1rem 1.15rem;border:1px solid var(--dk-border);border-radius:var(--dk-radius)', site_css)
             self.assertIn('.capability-strip li+li{margin-top:0}', site_css)
             self.assertIn('.header-controls', site_css)
             self.assertIn('.topbar{display:grid;grid-template-columns:auto minmax(12rem,30rem) max-content;grid-template-rows:auto var(--dk-control-height)', site_css)
             self.assertIn('.page-navigation a{min-height:0;max-width:none;padding:0;border:0;border-radius:0;background:transparent', site_css)
-            self.assertIn('.page-navigation .page-next{grid-column:1;justify-self:start}', site_css)
+            self.assertIn('.page-navigation .page-next{grid-column:1;justify-self:start;text-align:left;align-items:flex-start}', site_css)
             self.assertIn('.hero .hero-copy>p', site_css)
             self.assertIn('.hero-copy{min-width:0}', site_css)
             self.assertIn('.hero.hero-art{display:flex;flex-direction:column;padding:0}', site_css)
@@ -246,17 +246,15 @@ class BuildSiteTests(unittest.TestCase):
                 'background:var(--dk-interactive);color:var(--dk-on-interactive,#fff)}',
                 site_css,
             )
-            self.assertIn('.prose h1,.prose h2,.prose h3{font-family:var(--dk-font-display);font-weight:720;letter-spacing:-.032em;text-wrap:balance}', site_css)
-            self.assertIn('.prose h1{max-width:none;margin-bottom:1.25rem}', site_css)
+            self.assertIn('font-weight:720;letter-spacing:-.032em;text-wrap:balance;scroll-margin-top:6.5rem', site_css)
+            self.assertIn('line-height:1.12;max-width:none;margin:0 0 1.25rem', site_css)
             self.assertIn('@media(prefers-reduced-motion:reduce)', site_css)
             self.assertIn('.syntax-highlight .tok-property{color:#93c5fd}', site_css)
             self.assertIn('.syntax-highlight .tok-keyword{color:#c4b5fd}', site_css)
             self.assertIn('.header-controls{width:100%;gap:.35rem}', site_css)
             self.assertIn('.topbar select{width:100%;min-width:0}', site_css)
             self.assertIn(
-                '.capability-strip,.capability-strip[data-card-count="2"],'
-                '.capability-strip[data-card-count="3"],'
-                '.capability-strip[data-card-count="4"]{grid-template-columns:1fr}',
+                '.prose .capability-strip{grid-template-columns:1fr}',
                 site_css,
             )
             search = json.loads((root / "site" / "search-index.json").read_text(encoding="utf-8"))
