@@ -36,6 +36,12 @@ You choose the site's starting **Style**:
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
 
+Links follow one system in every style: inline content links carry a
+persistent underline, because colour alone never identifies them; navigation
+chrome—the sidebar, contents, search results, page navigation and
+footer—never underlines, signalling hover with a background tint or colour
+shift instead, and buttons never underline.
+
 The maintained
 [single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
