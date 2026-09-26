@@ -201,7 +201,7 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 .toc .toc-level-4{padding-left:1.5rem;font-size:.96em}
 .toc .toc-level-5{padding-left:1.85rem;font-size:.92em}
 .toc .toc-level-6{padding-left:2.2rem;font-size:.92em}
-@media(hover:hover){.capability-strip li:hover{border-color:var(--dk-interactive);box-shadow:inset 0 3px var(--dk-interactive)}}
+@media(hover:hover){.capability-strip li:hover{border-color:var(--dk-interactive)}}
 /* Glass composites stay within palette.py contrast bounds; blur is optional. */
 html[data-visual-theme="glassmorphic"] body{background:radial-gradient(46rem 32rem at 10% 12%,color-mix(in srgb,var(--dk-accent) var(--dk-mesh-1),transparent),transparent 58%),radial-gradient(38rem 30rem at 94% 8%,color-mix(in srgb,var(--dk-accent-secondary) var(--dk-mesh-2),transparent),transparent 55%),radial-gradient(42rem 34rem at 52% 118%,color-mix(in srgb,var(--dk-accent) var(--dk-mesh-3),transparent),transparent 60%),radial-gradient(28rem 24rem at 76% 74%,color-mix(in srgb,var(--dk-accent-secondary) var(--dk-mesh-4),transparent),transparent 55%),var(--dk-bg);background-attachment:fixed}
 html[data-visual-theme="glassmorphic"] :is(.site-header,.hero,.capability-strip li,.release-context,.search-results,.sidebar,.toc,.mobile-nav){background:var(--dk-glass);border-color:color-mix(in srgb,var(--dk-raised) 30%,var(--dk-border));box-shadow:inset 0 1px 0 color-mix(in srgb,var(--dk-raised) 70%,transparent),0 1.25rem 2.8rem -.55rem color-mix(in srgb,var(--dk-bg) 65%,transparent)}
