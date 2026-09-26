@@ -299,6 +299,17 @@ change.
       page demonstrating every supported element.
 - [x] Keep the capability-card hover to the border highlight.
 
+## v1.1.6 — Security and hardening patch ✅
+
+Close the Markdown image-alt attribute-escaping gap, keep ordinary alt text
+unchanged, and make the custom-CSS network boundary explicit, with no schema,
+route, machine-format, CLI, token-name or theme change.
+
+- [x] Escape image alt text for HTML attribute context with regression tests.
+- [x] Audit the remaining renderer attribute contexts; no other change needed.
+- [x] Document that bundled assets stay offline while author-owned custom CSS
+      is copied verbatim and may reference external resources when viewed.
+
 ## v1.2 — Visual Range and Adoption Guides
 
 - [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark

@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.1.6
+
+A security and hardening patch. Project Markdown is treated as untrusted
+input; v1.1.6 closes an attribute-escaping gap in Markdown image rendering and
+makes the custom-CSS network boundary explicit. No schema, route,
+machine-format, CLI, token-name or theme change: update the package and
+workflow pins to `v1.1.6` and rebuild.
+
+### Fixed
+
+- Escape Markdown image alt text correctly for HTML attribute context,
+  preventing crafted alt text from injecting attributes into generated `<img>`
+  elements. Ordinary Unicode and Markdown text render unchanged.
+- Clarify that DocSprout's own generated and bundled assets require no network
+  access, while user-provided `theme.custom_css` is copied verbatim and may
+  intentionally reference external resources when the generated site is viewed.
+
+### Security
+
+- Project Markdown is untrusted input and generated HTML is escaped. This
+  release fixes image alt-text handling so alt content stays inside its
+  `alt="..."` attribute; all other renderer attribute contexts were audited
+  and required no change.
+
 ## 1.1.5
 
 The scannable-sidebar release. The left navigation collapses into logical
