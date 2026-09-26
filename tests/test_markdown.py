@@ -211,11 +211,13 @@ class ImageAltEscapingTests(unittest.TestCase):
                 self.assertEqual(1, len(tags))
                 self.assertIsNotNone(re.fullmatch(r'<img src="[^"]*" alt="[^"]*">', tags[0]))
 
-    def test_straight_quote_alt_reaching_the_attribute_is_escaped(self) -> None:
-        # Code spans are protected from typographic quotes, so a straight quote
-        # survives to the image substitution. The attribute must still be safe.
-        # This payload produced alt="x" onerror="alert(1)" on v1.1.5.
-        rendered = render_markdown('`![x" onerror="alert(1)](images/diagram.svg)`', lambda target: target)
+    def test_straight_quote_in_image_target_is_escaped(self) -> None:
+        # Link/image targets are protected from typographic quotes, so a straight
+        # quote survives to the image substitution. The attribute must still be safe.
+        # v1.1.7 made code spans literal, so this no longer uses a code span to
+        # reach the attribute; it uses a target that keeps its exact characters.
+        # This payload produced an injectable attribute on v1.1.5.
+        rendered = render_markdown('![diagram](images/diagram.svg" onerror="alert(1))', lambda target: target)
 
         self.assertIn("&quot;", rendered.html)
         images = _collect_images(rendered.html)
@@ -223,8 +225,8 @@ class ImageAltEscapingTests(unittest.TestCase):
         image = images[0]
         self.assertEqual({"src", "alt"}, set(image))
         self.assertNotIn("onerror", image)
-        self.assertEqual("images/diagram.svg", image["src"])
-        self.assertEqual('x" onerror="alert(1)', image["alt"])
+        self.assertEqual('images/diagram.svg" onerror="alert(1', image["src"])
+        self.assertEqual("diagram", image["alt"])
         tags = re.findall(r"<img\b[^>]*>", rendered.html)
         self.assertEqual(1, len(tags))
         self.assertIsNotNone(re.fullmatch(r'<img src="[^"]*" alt="[^"]*">', tags[0]))
@@ -265,3 +267,86 @@ class ImageAltEscapingTests(unittest.TestCase):
             self.assertTrue(any("onerror" in alt for alt in alts))
             self.assertIn('alt="Fish &amp; chips &lt;diagram&gt;"', page)
             self.assertTrue((root / "site" / "assets" / "content" / "images" / "diagram.svg").is_file())
+
+
+class InlineCodeLiteralnessTests(unittest.TestCase):
+    def test_image_syntax_inside_code_stays_literal(self) -> None:
+        rendered = render_markdown("`![cat](images/cat.svg)`", lambda target: target)
+
+        self.assertEqual(1, rendered.html.count("<code>"))
+        self.assertEqual(1, rendered.html.count("</code>"))
+        self.assertIn("<code>![cat](images/cat.svg)</code>", rendered.html)
+        self.assertNotIn("<img", rendered.html)
+        self.assertEqual([], _collect_images(rendered.html))
+
+    def test_link_syntax_inside_code_stays_literal(self) -> None:
+        rendered = render_markdown("`[Guide](guide.md)`", lambda target: target)
+
+        self.assertEqual(1, rendered.html.count("<code>"))
+        self.assertIn("<code>[Guide](guide.md)</code>", rendered.html)
+        self.assertNotIn("<a href", rendered.html)
+
+    def test_emphasis_syntax_inside_code_stays_literal(self) -> None:
+        for source, literal in (("`**bold**`", "**bold**"), ("`*italic*`", "*italic*")):
+            with self.subTest(source=source):
+                rendered = render_markdown(source, lambda target: target)
+
+                self.assertEqual(1, rendered.html.count("<code>"))
+                self.assertIn(f"<code>{literal}</code>", rendered.html)
+                self.assertNotIn("<strong>", rendered.html)
+                self.assertNotIn("<em>", rendered.html)
+
+    def test_strikethrough_syntax_inside_code_stays_literal(self) -> None:
+        rendered = render_markdown("`~~deleted~~`", lambda target: target)
+
+        self.assertEqual(1, rendered.html.count("<code>"))
+        self.assertIn("<code>~~deleted~~</code>", rendered.html)
+        self.assertNotIn("<del>", rendered.html)
+
+    def test_math_syntax_inside_code_stays_literal(self) -> None:
+        rendered = render_markdown("`$x^2$`", lambda target: target)
+
+        self.assertEqual(1, rendered.html.count("<code>"))
+        self.assertIn("<code>$x^2$</code>", rendered.html)
+        self.assertNotIn("math-inline", rendered.html)
+        self.assertNotIn("<span", rendered.html)
+
+    def test_angle_brackets_are_escaped_inside_code(self) -> None:
+        rendered = render_markdown("`<span>`", lambda target: target)
+
+        self.assertEqual(1, rendered.html.count("<code>"))
+        self.assertIn("<code>&lt;span&gt;</code>", rendered.html)
+        self.assertNotIn("<span>", rendered.html)
+
+    def test_typographic_characters_stay_exact_inside_code(self) -> None:
+        for source, literal in (
+            ("`--flag`", "--flag"),
+            ("`don't`", "don't"),
+            ('`"quoted"`', '"quoted"'),
+        ):
+            with self.subTest(source=source):
+                rendered = render_markdown(source, lambda target: target)
+
+                self.assertEqual(1, rendered.html.count("<code>"))
+                self.assertIn(f"<code>{literal}</code>", rendered.html)
+        # Curly quotes, en/em dashes and ellipsis must not leak into code.
+        rendered = render_markdown("`--flag` `--` `...`", lambda target: target)
+        self.assertNotIn("–", rendered.html)
+        self.assertNotIn("—", rendered.html)
+        self.assertNotIn("…", rendered.html)
+        self.assertNotIn("’", rendered.html)
+        self.assertNotIn("“", rendered.html)
+
+    def test_mixed_inside_and_outside_code_renders_selectively(self) -> None:
+        rendered = render_markdown(
+            "**outside** `**inside**` [outside link](guide.md) `[inside link](guide.md)`",
+            lambda target: target,
+        )
+
+        self.assertIn("<strong>outside</strong>", rendered.html)
+        self.assertIn('<a href="guide.md">outside link</a>', rendered.html)
+        self.assertIn("<code>**inside**</code>", rendered.html)
+        self.assertIn("<code>[inside link](guide.md)</code>", rendered.html)
+        self.assertEqual(2, rendered.html.count("<code>"))
+        self.assertEqual(1, rendered.html.count("<strong>"))
+        self.assertEqual(1, rendered.html.count("<a href"))

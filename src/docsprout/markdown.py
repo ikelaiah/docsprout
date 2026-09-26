@@ -76,20 +76,43 @@ def _typographic(value: str) -> str:
 
 
 def _inline(value: str, resolve: LinkResolver) -> str:
-    escaped = html.escape(_typographic(value), quote=False)
+    # Protect inline code spans from every later inline transform so that
+    # Markdown-looking syntax inside backticks stays literal code. The token
+    # is deterministic per render, scoped to this call, and uses NUL
+    # sentinels that ordinary prose never contains. The base is extended
+    # until it cannot collide with the current input.
+    base = "DOCSPROUTCODE"
+    while base in value:
+        base += "X"
+    code_contents: list[str] = []
+
+    def _stash_code(match: re.Match[str]) -> str:
+        code_contents.append(match.group(1))
+        return f"\x00{base}{len(code_contents) - 1}\x00"
+
+    working = CODE.sub(_stash_code, value)
+    escaped = html.escape(_typographic(working), quote=False)
     escaped = IMAGE.sub(
         lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{html.escape(html.unescape(match.group(1)), quote=True)}">',
         escaped,
     )
     escaped = LINK.sub(lambda match: f'<a href="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}">{match.group(1)}</a>', escaped)
-    escaped = CODE.sub(r"<code>\1</code>", escaped)
     escaped = STRIKE.sub(r"<del>\1</del>", escaped)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
-    return INLINE_MATH.sub(
+    escaped = INLINE_MATH.sub(
         lambda match: f'<span class="math-inline" data-tex="{html.escape(html.unescape(match.group(1)), quote=True)}"></span>',
         escaped,
     )
+    if code_contents:
+        token = re.compile(r"\x00" + re.escape(base) + r"(\d+)\x00")
+
+        def _restore_code(match: re.Match[str]) -> str:
+            raw = code_contents[int(match.group(1))]
+            return f"<code>{html.escape(raw, quote=False)}</code>"
+
+        escaped = token.sub(_restore_code, escaped)
+    return escaped
 
 
 def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown:
