@@ -1,9 +1,9 @@
 # Qualification evidence for DocSprout v1.1.4
 
-DocSprout v1.1.4 is the brand-hero and contrast-proof release for generated
-sites, with the v1.0.0 stable contract preserved. The claims below are the
-contract that CI and the maintained fixtures exercise, and every row names how
-it is verified. "Supported" means the combination is run by automated
+DocSprout v1.1.4 adds the brand hero, contrast proof and two new visual styles
+for generated sites, with the v1.0.0 stable contract preserved. The claims below
+are the contract that CI and the maintained fixtures exercise. Every row names
+how it is verified. "Supported" means the combination is run by automated
 qualification on every pull request and release, not merely believed to work.
 
 The v0.17 and v0.18 matrices are retained as historical evidence for the
@@ -11,7 +11,7 @@ contract candidate that v1.0.0 freezes. v1 adds the Five Promises assessment,
 clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
 the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
 the typography evidence, v1.1.3 adds the documentation-quality evidence, and
-v1.1.4 adds the brand-hero and contrast evidence below.
+v1.1.4 adds the brand-hero, contrast and four-style evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -273,9 +273,9 @@ The brand-hero and contrast-proof release changes presentation and derives new
 values; no schema, route, machine-format or token-name change:
 
 - **Automatic hero**: the built home page is asserted to render one hero with
-  its heading, opening summary, release pill and derived Get started/Repository
-  actions; non-home pages stay hero-free, and unsafe repository URLs are never
-  emitted.
+  its heading, opening summary, optional release pill and derived Get
+  started/Repository actions; non-home pages stay hero-free, and unsafe
+  repository URLs are never emitted.
 - **Capability card icons**: every card receives a deterministic decorative
   inline SVG chosen from its title; tests count the icons and pin the
   accessible-hidden markup.

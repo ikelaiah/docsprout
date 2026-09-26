@@ -19,8 +19,7 @@ which is a top-level setting, are `homepage` values.
 
 DocSprout uses the same configuration on this site. Its
 [`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.4/docs/docsprout.json)
-uses these exact values for its home-page banner, capability cards and release
-context:
+uses these exact values for its home-page banner and capability cards:
 
 ```json
 {
@@ -35,7 +34,7 @@ context:
       {"title": "Versioned documentation", "description": "Keep released guides available side by side."},
       {"title": "Offline/local assets", "description": "Built sites work without a CDN."}
     ],
-    "sections": {"release_context": true}
+    "sections": {"release_context": false}
   }
 }
 ```
@@ -51,25 +50,24 @@ homepage.capabilities
         ↓
 capability cards below the hero on the DocSprout home page
 
-homepage.sections.release_context
+homepage.sections.release_context: false
         ↓
-the release pill inside the DocSprout home page hero
+the home page uses the version control in the header without a release pill
 ```
 
-Open the generated [DocSprout home page](index.md) to see all three effects;
+Open the generated [DocSprout home page](index.md) to see the banner and cards;
 [Configuration](configuration.md#add-a-home-page-banner) covers the banner's
 placement and asset rules.
 
-The built-in presentation adapts to the number of cards: two, three and four
-cards form balanced columns on a desktop, then move to two columns on a tablet
-and one column on a phone. This is part of the default visual system, so card
-configuration remains content-only.
+Two to four cards share two roomy columns on desktop and tablet home pages,
+then stack in one column on a phone. This is part of the default visual system,
+so card configuration remains content-only.
 
 ## The automatic hero
 
 The home page opens with a hero built from the same plain Markdown: the `h1`,
-the first paragraph (unless `introduction` is `false`), the release pill and a
-call-to-action row. Both actions are derived, never configured:
+the first paragraph (unless `introduction` is `false`), an optional release pill
+and a call-to-action row. Both actions are derived, never configured:
 
 - **Get started** links to the first listed page that is not the home page;
 - **Repository** links to `project.repository_url` when it is an http(s) URL.
@@ -123,7 +121,7 @@ that already exists in your repository: `docsprout build` stops with a
 validation error if it is missing. The banner appears as a full-width band at
 the top of the hero, followed by the introduction, and capability cards stay
 hidden. Wide artwork works best: the image keeps its proportions and is only
-cropped when a taller image exceeds the `15rem` cap. For a checked-in banner
+cropped when a taller image exceeds the `10rem` cap. For a checked-in banner
 example, build the maintained
 [visual fixture](visual-fixtures.md); its local 1200×240 SVG and `banner`
 configuration produce the hero band on the fixture's opening page without

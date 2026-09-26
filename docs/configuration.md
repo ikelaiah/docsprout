@@ -283,7 +283,7 @@ top of the home-page hero, above the heading. It never appears on other pages.
 `path` is repository-relative, must not contain `..`, and the file must
 already exist: `docsprout build` stops with a validation error otherwise.
 DocSprout copies the image into the built site and renders it at the content
-width, keeping its proportions and capping it at `15rem` tall with
+width, keeping its proportions and capping it at `10rem` tall with
 `object-fit: cover`, so wide artwork works best and important details should
 stay centred. The maintained
 [visual fixture](visual-fixtures.md) uses a 1200×240 SVG. To keep the setting

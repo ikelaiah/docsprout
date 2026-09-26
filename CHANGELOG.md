@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 1.1.4
+
+The brand-hero, contrast-proof and visual-style release. Generated sites get a
+designed home page, four styles in light and dark modes, and a single configured
+accent becomes a complete, WCAG-verified theme. No schema, route,
+machine-format or documented `--dk-*` token name changes: update the package
+and workflow pins to `v1.1.4`, rebuild, and review the home page and link
+colours once.
+
 ### Added
 
 - Two more visual styles: `e-ink` (flat, near-monochrome, contrast-first) and
@@ -13,32 +24,6 @@
 - [Checks in CI and CD](docs/ci-cd.md): the `check`/`audit` gates with a
   complete GitHub Actions job, portable runner guidance and static-host
   deployment.
-
-### Changed
-
-- The sidebar separates group labels from page entries: section headings are
-  quiet small-cap headers, and page links carry the visual weight.
-
-### Fixed
-
-- `docsprout serve` no longer serves stale output until restart. A source
-  saved while a rebuild was already running stays queued instead of being
-  marked as built, transient file errors (editor saves, antivirus locks) no
-  longer kill the watcher thread or fail requests, and the preview now
-  watches every module that shapes the built site (`assets`, `palette`,
-  `highlight`, `config`, `markdown`, `build`), not just two of them.
-
-## 1.1.4
-
-The brand-hero and contrast-proof release. Generated sites stop looking like a
-generic template: the home page opens with one designed hero, and a single
-configured accent becomes a complete, WCAG-verified theme. No schema, route,
-machine-format or documented `--dk-*` token name changes: update the package
-and workflow pins to `v1.1.4`, rebuild, and review the home page and link
-colours once.
-
-### Added
-
 - An automatic home-page hero built from the same Markdown: heading, opening
   summary, optional release pill, derived **Get started** (first non-home page)
   and **Repository** (`project.repository_url`) actions, an accent-derived
@@ -54,15 +39,26 @@ colours once.
 
 ### Changed
 
-- A configured banner now renders as a full-width band at the top of the
-  home-page hero: it keeps its proportions and only crops when taller than the
-  `15rem` cap, instead of a standalone image above the content.
-- Capability cards use a bordered card with a decorative icon and a subtle
-  hover lift; the hero replaces the previous plain home-page heading
-  treatment.
+- The sidebar separates group labels from page entries: section headings are
+  quiet small-cap headers, and page links carry the visual weight.
+- A configured banner renders as a full-width band at the top of the home-page
+  hero, capped at `10rem`. Home-page capability cards form two columns on wider
+  screens and one on phones. The DocSprout site uses the header version control
+  instead of repeating the release label in its hero.
+- The header content aligns with the page shell. DocSprout's own header mark is
+  a potted sprout with green leaves, brown soil and a beige pot; Classic hero
+  artwork no longer has an accent-coloured top border.
+- Capability cards use bordered surfaces with decorative icons and a subtle
+  hover lift; the hero replaces the previous plain home-page heading.
 
 ### Fixed
 
+- `docsprout serve` no longer serves stale output until restart. A source
+  saved while a rebuild was already running stays queued instead of being
+  marked as built, transient file errors (editor saves, antivirus locks) no
+  longer kill the watcher thread or fail requests, and the preview now
+  watches every module that shapes the built site (`assets`, `palette`,
+  `highlight`, `config`, `markdown`, `build`), not just two of them.
 - `repository_url` becomes the hero's Repository action only when it is an
   http(s) URL, so an unsafe value can never be emitted as a link. `doctor`
   reports the verified accent and any derived secondary.

@@ -72,7 +72,7 @@ Home page
 : Git's name for the exact commit currently checked out in your project folder.
 
 Hero
-: The designed opening section of the home page: the release pill, heading,
+: The designed opening section of the home page: an optional release pill, heading,
   opening summary, derived actions and optional banner artwork. DocSprout builds
   it from plain Markdown with no MDX or custom HTML.
 

@@ -24,8 +24,8 @@ configure modes.
 
 You choose the site's starting **Style**:
 
-- **Classic** (`classic`) pairs crisp surfaces with an accent-edged hero
-  and section headings;
+- **Classic** (`classic`) pairs crisp surfaces with accent-edged section
+  headings;
 - **Paper** (`paper`) sets long guides on a warm, layered reading sheet with
   lighter serif headings, italic introductory copy and an editorial drop cap;
 - **E-ink** (`e-ink`) pairs square, flat surfaces with monospace controls,

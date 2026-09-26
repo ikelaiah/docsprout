@@ -254,7 +254,7 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('.header-controls{width:100%;gap:.35rem}', site_css)
             self.assertIn('.topbar select{width:100%;min-width:0}', site_css)
             self.assertIn(
-                '.prose .capability-strip{grid-template-columns:1fr}',
+                '.prose .capability-strip,.prose[data-homepage="true"] .capability-strip{grid-template-columns:1fr}',
                 site_css,
             )
             search = json.loads((root / "site" / "search-index.json").read_text(encoding="utf-8"))

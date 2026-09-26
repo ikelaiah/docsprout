@@ -28,7 +28,7 @@
       {"title": "Offline/local assets", "description": "Built sites work without a CDN."}
     ],
     "sections": {
-      "release_context": true
+      "release_context": false
     }
   }
 }

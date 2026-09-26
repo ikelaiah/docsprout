@@ -130,7 +130,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
             ],
             [card["title"] for card in config["homepage"]["capabilities"]],
         )
-        self.assertTrue(config["homepage"]["sections"]["release_context"])
+        self.assertFalse(config["homepage"]["sections"]["release_context"])
         self.assertIn("The home page is the Markdown document selected by `layout.json.home`", guide)
         self.assertIn("## See it in DocSprout", guide)
 
