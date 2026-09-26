@@ -10,7 +10,7 @@ import re
 from urllib.parse import urlsplit
 
 from .config import CONFIG_FILENAME, load_config, page_source_path, page_source_reference
-from .markdown import HEADING, render_markdown, slugify
+from .markdown import HEADING, mask_protected_spans, render_markdown, slugify
 from .models import SiteConfig
 
 
@@ -135,13 +135,16 @@ def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> l
     findings: list[Finding] = []
     structural_findings: list[Finding] = []
     inside_fence = False
+    inside_display_math = False
     previous_level: int | None = None
     anchors: set[str] = set()
     heading_lines: list[int] = []
     for line_number, source_line in enumerate(page.text.splitlines(), start=1):
         if FENCE.match(source_line):
             inside_fence = not inside_fence
-        elif not inside_fence and HEADING.match(source_line):
+        elif not inside_fence and source_line.strip() == "$$":
+            inside_display_math = not inside_display_math
+        elif not inside_fence and not inside_display_math and HEADING.match(source_line):
             heading_lines.append(line_number)
     for (level, text, _identifier), line_number in zip(page.headings, heading_lines):
         anchor = slugify(text)
@@ -152,14 +155,21 @@ def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> l
             structural_findings.append(_finding("DK102", "warning", page, line_number, f"Heading level jumps from H{previous_level} to H{level}", "Use an intermediate heading level when it represents document structure."))
         previous_level = level
     inside_fence = False
+    inside_display_math = False
     for line_number, source_line in enumerate(page.text.splitlines(), start=1):
         if FENCE.match(source_line):
             inside_fence = not inside_fence
             continue
         if inside_fence:
             continue
-        matches = [(match.start(), "image", match) for match in IMAGE.finditer(source_line)]
-        matches.extend((match.start(), "link", match) for match in LINK.finditer(source_line))
+        if source_line.strip() == "$$":
+            inside_display_math = not inside_display_math
+            continue
+        if inside_display_math:
+            continue
+        visible = mask_protected_spans(source_line)
+        matches = [(match.start(), "image", match) for match in IMAGE.finditer(visible)]
+        matches.extend((match.start(), "link", match) for match in LINK.finditer(visible))
         for _position, kind, match in sorted(matches, key=lambda item: item[0]):
             if kind == "image":
                 findings.extend(_audit_image(page, line_number, match.group(1), match.group(2).strip(), root))

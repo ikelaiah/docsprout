@@ -12,6 +12,10 @@ Use a single dollar delimiter:
 Euler's identity is $e^{i\pi} + 1 = 0$.
 ```
 
+Inline math is TeX, not Markdown prose: emphasis, link/image syntax,
+typography conversion, and code transformation do not apply inside `$...$`.
+Link/image syntax inside inline math is neither resolved nor audited.
+
 ## Display math
 
 Use a fenced `math` block for the clearest source:

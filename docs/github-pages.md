@@ -48,7 +48,7 @@ from feature branches do not deploy Pages.
 workflow are current, it makes no repository changes.
 
 The generated workflow carries a DocSprout ownership marker and pins the reusable
-workflow to the installed release, such as `@v1.1.7`. It never follows
+workflow to the installed release, such as `@v1.1.8`. It never follows
 `@main`. If a recognised managed workflow is older, ordinary setup reports the
 version and leaves it unchanged. Update only that workflow deliberately:
 
@@ -101,13 +101,13 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.7
+    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.8
     with:
       versioned: false
       release: latest
 ```
 
-The maintained [single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.7/examples/single-version)
+The maintained [single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.8/examples/single-version)
 uses this form.
 
 ## Historical site for versioned projects
@@ -129,7 +129,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.7
+    uses: ikelaiah/docsprout/.github/workflows/publish-docs.yml@v1.1.8
 ```
 
 Check a historical release locally after creating its tag and before pushing:
@@ -140,7 +140,7 @@ docsprout check-release
 docsprout build-all --output build/docs-site
 ```
 
-The maintained [historical example](https://github.com/ikelaiah/docsprout/tree/v1.1.7/examples/historical)
+The maintained [historical example](https://github.com/ikelaiah/docsprout/tree/v1.1.8/examples/historical)
 uses this form. Follow the [pre-publish checklist](pre-publish-checklist.md)
 for the exact release order.
 

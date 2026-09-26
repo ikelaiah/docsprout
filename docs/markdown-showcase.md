@@ -310,6 +310,17 @@ Euler's identity is $e^{i\pi} + 1 = 0$.
 
 Euler's identity is $e^{i\pi} + 1 = 0$.
 
+Inline math is TeX, not Markdown: link and image syntax inside dollars is
+never resolved or audited:
+
+```markdown
+$[x](building.md)$ stays TeX, not a link.
+```
+
+Rendered:
+
+$[x](building.md)$ stays TeX, not a link.
+
 Display math stands on its own line:
 
 $$

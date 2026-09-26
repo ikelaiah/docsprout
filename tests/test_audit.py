@@ -123,6 +123,59 @@ class AuditTests(unittest.TestCase):
 
             self.assertEqual((), audit_project(root).findings)
 
+    def test_audit_ignores_links_and_images_inside_inline_code(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": "# Home\n\n`[missing](missing.md)`\n\n`![missing](missing.svg)`\n"})
+
+            self.assertEqual((), audit_project(root).findings)
+
+    def test_audit_ignores_links_and_images_inside_inline_math(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": "# Home\n\n$[missing](missing.md)$\n\n$![missing](missing.svg)$\n"})
+
+            self.assertEqual((), audit_project(root).findings)
+
+    def test_audit_ignores_links_inside_display_math_blocks(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": "# Home\n\n$$\n[missing](missing.md)\n$$\n"})
+
+            self.assertEqual((), audit_project(root).findings)
+
+    def test_audit_reports_only_genuine_link_among_protected_spans(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": "# Home\n\n[real missing](missing.md) `[fake](ignored.md)` $[math](ignored-too.md)$\n"})
+
+            findings = audit_project(root).findings
+
+            self.assertEqual(1, len(findings))
+            self.assertEqual("DK001", findings[0].code)
+            self.assertEqual("missing.md", findings[0].target)
+
+    def test_audit_still_checks_genuine_links_and_images(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {
+                "index.md": "# Home\n\n[Missing](missing.md)\n\n![Absent](absent.svg)\n",
+            })
+
+            findings = audit_project(root).findings
+
+            self.assertEqual(["DK001", "DK004"], [finding.code for finding in findings])
+
     def test_audit_reports_unsafe_url_schemes_instead_of_treating_them_as_external(self) -> None:
         from docsprout.audit import audit_project
 
