@@ -39,7 +39,8 @@ validation error such as `theme.custom_css asset ... does not exist` when the
 path is wrong. Absolute paths, parent-directory traversal and any path that
 resolves outside the repository are rejected, as are symlinks or junctions that
 escape the repository root. There is no network fetch and no CSS parser:
-DocSprout copies the file and a generated page references it.
+DocSprout copies the file verbatim and a generated page references it.
+DocSprout does not itself fetch resources referenced by custom CSS.
 
 ## Where and how it loads
 
@@ -71,7 +72,15 @@ DocSprout guarantees the mechanics:
 - deterministic inclusion of the file you configured;
 - correct load order (custom CSS last) on every page;
 - correct relative references on nested and versioned pages;
-- no generated broken links and no network dependence.
+- no generated broken links and no network dependence from DocSprout's own assets.
+
+User-supplied custom CSS is copied verbatim and is not parsed. It may
+intentionally reference external resources when the generated site is viewed,
+for example `@import url("https://example.com/style.css");` or
+`background-image: url("https://example.com/image.png");`. DocSprout's own
+generated and bundled assets require no network access; any external or
+network dependency introduced by custom CSS, with its privacy, security and
+accessibility consequences, belongs to the author.
 
 The accessibility and quality of **your** CSS is your responsibility. Custom
 CSS can override accessible defaults: it can reduce contrast below the
