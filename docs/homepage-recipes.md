@@ -18,7 +18,7 @@ which is a top-level setting, are `homepage` values.
 ## See it in DocSprout
 
 DocSprout uses the same configuration on this site. Its
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.7/docs/docsprout.json)
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.8/docs/docsprout.json)
 uses these exact values for its home-page banner and capability cards:
 
 ```json

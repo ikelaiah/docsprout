@@ -1,7 +1,7 @@
-# Qualification evidence for DocSprout v1.1.7
+# Qualification evidence for DocSprout v1.1.8
 
-DocSprout v1.1.7 is a Markdown correctness and documentation-accuracy patch
-with the v1.0.0 stable contract preserved. The claims below
+DocSprout v1.1.8 is a protected-context correctness patch with the v1.0.0
+stable contract preserved. The claims below
 are the contract that CI and the maintained fixtures exercise. Every row names
 how it is verified. "Supported" means the combination is run by automated
 qualification on every pull request and release, not merely believed to work.
@@ -13,8 +13,9 @@ the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
 the typography evidence, v1.1.3 adds the documentation-quality evidence,
 v1.1.4 adds the brand-hero, contrast and four-style evidence, v1.1.5 adds
 the grouped-navigation and Markdown-coverage evidence, v1.1.6 adds the
-image-alt escaping and custom-CSS contract evidence, and v1.1.7 adds the
-inline-code literalness and documentation-accuracy evidence below.
+image-alt escaping and custom-CSS contract evidence, v1.1.7 adds the
+inline-code literalness and documentation-accuracy evidence, and v1.1.8 adds
+the protected math/resolver/auditor evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -270,6 +271,27 @@ site configuration; no schema, route or token value changes:
   distinguish page structure from home-page presentation, and the glossary
   covers the navigation, theme and command vocabulary.
 
+## v1.1.8 additions
+
+The protected-context correctness patch makes inline math consistent with
+inline code across rendering, resolvers, auditing, and docs; no schema,
+route, machine-format, CLI, token-name, dependency, or syntax change:
+
+- **Inline-math literalness**: code and math are stashed together via one
+  shared `PROTECTED_SPAN` helper before ordinary transforms, so TeX remains
+  literal with only attribute escaping. Tests cover bold, italic,
+  strikethrough, links, images, angle brackets, `--flag`, apostrophes, and
+  mixed outside-math rendering with decoded `data-tex` assertions.
+- **Resolver protection**: raising-resolver tests prove fake links/images
+  inside code/math never invoke resolution, while mixed prose resolves only
+  the genuine outside target; combined code+math test guards both.
+- **Auditor agreement**: the auditor reuses `mask_protected_spans` and skips
+  display-math blocks, so code/math/fenced links/images produce no
+  DK001/DK002/DK004/DK101 findings while genuine prose links/images are still
+  audited, including mixed real-plus-fake cases.
+- **Preservation**: v1.1.6 image-alt `quote=True` escaping and v1.1.7
+  `InlineCodeLiteralnessTests` remain intact and passing.
+
 ## v1.1.7 additions
 
 The Markdown correctness and documentation-accuracy patch makes inline code
@@ -384,7 +406,7 @@ operation requires a network connection after installation.
 - **Browser automation status:** browser automation is intentionally not part
   of CI (Chrome DevTools MCP was not available during v1.0.0 qualification).
   Full browser geometry, console and keyboard inspection therefore remains
-   unavailable for every release, including v1.1.7; the automated
+   unavailable for every release, including v1.1.8; the automated
   structural/fixture coverage and live Pages sanity checks are reported
   separately and do not imply a full browser review.
 - External URLs in documentation are never network-checked; `audit` reports

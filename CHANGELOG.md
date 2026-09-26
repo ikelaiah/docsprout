@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.1.8
+
+A protected-context correctness patch. Inline math is now protected from
+ordinary Markdown transforms so TeX remains literal, and documentation
+auditing ignores apparent links/images inside inline code and inline math,
+matching renderer semantics. Preserves the v1.x contract with no new syntax
+or dependency: update the package and workflow pins to `v1.1.8` and rebuild.
+
+### Fixed
+
+- Protect inline math from ordinary Markdown transforms so TeX content remains
+  literal before KaTeX rendering.
+- Make documentation auditing ignore apparent links/images inside inline code
+  and inline math, matching renderer semantics.
+- Keep real links/images outside protected contexts audited normally.
+
 ## 1.1.7
 
 A Markdown correctness and documentation-accuracy patch. Inline code spans now

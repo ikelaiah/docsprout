@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install DocSprout
-        run: python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.7.zip"
+        run: python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.8.zip"
       - name: Validate the site
         run: docsprout check
       - name: Audit publications
@@ -52,7 +52,7 @@ jobs:
           path: audit.json
 ```
 
-Pin a released tag (`v1.1.7` above), never a branch. `--format json` writes the
+Pin a released tag (`v1.1.8` above), never a branch. `--format json` writes the
 machine-readable report; the artifact keeps it after the job, including when
 the audit fails.
 
@@ -76,7 +76,7 @@ is yours. The same checks in GitLab CI:
 docs-checks:
   image: python:3.12
   script:
-    - python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.7.zip"
+    - python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.8.zip"
     - docsprout check
     - docsprout audit --strict
 ```

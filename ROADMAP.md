@@ -322,6 +322,16 @@ CLI, token-name, dependency or syntax change.
 - [x] Correct the Markdown showcase for blockquotes, strikethrough and
       horizontal rules, with documentation-regression coverage.
 
+## v1.1.8 — Protected-context correctness patch ✅
+
+Protect inline math consistently with inline code across rendering, resolvers,
+auditing, and docs, with no schema, route, machine-format, CLI, token,
+dependency, or syntax change.
+
+- [x] Stash code and math together behind one shared protected-span helper.
+- [x] Never resolve fake links/images inside code/math; keep genuine prose links audited.
+- [x] Document code-literal and math-is-TeX rules with regression coverage.
+
 ## v1.2 — Visual Range and Adoption Guides
 
 - [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark
