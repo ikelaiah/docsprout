@@ -424,3 +424,42 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("layout.json", readme)
         self.assertIn("docsprout.json", readme)
         self.assertIn("DocSprout commands for editing pages, sections or themes", readme)
+
+    def test_markdown_showcase_documents_supported_blockquotes_strikethrough_and_rules(self) -> None:
+        showcase = (self.root / "docs" / "markdown-showcase.md").read_text(encoding="utf-8")
+
+        # Stale v1.1.5 claims must not return: these features are supported.
+        for stale in (
+            "It appears as text starting with `>`, not as a quotation",
+            "A horizontal rule has no form",
+            "Strikethrough is not available",
+            "Strikethrough is unavailable",
+            "The tildes stay visible",
+        ):
+            with self.subTest(stale=stale):
+                self.assertNotIn(stale, showcase)
+
+        # Canonical supported examples must be present (prose may evolve).
+        for example in (
+            "> An ordinary quotation.",
+            "> A second paragraph in the same quotation.",
+            "Use ~~deleted words~~ sparingly.",
+            "`![mark](assets/docsprout-mark.svg)`",
+            "`[Build](building.md)`",
+            "`**bold**`",
+            "`~~deleted~~`",
+            "`$x^2$`",
+        ):
+            with self.subTest(example=example):
+                self.assertIn(example, showcase)
+
+        # Horizontal-rule forms accepted by the renderer must be documented.
+        self.assertIn("## Horizontal rules", showcase)
+        self.assertIn("---", showcase)
+        self.assertIn("***", showcase)
+        self.assertIn("___", showcase)
+
+        # Ordinary quotations and admonitions are both supported but distinct.
+        self.assertIn("## Blockquotes", showcase)
+        self.assertIn("> [!NOTE]", showcase)
+        self.assertIn("<blockquote>", showcase)
