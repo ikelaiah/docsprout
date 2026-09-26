@@ -1,6 +1,23 @@
+import html
+import json
+import re
+import tempfile
 import unittest
+from html.parser import HTMLParser
+from pathlib import Path
 
+from docsprout.build import build_site
 from docsprout.markdown import render_markdown
+
+
+class _ImageCollector(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.images: list[dict[str, str]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "img":
+            self.images.append({name: value or "" for name, value in attrs})
 
 
 class MarkdownTests(unittest.TestCase):
@@ -129,3 +146,122 @@ class MarkdownTests(unittest.TestCase):
         self.assertIn('<span class="tok-property">enabled</span>', rendered.html)
         self.assertIn('<span class="tok-heading"># Heading</span>', rendered.html)
         self.assertIn('<pre class="language-text"><code>&lt;plain&gt;</code></pre>', rendered.html)
+
+
+def _collect_images(output: str) -> list[dict[str, str]]:
+    collector = _ImageCollector()
+    collector.feed(output)
+    return collector.images
+
+
+def _assert_single_safe_image(output: str, *, src: str, alt_text: str) -> dict[str, str]:
+    tags = re.findall(r"<img\b[^>]*>", output)
+    assert len(tags) == 1, f"expected one image element, found {tags!r} in {output!r}"
+    assert re.fullmatch(r'<img src="[^"]*" alt="[^"]*">', tags[0]), f"image element is not one safe element: {tags[0]!r}"
+    images = _collect_images(output)
+    assert len(images) == 1, f"expected one parsed image, found {images!r}"
+    image = images[0]
+    assert set(image) == {"src", "alt"}, f"image has unexpected attributes: {image!r}"
+    assert "onerror" not in image and "onclick" not in image, f"injected event attribute: {image!r}"
+    assert image["src"] == src, f"unexpected src: {image!r}"
+    assert image["alt"] == alt_text, f"unexpected alt text: {image!r}"
+    return image
+
+
+class ImageAltEscapingTests(unittest.TestCase):
+    def test_ordinary_alt_text_is_preserved(self) -> None:
+        rendered = render_markdown("![Normal diagram](images/diagram.svg)", lambda target: target)
+
+        _assert_single_safe_image(rendered.html, src="images/diagram.svg", alt_text="Normal diagram")
+        self.assertIn('alt="Normal diagram"', rendered.html)
+
+    def test_quoted_alt_text_keeps_typography_without_breakout(self) -> None:
+        rendered = render_markdown('![A "quoted" diagram](images/diagram.svg)', lambda target: target)
+
+        # Straight quotes in prose become typographic quotes, which stay literal in the attribute.
+        _assert_single_safe_image(rendered.html, src="images/diagram.svg", alt_text="A “quoted” diagram")
+        self.assertIn('alt="A “quoted” diagram"', rendered.html)
+
+    def test_special_characters_are_escaped_without_double_escaping(self) -> None:
+        rendered = render_markdown("![Fish & chips <diagram>](images/diagram.svg)", lambda target: target)
+
+        _assert_single_safe_image(rendered.html, src="images/diagram.svg", alt_text="Fish & chips <diagram>")
+        self.assertIn('alt="Fish &amp; chips &lt;diagram&gt;"', rendered.html)
+        self.assertNotIn("&amp;amp;", rendered.html)
+
+    def test_malicious_alt_cannot_inject_attributes(self) -> None:
+        payloads = [
+            '![x" onerror="alert(1)](images/diagram.svg)',
+            "![x' onclick='alert(1)](images/diagram.svg)",
+            '![a "\' <>& onclick="alert(1)" onerror=\'alert(1)](images/diagram.svg)',
+        ]
+        for source in payloads:
+            with self.subTest(source=source):
+                rendered = render_markdown(source, lambda target: target)
+                images = _collect_images(rendered.html)
+                self.assertEqual(1, len(images))
+                image = images[0]
+                self.assertEqual({"src", "alt"}, set(image))
+                self.assertNotIn("onerror", image)
+                self.assertNotIn("onclick", image)
+                self.assertEqual("images/diagram.svg", image["src"])
+                # The payload text stays as text inside alt; it must not become markup.
+                self.assertIn("onerror" if "onerror" in source else "onclick", html.unescape(image["alt"]))
+                tags = re.findall(r"<img\b[^>]*>", rendered.html)
+                self.assertEqual(1, len(tags))
+                self.assertIsNotNone(re.fullmatch(r'<img src="[^"]*" alt="[^"]*">', tags[0]))
+
+    def test_straight_quote_alt_reaching_the_attribute_is_escaped(self) -> None:
+        # Code spans are protected from typographic quotes, so a straight quote
+        # survives to the image substitution. The attribute must still be safe.
+        # This payload produced alt="x" onerror="alert(1)" on v1.1.5.
+        rendered = render_markdown('`![x" onerror="alert(1)](images/diagram.svg)`', lambda target: target)
+
+        self.assertIn("&quot;", rendered.html)
+        images = _collect_images(rendered.html)
+        self.assertEqual(1, len(images))
+        image = images[0]
+        self.assertEqual({"src", "alt"}, set(image))
+        self.assertNotIn("onerror", image)
+        self.assertEqual("images/diagram.svg", image["src"])
+        self.assertEqual('x" onerror="alert(1)', image["alt"])
+        tags = re.findall(r"<img\b[^>]*>", rendered.html)
+        self.assertEqual(1, len(tags))
+        self.assertIsNotNone(re.fullmatch(r'<img src="[^"]*" alt="[^"]*">', tags[0]))
+
+    def test_build_publishes_malicious_alt_safely_with_real_assets(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            (docs / "images").mkdir(parents=True)
+            (docs / "images" / "diagram.svg").write_text("<svg/>", encoding="utf-8")
+            (docs / "index.md").write_text(
+                "# Home\n\n"
+                "![Normal diagram](images/diagram.svg)\n\n"
+                "![Fish & chips <diagram>](images/diagram.svg)\n\n"
+                '![x" onerror="alert(1)](images/diagram.svg)\n',
+                encoding="utf-8",
+            )
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
+            }), encoding="utf-8")
+
+            build_site(root=root, output=root / "site", release="dev")
+
+            page = (root / "site" / "index.html").read_text(encoding="utf-8")
+            images = _collect_images(page)
+            content_images = [image for image in images if "content/images/diagram.svg" in image.get("src", "")]
+            self.assertEqual(3, len(content_images))
+            for image in content_images:
+                with self.subTest(image=image):
+                    self.assertEqual({"src", "alt"}, set(image))
+                    self.assertNotIn("onerror", image)
+                    self.assertNotIn("onclick", image)
+            alts = sorted(image["alt"] for image in content_images)
+            self.assertIn("Normal diagram", alts)
+            self.assertIn("Fish & chips <diagram>", alts)
+            self.assertTrue(any("onerror" in alt for alt in alts))
+            self.assertIn('alt="Fish &amp; chips &lt;diagram&gt;"', page)
+            self.assertTrue((root / "site" / "assets" / "content" / "images" / "diagram.svg").is_file())
