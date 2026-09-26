@@ -350,3 +350,110 @@ class InlineCodeLiteralnessTests(unittest.TestCase):
         self.assertEqual(2, rendered.html.count("<code>"))
         self.assertEqual(1, rendered.html.count("<strong>"))
         self.assertEqual(1, rendered.html.count("<a href"))
+
+
+def _decoded_math_tex(output: str) -> list[str]:
+    return [html.unescape(value) for value in re.findall(r'data-tex="([^"]*)"', output)]
+
+
+class InlineMathLiteralnessTests(unittest.TestCase):
+    def test_markdown_syntax_inside_math_stays_literal_tex(self) -> None:
+        for source, tex in (
+            ("$**x**$", "**x**"),
+            ("$*x*$", "*x*"),
+            ("$~~x~~$", "~~x~~"),
+            ("$[x](missing.md)$", "[x](missing.md)"),
+            ("$![x](missing.svg)$", "![x](missing.svg)"),
+        ):
+            with self.subTest(source=source):
+                rendered = render_markdown(source, lambda target: target)
+
+                self.assertEqual([tex], _decoded_math_tex(rendered.html))
+                self.assertNotIn("<strong>", rendered.html)
+                self.assertNotIn("<em>", rendered.html)
+                self.assertNotIn("<del>", rendered.html)
+                self.assertNotIn("<a href", rendered.html)
+                self.assertNotIn("<img", rendered.html)
+
+    def test_math_content_escapes_safely_without_typography(self) -> None:
+        for source, tex in (
+            ("$<tag>$", "<tag>"),
+            ("$--flag$", "--flag"),
+            ("$don't$", "don't"),
+        ):
+            with self.subTest(source=source):
+                rendered = render_markdown(source, lambda target: target)
+
+                self.assertEqual([tex], _decoded_math_tex(rendered.html))
+        rendered = render_markdown("$--flag$ $don't$", lambda target: target)
+        self.assertNotIn("–", rendered.html)
+        self.assertNotIn("—", rendered.html)
+        self.assertNotIn("’", rendered.html)
+        self.assertNotIn("“", rendered.html)
+
+    def test_math_does_not_invoke_link_resolver(self) -> None:
+        def forbidden(target: str) -> str:
+            raise AssertionError(f"resolver unexpectedly called for {target}")
+
+        for source in ("$[Guide](missing.md)$", "$![Image](missing.svg)$"):
+            with self.subTest(source=source):
+                rendered = render_markdown(source, forbidden)
+
+                self.assertIn("math-inline", rendered.html)
+                self.assertNotIn("<a href", rendered.html)
+                self.assertNotIn("<img", rendered.html)
+
+    def test_mixed_outside_math_renders_while_inside_stays_tex(self) -> None:
+        rendered = render_markdown(
+            "**outside** $**inside**$ [outside](guide.md)",
+            lambda target: target,
+        )
+
+        self.assertIn("<strong>outside</strong>", rendered.html)
+        self.assertIn('<a href="guide.md">outside</a>', rendered.html)
+        self.assertEqual(["**inside**"], _decoded_math_tex(rendered.html))
+        self.assertEqual(1, rendered.html.count("<strong>"))
+        self.assertEqual(1, rendered.html.count("<a href"))
+
+
+class ProtectedResolverTests(unittest.TestCase):
+    def test_resolver_never_called_inside_code_or_math(self) -> None:
+        def forbidden(target: str) -> str:
+            raise AssertionError(f"resolver unexpectedly called for {target}")
+
+        for source in (
+            "`[Guide](missing.md)`",
+            "`![Image](missing.svg)`",
+            "$[Guide](missing.md)$",
+            "$![Image](missing.svg)$",
+        ):
+            with self.subTest(source=source):
+                render_markdown(source, forbidden)
+
+    def test_resolver_called_only_outside_protected_spans(self) -> None:
+        seen: list[str] = []
+
+        def recording(target: str) -> str:
+            seen.append(target)
+            return target
+
+        rendered = render_markdown(
+            "[Real](guide.md) `[Fake](missing.md)` $[math](also-missing.md)$",
+            recording,
+        )
+
+        self.assertEqual(["guide.md"], seen)
+        self.assertIn('<a href="guide.md">Real</a>', rendered.html)
+        self.assertIn("<code>[Fake](missing.md)</code>", rendered.html)
+        self.assertIn("math-inline", rendered.html)
+
+    def test_code_and_math_together_stay_protected(self) -> None:
+        def forbidden(target: str) -> str:
+            raise AssertionError(f"resolver unexpectedly called for {target}")
+
+        rendered = render_markdown("`[a](m1.md)` and $[b](m2.md)$", forbidden)
+
+        self.assertIn("<code>[a](m1.md)</code>", rendered.html)
+        self.assertEqual(["[b](m2.md)"], _decoded_math_tex(rendered.html))
+        self.assertNotIn("<a href", rendered.html)
+        self.assertNotIn("<img", rendered.html)

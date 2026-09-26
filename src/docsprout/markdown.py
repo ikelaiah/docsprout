@@ -26,6 +26,17 @@ INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)\$")
 DEFINITION_DESCRIPTION = re.compile(r"^:\s+(.+)$")
 PROTECTED_INLINE = re.compile(r"(`[^`]+`|(?<!\\)\$[^$\n]+\$|!?\[[^\]]*\]\([^)]*\))")
 LINK_COMPONENTS = re.compile(r"(!?)\[([^\]]*)\]\(([^)]*)\)", re.DOTALL)
+PROTECTED_SPAN = re.compile(r"`([^`]+)`|(?<!\\)\$([^$\n]+)\$")
+
+
+def mask_protected_spans(line: str) -> str:
+    """Mask inline code and math spans so link/image scans ignore them.
+
+    Shared definition of protected inline contexts reused by the auditor.
+    Spans are replaced with equal-length spaces to preserve positions.
+    """
+
+    return PROTECTED_SPAN.sub(lambda match: " " * len(match.group(0)), line)
 
 
 @dataclass(frozen=True)
@@ -76,21 +87,24 @@ def _typographic(value: str) -> str:
 
 
 def _inline(value: str, resolve: LinkResolver) -> str:
-    # Protect inline code spans from every later inline transform so that
-    # Markdown-looking syntax inside backticks stays literal code. The token
-    # is deterministic per render, scoped to this call, and uses NUL
-    # sentinels that ordinary prose never contains. The base is extended
-    # until it cannot collide with the current input.
-    base = "DOCSPROUTCODE"
+    # Protect inline code and math spans from every ordinary inline transform.
+    # Code is literal code; math is TeX, not Markdown prose. The token is
+    # deterministic per render, scoped to this call, and uses NUL sentinels
+    # that ordinary prose never contains. The base is extended until it
+    # cannot collide with the current input.
+    base = "DOCSPROUT"
     while base in value:
         base += "X"
-    code_contents: list[str] = []
+    contents: list[tuple[str, str]] = []
 
-    def _stash_code(match: re.Match[str]) -> str:
-        code_contents.append(match.group(1))
-        return f"\x00{base}{len(code_contents) - 1}\x00"
+    def _stash(match: re.Match[str]) -> str:
+        if match.group(1) is not None:
+            contents.append(("code", match.group(1)))
+        else:
+            contents.append(("math", match.group(2) or ""))
+        return f"\x00{base}{len(contents) - 1}\x00"
 
-    working = CODE.sub(_stash_code, value)
+    working = PROTECTED_SPAN.sub(_stash, value)
     escaped = html.escape(_typographic(working), quote=False)
     escaped = IMAGE.sub(
         lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{html.escape(html.unescape(match.group(1)), quote=True)}">',
@@ -100,18 +114,16 @@ def _inline(value: str, resolve: LinkResolver) -> str:
     escaped = STRIKE.sub(r"<del>\1</del>", escaped)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
-    escaped = INLINE_MATH.sub(
-        lambda match: f'<span class="math-inline" data-tex="{html.escape(html.unescape(match.group(1)), quote=True)}"></span>',
-        escaped,
-    )
-    if code_contents:
+    if contents:
         token = re.compile(r"\x00" + re.escape(base) + r"(\d+)\x00")
 
-        def _restore_code(match: re.Match[str]) -> str:
-            raw = code_contents[int(match.group(1))]
-            return f"<code>{html.escape(raw, quote=False)}</code>"
+        def _restore(match: re.Match[str]) -> str:
+            kind, raw = contents[int(match.group(1))]
+            if kind == "code":
+                return f"<code>{html.escape(raw, quote=False)}</code>"
+            return f'<span class="math-inline" data-tex="{html.escape(raw, quote=True)}"></span>'
 
-        escaped = token.sub(_restore_code, escaped)
+        escaped = token.sub(_restore, escaped)
     return escaped
 
 
