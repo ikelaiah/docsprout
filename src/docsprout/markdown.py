@@ -78,7 +78,7 @@ def _typographic(value: str) -> str:
 def _inline(value: str, resolve: LinkResolver) -> str:
     escaped = html.escape(_typographic(value), quote=False)
     escaped = IMAGE.sub(
-        lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{match.group(1)}">',
+        lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{html.escape(html.unescape(match.group(1)), quote=True)}">',
         escaped,
     )
     escaped = LINK.sub(lambda match: f'<a href="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}">{match.group(1)}</a>', escaped)

@@ -70,8 +70,8 @@ identity asset:
 
 Fields that are not relevant here, such as `banner` and `homepage`, are
 omitted for brevity. You can inspect the complete maintained
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.5/docs/docsprout.json)
-and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.5/docs/assets/docsprout-mark.svg).
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.6/docs/docsprout.json)
+and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.6/docs/assets/docsprout-mark.svg).
 On generated DocSprout pages, purple is the accent and highlight colour; the
 potted sprout mark (green leaves, brown soil and a beige pot) appears immediately
 before the project name in the top header;

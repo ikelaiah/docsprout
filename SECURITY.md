@@ -30,7 +30,12 @@ boundaries:
   `github-pages` create, and refuses to replace directories it does not own;
 - it treats project Markdown, configuration and Git data as untrusted input and
   escapes generated HTML;
-- generated sites use only bundled local assets, including KaTeX.
+- generated sites use only bundled local assets, including KaTeX. DocSprout's
+  own generated and bundled assets require no network access, and DocSprout
+  does not itself fetch resources referenced by custom CSS. User-supplied
+  `theme.custom_css` is copied verbatim; when the generated site is viewed,
+  that author-owned stylesheet may intentionally reference external resources,
+  whose privacy, security and accessibility consequences belong to the author.
 
 A bug in one of those guarantees — path escape, replacing unowned files,
 executing project-controlled content, or emitting unescaped HTML — is a

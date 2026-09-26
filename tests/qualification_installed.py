@@ -5,7 +5,7 @@ installed from a built wheel or sdist, from a working directory outside the
 source tree. Every path used here is a fresh temporary directory, so a passing
 run is evidence that the package does not depend on repository-only files.
 
-    python qualification_installed.py --expected-version 1.1.5
+    python qualification_installed.py --expected-version 1.1.6
 
 The script is deliberately self-contained (stdlib only) so it can be copied or
 run from any location without importing anything from the repository.
