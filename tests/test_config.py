@@ -414,6 +414,99 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
+    def test_accepts_expanded_sections_and_defaults_to_collapsed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "guide.md").write_text("# Guide", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps(
+                {"schema_version": 1, "navigation": [
+                    {"title": "Start", "expanded": True, "pages": [{"title": "Home", "path": "index.md"}]},
+                    {"title": "Guides", "pages": [{"title": "Guide", "path": "guide.md"}]},
+                ]}
+            ), encoding="utf-8")
+
+            config = load_config(root)
+            self.assertEqual(("Start",), config.expanded_sections)
+
+            (docs / "layout.json").write_text(json.dumps(
+                {"schema_version": 1, "unlisted": "exclude", "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}
+            ), encoding="utf-8")
+            self.assertEqual((), load_config(root).expanded_sections)
+
+    def test_rejects_a_non_boolean_expanded_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "expanded": "yes", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+            with self.assertRaisesRegex(DocSproutError, r"field 'expanded' must be a boolean"):
+                load_config(root)
+
+    def test_accepts_nested_groups_and_records_expanded_groups(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home", encoding="utf-8")
+            (docs / "guide.md").write_text("# Guide", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({"schema_version": 1, "project": {"name": "Demo"}}), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps(
+                {"schema_version": 1, "navigation": [
+                    {"title": "Start", "pages": [
+                        {"title": "Home", "path": "index.md"},
+                        {"title": "Quickstart", "expanded": True, "pages": [{"title": "Guide", "path": "guide.md"}]},
+                    ]},
+                ]}
+            ), encoding="utf-8")
+
+            config = load_config(root)
+            self.assertEqual("Quickstart", config.pages[1].subsection)
+            self.assertIsNone(config.pages[0].subsection)
+            self.assertEqual((("Start", "Quickstart"),), config.expanded_groups)
+
+    def test_rejects_invalid_nested_group_entries(self) -> None:
+        cases = [
+            (
+                {"title": "Start", "pages": [{"title": "Both", "path": "index.md", "pages": [{"title": "X", "path": "index.md"}]}]},
+                "both 'path' and 'pages'",
+            ),
+            (
+                {"title": "Start", "pages": [{"title": "Neither"}]},
+                "needs either 'path' or 'pages'",
+            ),
+            (
+                {"title": "Start", "pages": [{"title": "Group", "expanded": "yes", "pages": [{"title": "Home", "path": "index.md"}]}]},
+                "field 'expanded' must be a boolean",
+            ),
+            (
+                {"title": "Start", "pages": [{"title": "Group", "pages": [{"title": "Nested", "pages": [{"title": "X", "path": "index.md"}]}]}]},
+                "must not contain nested 'pages'",
+            ),
+            (
+                {"title": "Start", "pages": [
+                    {"title": "Group", "pages": [{"title": "Home", "path": "index.md"}]},
+                    {"title": "Group", "pages": [{"title": "Home", "path": "index.md"}]},
+                ]},
+                "appears more than once in section",
+            ),
+        ]
+        for navigation_section, message in cases:
+            with self.subTest(navigation_section=navigation_section), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(
+                    root,
+                    {"schema_version": 1, "project": {"name": "Demo"}},
+                    {"schema_version": 1, "navigation": [navigation_section]},
+                )
+                with self.assertRaisesRegex(DocSproutError, message):
+                    load_config(root)
+
     def test_rejects_non_string_project_metadata_fields(self) -> None:
         for field, value in (("description", 42), ("repository_url", ["x"]), ("site_url", None)):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:

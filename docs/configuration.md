@@ -135,8 +135,40 @@ There are no DocSprout commands for these operations:
 | Move a page to another section | Cut its object and paste it into another section's `pages` list |
 | Add a section | Add a `{"title": ..., "pages": [...]}` object to `navigation` |
 | Rename a section | Change that section's `"title"` |
+| Add a collapsible group | Add a `{"title": ..., "pages": [...]}` object inside a section's `pages` list |
+| Move a page into a group | Cut its page object and paste it into the group's `pages` list |
+| Keep a group expanded | Add `"expanded": true` to that group object (default `false`) |
 | Change the home page | Change the top-level `"home"` object (its `path` must stay a listed page) |
 | Publish or unpublish a page | Add or remove its page object under `"unlisted": "exclude"` |
+
+Sections are static headers and always visible. Groups inside a section are
+collapsible: by default only the group containing the current page starts
+expanded; every other group starts collapsed but stays one click away. Add
+`"expanded": true` to a group to keep it expanded on every page as well. The
+active group is always expanded so the current page stays visible:
+
+```json
+{
+  "title": "Get started",
+  "pages": [
+    {"title": "Overview", "path": "index.md"},
+    {
+      "title": "Quickstart",
+      "expanded": true,
+      "pages": [
+        {"title": "Your first site", "path": "beginners-guide.md"}
+      ]
+    }
+  ]
+}
+```
+
+A navigation entry uses either `"path"` (a page) or `"pages"` (a collapsible
+group with child page entries), never both. Groups hold only one level of
+pages. Omit `expanded` or use `false` to keep the default
+collapsed-unless-active behaviour. It must be a boolean when present.
+A legacy `"expanded"` flag on a section object still loads but has no visual
+effect, since sections are always shown.
 
 The `"title"` is independent of the filename: a file named `install-guide.md`
 can display as `Getting installed`. The navigation order is the written order

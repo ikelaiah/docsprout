@@ -40,22 +40,34 @@ class DocumentationUsabilityTests(unittest.TestCase):
         layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
         sections = layout["navigation"]
 
+        def _leaf_paths(entries: list) -> list:
+            found: list = []
+            for entry in entries:
+                if "path" in entry:
+                    found.append(entry["path"])
+                else:
+                    found.extend(_leaf_paths(entry.get("pages", [])))
+            return found
+
         self.assertEqual("Start here", sections[0]["title"])
         self.assertEqual(
             [
                 "index.md", "beginners-guide.md", "existing-repository.md", "building.md",
-                "writing-great-docs.md", "glossary.md", "troubleshooting.md",
+                "writing-great-docs.md", "markdown-showcase.md", "glossary.md", "troubleshooting.md",
             ],
-            [page["path"] for page in sections[0]["pages"]],
+            _leaf_paths(sections[0]["pages"]),
         )
-        self.assertEqual("Maintainer reference", sections[-1]["title"])
+        self.assertEqual(["Start here", "Build your site", "Publish", "Maintainer reference"], [section["title"] for section in sections])
         self.assertGreater(
             next(index for index, section in enumerate(sections) if section["title"] == "Maintainer reference"),
-            next(index for index, section in enumerate(sections) if section["title"] == "Publish safely"),
+            next(index for index, section in enumerate(sections) if section["title"] == "Publish"),
         )
-        maintained = [page["path"] for page in sections[-1]["pages"]]
-        self.assertIn("architecture.md", maintained)
-        self.assertIn("decisions/0012-brand-hero-and-proven-contrast.md", maintained)
+        by_title = {section["title"]: _leaf_paths(section["pages"]) for section in sections}
+        self.assertIn("architecture.md", by_title["Maintainer reference"])
+        self.assertIn("decisions/0012-brand-hero-and-proven-contrast.md", by_title["Maintainer reference"])
+        start_groups = [entry["title"] for entry in sections[0]["pages"] if "pages" in entry]
+        self.assertIn("Quickstart", start_groups)
+        self.assertIn("Writing documentation", start_groups)
 
     def test_recommended_layouts_use_the_explicit_modern_contract(self) -> None:
         layouts = {
@@ -358,7 +370,17 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
     def test_stable_contract_guides_and_examples_are_maintained(self) -> None:
         layout = json.loads((self.root / "docs" / "layout.json").read_text(encoding="utf-8"))
-        pages = [page["path"] for section in layout["navigation"] for page in section["pages"]]
+
+        def _leaf_paths(entries: list) -> list:
+            found: list = []
+            for entry in entries:
+                if "path" in entry:
+                    found.append(entry["path"])
+                else:
+                    found.extend(_leaf_paths(entry.get("pages", [])))
+            return found
+
+        pages = [path for section in layout["navigation"] for path in _leaf_paths(section["pages"])]
         machine = (self.root / "docs" / "machine-contracts.md").read_text(encoding="utf-8")
         custom_css = (self.root / "docs" / "custom-css.md").read_text(encoding="utf-8")
         themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")

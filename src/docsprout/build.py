@@ -143,19 +143,45 @@ def _hero_actions(*, config, current_route: str) -> str:
 
 def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page, config, current_route: str, version_options: str, banner: str | None, logo: str | None, release: str, custom_css: bool = False) -> str:
     navigation_sections: list[str] = []
+    expanded_groups = set(getattr(config, "expanded_groups", ()))
     for section in dict.fromkeys(item.section for item in config.pages):
-        section_links: list[str] = []
-        for item in config.pages:
-            if item.section != section:
+        section_items: list[str] = []
+        seen_groups: set[str] = set()
+        section_pages = [item for item in config.pages if item.section == section]
+        for item in section_pages:
+            if item.subsection is None:
+                is_current = item.path == page.path
+                active_class = "active" if is_current else ""
+                aria_current = ' aria-current="page"' if is_current else ""
+                href = html.escape(_relative(current_route, _route(item.path, config.home_document)), quote=True)
+                section_items.append(
+                    f'<a class="{active_class}" href="{href}"{aria_current}>{html.escape(item.title)}</a>'
+                )
                 continue
-            is_current = item.path == page.path
-            active_class = "active" if is_current else ""
-            aria_current = ' aria-current="page"' if is_current else ""
-            href = html.escape(_relative(current_route, _route(item.path, config.home_document)), quote=True)
-            section_links.append(
-                f'<a class="{active_class}" href="{href}"{aria_current}>{html.escape(item.title)}</a>'
+            if item.subsection in seen_groups:
+                continue
+            seen_groups.add(item.subsection)
+            group_pages = [entry for entry in section_pages if entry.subsection == item.subsection]
+            group_links: list[str] = []
+            group_active = False
+            for entry in group_pages:
+                is_current = entry.path == page.path
+                group_active = group_active or is_current
+                active_class = "active" if is_current else ""
+                aria_current = ' aria-current="page"' if is_current else ""
+                href = html.escape(_relative(current_route, _route(entry.path, config.home_document)), quote=True)
+                group_links.append(
+                    f'<a class="{active_class}" href="{href}"{aria_current}>{html.escape(entry.title)}</a>'
+                )
+            is_open = group_active or (section, item.subsection) in expanded_groups
+            open_attribute = " open" if is_open else ""
+            section_items.append(
+                f'<details class="nav-group"{open_attribute}>'
+                f'<summary><span>{html.escape(item.subsection)}</span></summary>'
+                f'<div class="nav-group-links">{"".join(group_links)}</div>'
+                f"</details>"
             )
-        navigation_sections.append(f'<h2>{html.escape(section)}</h2>{"".join(section_links)}')
+        navigation_sections.append(f'<h2>{html.escape(section)}</h2>{"".join(section_items)}')
     nav = "".join(navigation_sections)
     banner_html = f'<img class="banner" src="{html.escape(banner, quote=True)}" alt="{html.escape(config.banner_alt or "", quote=True)}">' if banner else ""
     style = f"--dk-accent:{config.accent};--dk-accent-secondary:{config.accent_secondary}"
