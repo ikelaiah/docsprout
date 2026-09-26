@@ -285,6 +285,20 @@ accessibility judgement call.
 - [x] Keep every schema, route, machine format and documented `--dk-*` token
       name unchanged, with regression tests and updated guides.
 
+## v1.1.5 — Scannable sidebar ✅
+
+Collapse the documentation sidebar into logical groups without moving any
+page, and widen Markdown coverage, with no schema, route or machine-format
+change.
+
+- [x] Render section pages as collapsible subgroups that auto-expand for the
+      current page, with an optional per-group `"expanded"` default.
+- [x] Reorganise the site into Start here, Build your site, Publish and
+      Maintainer reference, preserving all pages and routes.
+- [x] Render blockquotes, strikethrough and horizontal rules, with a showcase
+      page demonstrating every supported element.
+- [x] Keep the capability-card hover to the border highlight.
+
 ## v1.2 — Visual Range and Adoption Guides
 
 - [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark

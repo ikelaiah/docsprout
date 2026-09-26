@@ -17,12 +17,16 @@ has one section:
 {"navigation": [{"title": "Getting started", "pages": [{"title": "Overview", "path": "index.md"}]}]}
 ```
 
-After, replace that `navigation` value with deliberate groups in the same
-written order:
+After, replace that `navigation` value with deliberate sections in the same
+written order. Entries inside a section's `pages` list use either `"path"`
+for a directly listed page or `"pages"` for a collapsible subgroup:
 
 ```json
 {"navigation": [
-  {"title": "Getting started", "pages": [{"title": "Overview", "path": "index.md"}]},
+  {"title": "Getting started", "pages": [
+    {"title": "Overview", "path": "index.md"},
+    {"title": "Quickstart", "pages": [{"title": "Your first site", "path": "beginners-guide.md"}]}
+  ]},
   {"title": "Reference", "pages": [{"title": "API", "path": "reference/api.md"}]}
 ]}
 ```
@@ -66,8 +70,8 @@ identity asset:
 
 Fields that are not relevant here, such as `banner` and `homepage`, are
 omitted for brevity. You can inspect the complete maintained
-[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.4/docs/docsprout.json)
-and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.4/docs/assets/docsprout-mark.svg).
+[`docs/docsprout.json`](https://github.com/ikelaiah/docsprout/blob/v1.1.5/docs/docsprout.json)
+and its [local SVG asset](https://github.com/ikelaiah/docsprout/blob/v1.1.5/docs/assets/docsprout-mark.svg).
 On generated DocSprout pages, purple is the accent and highlight colour; the
 potted sprout mark (green leaves, brown soil and a beige pot) appears immediately
 before the project name in the top header;

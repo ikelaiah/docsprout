@@ -44,7 +44,8 @@ CAPABILITY_FIELDS = ("title", "description")
 LINK_FIELDS = ("label", "url")
 LAYOUT_FIELDS = ("schema_version", "home", "unlisted", "navigation")
 HOME_FIELDS = ("path", "source")
-SECTION_FIELDS = ("title", "pages")
+SECTION_FIELDS = ("title", "pages", "expanded")
+GROUP_FIELDS = ("title", "pages", "expanded")
 PAGE_FIELDS = ("title", "path", "source")
 MANIFEST_FIELDS = ("schema_version", "current", "versions")
 VERSION_FIELDS = ("release", "source_ref")
@@ -330,36 +331,97 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     if not isinstance(navigation, list) or not navigation:
         raise DocSproutError(f"{layout_path}: field 'navigation' must be a non-empty list")
     pages: list[Page] = []
+    expanded_sections: list[str] = []
+    expanded_groups: list[tuple[str, str]] = []
+
+    def _add_listed_page(entry: dict, section_title: str, subsection: str | None) -> None:
+        path = safe_document_path(entry.get("path"), f"{layout_path}: navigation page")
+        source = entry.get("source", "docs")
+        if source not in {"docs", "root"}:
+            raise DocSproutError(f"{layout_path}: navigation page source must be 'docs' or 'root'")
+        if source == "root" and path != "README.md":
+            raise DocSproutError(f"{layout_path}: repository-root source only supports README.md")
+        page = Page(path, entry["title"], section_title, source, subsection)
+        if not page_source_path(root, page).is_file():
+            location = "README.md" if source == "root" else f"docs/{path}"
+            raise DocSproutError(
+                f"{layout_path}: navigation page {path!r} does not exist. "
+                f"Create {location} or correct its path."
+            )
+        if any(page.path == path for page in pages):
+            raise DocSproutError(f"{layout_path}: navigation page {path!r} appears more than once")
+        pages.append(page)
+
     for section in navigation:
         if not isinstance(section, dict) or not isinstance(section.get("title"), str) or not section["title"].strip():
             raise DocSproutError(f"{layout_path}: each navigation section needs a non-empty title")
         _reject_unknown_fields(section, SECTION_FIELDS, f"navigation.{section.get('title')}", layout_path)
+        expanded = section.get("expanded", False)
+        if not isinstance(expanded, bool):
+            raise DocSproutError(
+                f"{layout_path}: navigation section {section['title']!r} field 'expanded' must be a boolean. "
+                "Use true to start the section expanded or false (the default) to start it collapsed."
+            )
+        if expanded and section["title"] not in expanded_sections:
+            expanded_sections.append(section["title"])
         entries = section.get("pages")
         if not isinstance(entries, list) or not entries:
             raise DocSproutError(
                 f"{layout_path}: navigation section {section['title']!r} needs pages. "
                 "Add at least one page entry or remove the section."
             )
+        group_titles: set[str] = set()
         for entry in entries:
             if not isinstance(entry, dict) or not isinstance(entry.get("title"), str) or not entry["title"].strip():
-                raise DocSproutError(f"{layout_path}: navigation page needs a non-empty title")
-            _reject_unknown_fields(entry, PAGE_FIELDS, f"navigation.{section['title']}.pages", layout_path)
-            path = safe_document_path(entry.get("path"), f"{layout_path}: navigation page")
-            source = entry.get("source", "docs")
-            if source not in {"docs", "root"}:
-                raise DocSproutError(f"{layout_path}: navigation page source must be 'docs' or 'root'")
-            if source == "root" and path != "README.md":
-                raise DocSproutError(f"{layout_path}: repository-root source only supports README.md")
-            page = Page(path, entry["title"], section["title"], source)
-            if not page_source_path(root, page).is_file():
-                location = "README.md" if source == "root" else f"docs/{path}"
+                raise DocSproutError(f"{layout_path}: navigation entry needs a non-empty title")
+            has_path = "path" in entry
+            has_pages = "pages" in entry
+            if has_path and has_pages:
                 raise DocSproutError(
-                    f"{layout_path}: navigation page {path!r} does not exist. "
-                    f"Create {location} or correct its path."
+                    f"{layout_path}: navigation entry {entry['title']!r} has both 'path' and 'pages'. "
+                    "Use 'path' for a page or 'pages' for a collapsible group, not both."
                 )
-            if any(page.path == path for page in pages):
-                raise DocSproutError(f"{layout_path}: navigation page {path!r} appears more than once")
-            pages.append(page)
+            if has_pages:
+                _reject_unknown_fields(entry, GROUP_FIELDS, f"navigation.{section['title']}", layout_path)
+                group_title = entry["title"]
+                if group_title in group_titles:
+                    raise DocSproutError(
+                        f"{layout_path}: navigation group {group_title!r} appears more than once in section {section['title']!r}. "
+                        "Use a unique group title within the section."
+                    )
+                group_titles.add(group_title)
+                group_expanded = entry.get("expanded", False)
+                if not isinstance(group_expanded, bool):
+                    raise DocSproutError(
+                        f"{layout_path}: navigation group {group_title!r} field 'expanded' must be a boolean. "
+                        "Use true to start the group expanded or false (the default) to start it collapsed."
+                    )
+                if group_expanded and (section["title"], group_title) not in expanded_groups:
+                    expanded_groups.append((section["title"], group_title))
+                sub_entries = entry.get("pages")
+                if not isinstance(sub_entries, list) or not sub_entries:
+                    raise DocSproutError(
+                        f"{layout_path}: navigation group {group_title!r} needs pages. "
+                        "Add at least one page entry or remove the group."
+                    )
+                for sub in sub_entries:
+                    if not isinstance(sub, dict) or not isinstance(sub.get("title"), str) or not sub["title"].strip():
+                        raise DocSproutError(f"{layout_path}: navigation page needs a non-empty title")
+                    if "pages" in sub:
+                        raise DocSproutError(
+                            f"{layout_path}: navigation page {sub.get('title')!r} must not contain nested 'pages'. "
+                            "Groups support only one level of child pages."
+                        )
+                    _reject_unknown_fields(sub, PAGE_FIELDS, f"navigation.{section['title']}.{group_title}", layout_path)
+                    _add_listed_page(sub, section["title"], group_title)
+            elif has_path:
+                _reject_unknown_fields(entry, PAGE_FIELDS, f"navigation.{section['title']}.pages", layout_path)
+                _add_listed_page(entry, section["title"], None)
+            else:
+                raise DocSproutError(
+                    f"{layout_path}: navigation entry {entry['title']!r} needs either 'path' or 'pages'. "
+                    "Use 'path' for a page or 'pages' with child page entries for a collapsible group."
+                )
     listed_paths = {page.path for page in pages}
     unlisted_paths = sorted(path.relative_to(docs).as_posix() for path in docs.rglob("*.md") if path.is_file() and path.relative_to(docs).as_posix() not in listed_paths)
     if require_listed_documents and unlisted == "error" and unlisted_paths:
@@ -426,4 +488,6 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         legacy=False, home_document=home, homepage=homepage,
         custom_css=custom_css, excluded_documents=excluded_documents,
         config_filename=primary.name, palette=palette,
+        expanded_sections=tuple(expanded_sections),
+        expanded_groups=tuple(expanded_groups),
     )

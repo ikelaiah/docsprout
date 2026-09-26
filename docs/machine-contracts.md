@@ -93,7 +93,7 @@ The browser search reads this file. Versioned shape:
   "entries": [
     {
       "title": "Configuration",
-      "section": "Shape your site",
+      "section": "Build your site",
       "url": "configuration.html",
       "text": "plain text used for ranking and previews"
     }

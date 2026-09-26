@@ -9,59 +9,110 @@
       "title": "Start here",
       "pages": [
         {"title": "Overview", "path": "index.md"},
-        {"title": "Your first site", "path": "beginners-guide.md"},
-        {"title": "Add to an existing repository", "path": "existing-repository.md"},
-        {"title": "Build and inspect your site", "path": "building.md"},
-        {"title": "Write useful documentation", "path": "writing-great-docs.md"},
+        {
+          "title": "Quickstart",
+          "pages": [
+            {"title": "Your first site", "path": "beginners-guide.md"},
+            {"title": "Add to an existing repository", "path": "existing-repository.md"},
+            {"title": "Build and inspect your site", "path": "building.md"}
+          ]
+        },
+        {
+          "title": "Writing documentation",
+          "pages": [
+            {"title": "Write useful documentation", "path": "writing-great-docs.md"},
+            {"title": "Markdown showcase", "path": "markdown-showcase.md"}
+          ]
+        },
         {"title": "Glossary", "path": "glossary.md"},
         {"title": "Troubleshooting", "path": "troubleshooting.md"}
       ]
     },
     {
-      "title": "Shape your site",
+      "title": "Build your site",
       "pages": [
         {"title": "Configuration", "path": "configuration.md"},
-        {"title": "Authoring recipes", "path": "authoring-recipes.md"},
-        {"title": "Sections and identity", "path": "customisation.md"},
-        {"title": "Customize the home page", "path": "homepage-recipes.md"},
-        {"title": "Themes", "path": "themes.md"},
-        {"title": "Custom CSS (advanced)", "path": "custom-css.md"},
-        {"title": "Machine-readable contracts", "path": "machine-contracts.md"},
-        {"title": "Visual fixtures", "path": "visual-fixtures.md"},
-        {"title": "Mathematics", "path": "math.md"}
+        {
+          "title": "Content & navigation",
+          "pages": [
+            {"title": "Authoring recipes", "path": "authoring-recipes.md"},
+            {"title": "Sections and identity", "path": "customisation.md"},
+            {"title": "Customize the home page", "path": "homepage-recipes.md"}
+          ]
+        },
+        {
+          "title": "Appearance",
+          "pages": [
+            {"title": "Themes", "path": "themes.md"},
+            {"title": "Custom CSS (advanced)", "path": "custom-css.md"},
+            {"title": "Visual fixtures", "path": "visual-fixtures.md"},
+            {"title": "Mathematics", "path": "math.md"}
+          ]
+        },
+        {
+          "title": "Advanced",
+          "pages": [
+            {"title": "Machine-readable contracts", "path": "machine-contracts.md"}
+          ]
+        }
       ]
     },
     {
-      "title": "Publish safely",
+      "title": "Publish",
       "pages": [
-        {"title": "Audit your documentation", "path": "audit.md"},
-        {"title": "Checks in CI and CD", "path": "ci-cd.md"},
-        {"title": "GitHub Pages", "path": "github-pages.md"},
-        {"title": "Pre-publish checklist", "path": "pre-publish-checklist.md"},
-        {"title": "Historical documentation", "path": "historical-docs.md"},
-        {"title": "Qualification evidence", "path": "qualification.md"},
-        {"title": "Migration", "path": "migration.md"}
+        {
+          "title": "Checks & auditing",
+          "pages": [
+            {"title": "Audit your documentation", "path": "audit.md"},
+            {"title": "Pre-publish checklist", "path": "pre-publish-checklist.md"},
+            {"title": "Checks in CI and CD", "path": "ci-cd.md"},
+            {"title": "Qualification evidence", "path": "qualification.md"}
+          ]
+        },
+        {
+          "title": "Deployment",
+          "pages": [
+            {"title": "GitHub Pages", "path": "github-pages.md"}
+          ]
+        },
+        {
+          "title": "Versions & migration",
+          "pages": [
+            {"title": "Historical documentation", "path": "historical-docs.md"},
+            {"title": "Migration", "path": "migration.md"}
+          ]
+        }
       ]
     },
     {
       "title": "Maintainer reference",
       "pages": [
-        {"title": "PasWeave integration", "path": "pasweave-integration.md"},
-        {"title": "Architecture", "path": "architecture.md"},
-        {"title": "Architecture analysis", "path": "architecture-analysis.md"},
-        {"title": "Project specification (historical)", "path": "spec.md"},
-        {"title": "Boundaries", "path": "decisions/0001-boundaries.md"},
-        {"title": "History and customisation", "path": "decisions/0002-history-and-customisation.md"},
-        {"title": "Release-tag publication", "path": "decisions/0003-publish-from-release-tags.md"},
-        {"title": "Reader-first documentation", "path": "decisions/0004-reader-first-documentation.md"},
-        {"title": "Local syntax highlighting", "path": "decisions/0005-local-syntax-highlighting.md"},
-        {"title": "Existing-repository adoption", "path": "decisions/0006-existing-repository-adoption.md"},
-        {"title": "GitHub Pages setup", "path": "decisions/0007-github-pages-one-command.md"},
-        {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
-        {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
-        {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"},
-        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"},
-        {"title": "Brand hero and proven contrast", "path": "decisions/0012-brand-hero-and-proven-contrast.md"}
+        {
+          "title": "Core reference",
+          "pages": [
+            {"title": "PasWeave integration", "path": "pasweave-integration.md"},
+            {"title": "Architecture", "path": "architecture.md"},
+            {"title": "Architecture analysis", "path": "architecture-analysis.md"},
+            {"title": "Project specification (historical)", "path": "spec.md"}
+          ]
+        },
+        {
+          "title": "Architecture decisions",
+          "pages": [
+            {"title": "Boundaries", "path": "decisions/0001-boundaries.md"},
+            {"title": "History and customisation", "path": "decisions/0002-history-and-customisation.md"},
+            {"title": "Release-tag publication", "path": "decisions/0003-publish-from-release-tags.md"},
+            {"title": "Reader-first documentation", "path": "decisions/0004-reader-first-documentation.md"},
+            {"title": "Local syntax highlighting", "path": "decisions/0005-local-syntax-highlighting.md"},
+            {"title": "Existing-repository adoption", "path": "decisions/0006-existing-repository-adoption.md"},
+            {"title": "GitHub Pages setup", "path": "decisions/0007-github-pages-one-command.md"},
+            {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
+            {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
+            {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"},
+            {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"},
+            {"title": "Brand hero and proven contrast", "path": "decisions/0012-brand-hero-and-proven-contrast.md"}
+          ]
+        }
       ]
     }
   ]

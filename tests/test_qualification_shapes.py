@@ -229,7 +229,61 @@ class RepositoryShapeQualificationTests(unittest.TestCase):
             sidebar = (output / "index.html").read_text(encoding="utf-8")
             sidebar_navigation = sidebar[sidebar.index('<nav class="sidebar"'):sidebar.index("</nav>")]
             self.assertEqual(3, sidebar_navigation.count("<h2>"))
+            self.assertNotIn('<details class="nav-group"', sidebar_navigation)
             self.assertEqual(5, sidebar_navigation.count('<a class='))
+
+    def test_nested_groups_collapse_with_active_group_open(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "grouped-nav-project"
+            root.mkdir()
+            _project(root)
+            _pages(root, "index.md", "guides/one.md", "guides/two.md", "reference/api.md")
+            _layout(root, [
+                {"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]},
+                {"title": "Guides", "pages": [
+                    {"title": "Basics", "pages": [
+                        {"title": "Guide One", "path": "guides/one.md"},
+                        {"title": "Guide Two", "path": "guides/two.md"},
+                    ]},
+                ]},
+                {"title": "Reference", "pages": [{"title": "API", "path": "reference/api.md"}]},
+            ])
+
+            output, result = _build(root)
+
+            self.assertEqual(4, result.page_count)
+            self.assertEqual(3, result.section_count)
+            guide = (output / "guides" / "one.html").read_text(encoding="utf-8")
+            sidebar_navigation = guide[guide.index('<nav class="sidebar"'):guide.index("</nav>")]
+            self.assertEqual(3, sidebar_navigation.count("<h2>"))
+            self.assertEqual(1, sidebar_navigation.count('<details class="nav-group" open>'))
+            self.assertIn('<details class="nav-group" open><summary><span>Basics</span></summary>', sidebar_navigation)
+            self.assertIn('aria-current="page"', sidebar_navigation)
+            home = (output / "index.html").read_text(encoding="utf-8")
+            home_navigation = home[home.index('<nav class="sidebar"'):home.index("</nav>")]
+            self.assertIn('<details class="nav-group"><summary><span>Basics</span></summary>', home_navigation)
+
+    def test_expanded_groups_start_open_on_every_page(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "expanded-nav-project"
+            root.mkdir()
+            _project(root)
+            _pages(root, "index.md", "guides/one.md", "reference/api.md")
+            _layout(root, [
+                {"title": "Start", "pages": [
+                    {"title": "Home", "path": "index.md"},
+                    {"title": "Pinned", "expanded": True, "pages": [{"title": "Guide One", "path": "guides/one.md"}]},
+                ]},
+                {"title": "Reference", "pages": [{"title": "API", "path": "reference/api.md"}]},
+            ])
+
+            output, _ = _build(root)
+
+            api = (output / "reference" / "api.html").read_text(encoding="utf-8")
+            sidebar_navigation = api[api.index('<nav class="sidebar"'):api.index("</nav>")]
+            # Active page has no group, but the configured expanded group stays open.
+            self.assertEqual(1, sidebar_navigation.count('<details class="nav-group" open>'))
+            self.assertIn('<details class="nav-group" open><summary><span>Pinned</span></summary>', sidebar_navigation)
 
     def test_qualifies_a_root_readme_alongside_docs(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -70,6 +70,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .sidebar a.active{border-left:2px solid var(--dk-accent);background:color-mix(in srgb,var(--dk-accent) 9%,transparent);color:var(--dk-interactive);font-weight:700;text-decoration:none}
 .sidebar h2{margin:1.85rem 0 .55rem;padding-left:.7rem;color:var(--dk-muted);font-size:.68rem;font-weight:650;letter-spacing:.12em;text-transform:uppercase}
 .sidebar h2:first-child{margin-top:.25rem}
+.nav-group{margin:0 0 .25rem;padding:0;border:0}
+.nav-group summary{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:0;padding:.42rem .5rem .42rem .7rem;border-radius:.25rem;color:var(--dk-text);font-size:.86rem;font-weight:650;cursor:pointer;list-style:none}
+.nav-group summary::-webkit-details-marker{display:none}
+.nav-group summary::after{content:"\203A";flex:0 0 auto;color:var(--dk-muted);font-size:1rem;font-weight:400;line-height:1;transition:transform .15s ease}
+.nav-group[open] summary::after{transform:rotate(90deg)}
+.nav-group summary:hover{background:var(--dk-surface)}
+.nav-group-links{display:flex;flex-direction:column;margin:.15rem 0 .35rem .7rem;padding-left:.55rem;border-left:1px solid var(--dk-border)}
+.nav-group-links a{padding:.34rem .6rem;font-size:.84rem}
 .prose{min-width:0;max-width:var(--dk-content-width);padding-bottom:var(--dk-space-2)}
 .prose h1,.prose h2,.prose h3{font-family:var(--dk-font-display);font-weight:720;letter-spacing:-.032em;text-wrap:balance;scroll-margin-top:6.5rem}
 .prose h1{font-size:clamp(2.3rem,4vw,3rem);line-height:1.12;max-width:none;margin:0 0 1.25rem}
@@ -193,7 +201,7 @@ select:hover,.topbar .search-control input:hover{border-color:color-mix(in srgb,
 .toc .toc-level-4{padding-left:1.5rem;font-size:.96em}
 .toc .toc-level-5{padding-left:1.85rem;font-size:.92em}
 .toc .toc-level-6{padding-left:2.2rem;font-size:.92em}
-@media(hover:hover){.capability-strip li:hover{border-color:var(--dk-interactive);box-shadow:inset 0 3px var(--dk-interactive)}}
+@media(hover:hover){.capability-strip li:hover{border-color:var(--dk-interactive)}}
 /* Glass composites stay within palette.py contrast bounds; blur is optional. */
 html[data-visual-theme="glassmorphic"] body{background:radial-gradient(46rem 32rem at 10% 12%,color-mix(in srgb,var(--dk-accent) var(--dk-mesh-1),transparent),transparent 58%),radial-gradient(38rem 30rem at 94% 8%,color-mix(in srgb,var(--dk-accent-secondary) var(--dk-mesh-2),transparent),transparent 55%),radial-gradient(42rem 34rem at 52% 118%,color-mix(in srgb,var(--dk-accent) var(--dk-mesh-3),transparent),transparent 60%),radial-gradient(28rem 24rem at 76% 74%,color-mix(in srgb,var(--dk-accent-secondary) var(--dk-mesh-4),transparent),transparent 55%),var(--dk-bg);background-attachment:fixed}
 html[data-visual-theme="glassmorphic"] :is(.site-header,.hero,.capability-strip li,.release-context,.search-results,.sidebar,.toc,.mobile-nav){background:var(--dk-glass);border-color:color-mix(in srgb,var(--dk-raised) 30%,var(--dk-border));box-shadow:inset 0 1px 0 color-mix(in srgb,var(--dk-raised) 70%,transparent),0 1.25rem 2.8rem -.55rem color-mix(in srgb,var(--dk-bg) 65%,transparent)}
@@ -225,9 +233,12 @@ summary{cursor:pointer}
   .shell{display:block;padding-top:1.5rem}
   .sidebar{display:none}
   .mobile-nav{display:block;margin:0;padding:0 1rem .75rem;border-bottom:1px solid var(--dk-border);background:var(--dk-surface)}
-  .mobile-nav summary{min-height:2.75rem;padding:.65rem 0;cursor:pointer;font-family:var(--dk-font-display);font-size:.86rem;font-weight:700;list-style-position:inside}
+  .mobile-nav>summary{min-height:2.75rem;padding:.65rem 0;cursor:pointer;font-family:var(--dk-font-display);font-size:.86rem;font-weight:700;list-style-position:inside}
   .mobile-nav h2{margin:1rem 0 .35rem;padding-left:.25rem;color:var(--dk-muted);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase}
-  .mobile-nav a{display:block;padding:.55rem .25rem;color:var(--dk-muted);text-decoration:none}
+  .mobile-nav .nav-group{margin:0 0 .2rem}
+  .mobile-nav .nav-group summary{margin:0;padding:.55rem .25rem;color:var(--dk-text);font-size:.86rem;font-weight:650}
+  .mobile-nav .nav-group-links{margin:.1rem 0 .3rem .25rem;padding-left:.5rem}
+  .mobile-nav .nav-group-links a{display:block;padding:.55rem .25rem;color:var(--dk-muted);text-decoration:none}
   .mobile-nav a:hover{background:var(--dk-surface);color:var(--dk-text)}
   .mobile-nav a.active{color:var(--dk-interactive);font-weight:700}
   .toc{display:none}
@@ -266,6 +277,8 @@ summary{cursor:pointer}
   .prose a{color:inherit;text-decoration:underline}
   .prose pre,.table-scroll,.admonition,.banner{border-color:#999;box-shadow:none}
   .copy-code{display:none}
+  .nav-group summary::after{display:none}
+  .nav-group:not([open]) .nav-group-links{display:block}
 }
 '''
 

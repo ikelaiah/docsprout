@@ -1,8 +1,39 @@
 # Changelog
 
-## Unreleased
+## 1.1.5
 
-No changes yet.
+The scannable-sidebar release. The left navigation collapses into logical
+groups, the Markdown renderer covers quotes, deletions and rules, and the
+capability cards keep a quiet hover. No schema, route or machine-format
+changes: update the package and workflow pins to `v1.1.5`, rebuild, and review
+the sidebar once.
+
+### Added
+
+- Nested navigation groups in `docs/layout.json`: a section's `pages` entry
+  uses either `"path"` for a directly listed page or `"pages"` for a
+  collapsible subgroup with one level of child pages. Only the group holding
+  the current page starts expanded; `"expanded": true` on a group keeps it
+  expanded everywhere. Existing flat layouts load unchanged.
+- Standard Markdown blockquotes (`> quote`), strikethrough (`~~deleted~~`)
+  and horizontal rules (`---`, `***`, `___` on their own line), with a
+  [showcase page](docs/markdown-showcase.md) rendering every supported
+  element beside its source.
+
+### Changed
+
+- Reorganised the DocSprout site navigation into `Start here`,
+  `Build your site`, `Publish` and `Maintainer reference`, with collapsible
+  subgroups (`Quickstart`, `Writing documentation`, `Content & navigation`,
+  `Appearance`, `Advanced`, `Checks & auditing`, `Deployment`,
+  `Versions & migration`, `Core reference`, `Architecture decisions`).
+  All 40 pages and routes are preserved.
+- Capability cards now signal hover with the border highlight only; the
+  inset top eyebrow is removed.
+
+### Fixed
+
+- Pinned package, workflow examples, docs manifest and guides to `v1.1.5`.
 
 ## 1.1.4
 

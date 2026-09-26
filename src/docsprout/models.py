@@ -11,6 +11,7 @@ class Page:
     title: str
     section: str = "Documentation"
     source: str = "docs"
+    subsection: str | None = None
 
 
 @dataclass(frozen=True)
@@ -45,3 +46,5 @@ class SiteConfig:
     excluded_documents: tuple[str, ...] = ()
     config_filename: str | None = None
     palette: Palette | None = None
+    expanded_sections: tuple[str, ...] = ()
+    expanded_groups: tuple[tuple[str, str], ...] = ()
