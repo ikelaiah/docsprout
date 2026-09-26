@@ -20,7 +20,7 @@ class PublishingWorkflowTests(unittest.TestCase):
     def test_reusable_workflow_installs_the_pinned_docsprout_release(self) -> None:
         workflow = (self.root / ".github" / "workflows" / "publish-docs.yml").read_text(encoding="utf-8")
 
-        self.assertIn("git+https://github.com/ikelaiah/docsprout.git@v1.1.6", workflow)
+        self.assertIn("git+https://github.com/ikelaiah/docsprout.git@v1.1.7", workflow)
         self.assertNotIn("python -m pip install .", workflow)
 
     def test_workflows_use_checkout_v7_node_24_major(self) -> None:
@@ -51,7 +51,7 @@ class PublishingWorkflowTests(unittest.TestCase):
         single = (self.root / "examples" / "single-version" / ".github" / "workflows" / "documentation.yml").read_text(encoding="utf-8")
         historical = (self.root / "examples" / "historical" / ".github" / "workflows" / "documentation.yml").read_text(encoding="utf-8")
 
-        self.assertIn("publish-docs.yml@v1.1.6", single)
+        self.assertIn("publish-docs.yml@v1.1.7", single)
         self.assertIn("versioned: false", single)
-        self.assertIn("publish-docs.yml@v1.1.6", historical)
+        self.assertIn("publish-docs.yml@v1.1.7", historical)
         self.assertNotIn("versioned: false", historical)

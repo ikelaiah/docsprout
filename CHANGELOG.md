@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.7
+
+A Markdown correctness and documentation-accuracy patch. Inline code spans now
+protect their contents from Markdown interpretation, and the Markdown showcase
+documents blockquotes, strikethrough and horizontal rules as supported,
+matching behaviour introduced in v1.1.5. No schema, route, machine-format,
+CLI, token-name, dependency or Markdown-syntax change: update the package and
+workflow pins to `v1.1.7` and rebuild.
+
+### Fixed
+
+- Inline code spans now protect their contents from Markdown interpretation,
+  so image, link, emphasis, strikethrough, math and other Markdown-looking
+  syntax inside backticks remains literal code.
+- Correct the Markdown showcase to document blockquotes, strikethrough and
+  horizontal rules as supported features, matching behaviour introduced in
+  v1.1.5.
+
 ## 1.1.6
 
 A security and hardening patch. Project Markdown is treated as untrusted

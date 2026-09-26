@@ -310,6 +310,18 @@ route, machine-format, CLI, token-name or theme change.
 - [x] Document that bundled assets stay offline while author-owned custom CSS
       is copied verbatim and may reference external resources when viewed.
 
+## v1.1.7 — Markdown correctness patch ✅
+
+Make inline code truly literal and bring the Markdown documentation back into
+exact agreement with the renderer, with no schema, route, machine-format,
+CLI, token-name, dependency or syntax change.
+
+- [x] Protect inline code spans from every inline Markdown transform with
+      deterministic placeholders and regression tests.
+- [x] Preserve the v1.1.6 image-alt escaping fix and URL safety.
+- [x] Correct the Markdown showcase for blockquotes, strikethrough and
+      horizontal rules, with documentation-regression coverage.
+
 ## v1.2 — Visual Range and Adoption Guides
 
 - [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark

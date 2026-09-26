@@ -26,7 +26,7 @@ that normally contains `README.md` or `src/`.
 Open a terminal in your project folder and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.6.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.1.7.zip"
 ```
 
 Then check that the command is available:
@@ -295,7 +295,7 @@ appear in the navigation.
   in [How DocSprout renders Markdown](markdown-showcase.md).
 - Learn the three configuration files in [Configuration](configuration.md).
 - Copy a small working project from the
-  [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.6/examples/minimal).
+  [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.7/examples/minimal).
 - When you truly want a public site, choose the simpler or historical path in
   [GitHub Pages](github-pages.md).
 - Look up unfamiliar words in the [glossary](glossary.md).

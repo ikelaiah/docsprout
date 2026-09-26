@@ -1,7 +1,7 @@
-# Qualification evidence for DocSprout v1.1.6
+# Qualification evidence for DocSprout v1.1.7
 
-DocSprout v1.1.6 is a security and hardening patch with the v1.0.0 stable
-contract preserved. The claims below
+DocSprout v1.1.7 is a Markdown correctness and documentation-accuracy patch
+with the v1.0.0 stable contract preserved. The claims below
 are the contract that CI and the maintained fixtures exercise. Every row names
 how it is verified. "Supported" means the combination is run by automated
 qualification on every pull request and release, not merely believed to work.
@@ -12,8 +12,9 @@ clean-room package rehearsal and the explicit compatibility policy; v1.1 adds
 the rebrand compatibility evidence and the quality-gate additions; v1.1.2 adds
 the typography evidence, v1.1.3 adds the documentation-quality evidence,
 v1.1.4 adds the brand-hero, contrast and four-style evidence, v1.1.5 adds
-the grouped-navigation and Markdown-coverage evidence, and v1.1.6 adds the
-image-alt escaping and custom-CSS contract evidence below.
+the grouped-navigation and Markdown-coverage evidence, v1.1.6 adds the
+image-alt escaping and custom-CSS contract evidence, and v1.1.7 adds the
+inline-code literalness and documentation-accuracy evidence below.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -269,6 +270,28 @@ site configuration; no schema, route or token value changes:
   distinguish page structure from home-page presentation, and the glossary
   covers the navigation, theme and command vocabulary.
 
+## v1.1.7 additions
+
+The Markdown correctness and documentation-accuracy patch makes inline code
+truly literal and brings the showcase back into agreement with the renderer;
+no schema, route, machine-format, CLI, token-name, dependency or syntax change:
+
+- **Inline-code literalness**: inline code spans are stashed behind
+  deterministic NUL-sentinal placeholders during `_inline()` processing, so
+  image, link, emphasis, strikethrough, math and other Markdown-looking syntax
+  inside backticks remains literal `<code>` with only HTML escaping. Unit tests
+  cover image, link, bold, italic, strikethrough, math, angle brackets,
+  `--flag`, apostrophes, quotes, and mixed inside/outside rendering.
+- **v1.1.6 security preservation**: the image-alt `quote=True` escaping fix
+  remains intact; the straight-quote attribute test now reaches the attribute
+  through a link/image target (protected from typography) instead of relying
+  on incorrect code-span image semantics, plus the existing malicious-alt and
+  build-level asset tests.
+- **Documentation-showcase accuracy**: the showcase documents standard
+  blockquotes, strikethrough, horizontal rules (`---`, `***`, `___`), and
+  literal inline code with rendered examples, and a documentation-regression
+  test asserts the stale unsupported claims do not return.
+
 ## v1.1.6 additions
 
 The security and hardening patch closes an attribute-escaping gap and makes
@@ -361,7 +384,7 @@ operation requires a network connection after installation.
 - **Browser automation status:** browser automation is intentionally not part
   of CI (Chrome DevTools MCP was not available during v1.0.0 qualification).
   Full browser geometry, console and keyboard inspection therefore remains
-   unavailable for every release, including v1.1.6; the automated
+   unavailable for every release, including v1.1.7; the automated
   structural/fixture coverage and live Pages sanity checks are reported
   separately and do not imply a full browser review.
 - External URLs in documentation are never network-checked; `audit` reports

@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
-      - run: python -m pip install "git+https://github.com/ikelaiah/docsprout.git@v1.1.6"
+      - run: python -m pip install "git+https://github.com/ikelaiah/docsprout.git@v1.1.7"
       - run: docsprout check
       - if: inputs.versioned
         run: docsprout check-release

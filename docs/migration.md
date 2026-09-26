@@ -3,7 +3,7 @@
 The 1.x upgrades are deliberately boring: v1.0.0 froze the qualified v0.18.1
 surface, and every later 1.x release adds no configuration schema change. Pin
 the released package and workflow, then run the same checks you already use.
-Current guidance targets `v1.1.6`; each section below remains authoritative for
+Current guidance targets `v1.1.7`; each section below remains authoritative for
 its own step.
 
 ## DocKit to DocSprout (1.x rebrand)
@@ -64,7 +64,7 @@ each published release manifest on immutable tags while upgrading.
 ## Upgrade directly from any supported 0.x release
 
 All released 0.x configurations use schema version 1. Upgrade the pinned package
-and workflow to the latest 1.x release (`v1.1.6`), then use this table before
+and workflow to the latest 1.x release (`v1.1.7`), then use this table before
 running `doctor`, `check`, and the appropriate publish build.
 
 | Starting release | Required compatibility work |
@@ -95,6 +95,16 @@ For historical publication, v0.9.0 additionally rejects unsafe release path
 segments and option-like refs, requires the current source to match `HEAD`, and
 requires documentation changes to be committed. These checks make existing
 valid manifests more dependable; they do not change generated routes.
+
+## v1.1.6 to v1.1.7
+
+No configuration change is required. Update the package archive or source pin
+and any caller workflow pin to `v1.1.7`. Inline code now correctly remains
+literal, so Markdown-looking syntax inside backticks no longer creates image,
+link, emphasis, strikethrough, or math elements, and the supported Markdown
+documentation has been corrected for blockquotes, strikethrough, and
+horizontal rules. All routes, schemas, machine formats, CLI contracts,
+token names, and dependencies are unchanged.
 
 ## v1.1.5 to v1.1.6
 
@@ -222,7 +232,7 @@ the contract qualified by v0.18.1:
 
 1. Pin the package archive or source installation to `v1.0.0` and pin the
    reusable Pages workflow to `@v1.0.0`; never use `main`. For a new upgrade
-   today, pin the latest 1.x release (`v1.1.6`) instead.
+   today, pin the latest 1.x release (`v1.1.7`) instead.
 2. Keep `"schema_version": 1` in `docsprout.json`, `layout.json` and
    `versions.json`. There is no schema rewrite or generated-route migration.
 3. If custom CSS still uses pre-v0.18 generic names such as `--bg`, `--text`
@@ -354,9 +364,9 @@ safe, readable plain code.
 
 Version 1.0 is the formal commitment point for the contracts that v0.18.1
 qualified, and later 1.x releases keep that contract. There is no schema change.
-Before adopting the latest 1.x release (`v1.1.6`):
+Before adopting the latest 1.x release (`v1.1.7`):
 
-1. Upgrade the pinned package and Pages workflow to `v1.1.6` following this
+1. Upgrade the pinned package and Pages workflow to `v1.1.7` following this
    guide's patterns (config-compatible, then rebuild).
 2. Remove references to any pre-v0.18 generic theme token names
    (`--bg`, `--text`, `--interactive`, …) in custom CSS; the `--dk-*` names
