@@ -291,6 +291,8 @@ appear in the navigation.
 
 - Learn a simple, language-neutral writing method in
   [Write documentation people can use](writing-great-docs.md).
+- See every supported Markdown element rendered side by side with its source
+  in [How DocSprout renders Markdown](markdown-showcase.md).
 - Learn the three configuration files in [Configuration](configuration.md).
 - Copy a small working project from the
   [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/minimal).

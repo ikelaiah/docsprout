@@ -20,6 +20,8 @@ TASK = re.compile(r"^\[([ xX])\]\s+(.+)$")
 LINK = re.compile(r"\[([^]]+)]\(([^)]+)\)")
 IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
 CODE = re.compile(r"`([^`]+)`")
+STRIKE = re.compile(r"~~(.+?)~~")
+HR = re.compile(r"^\s{0,3}(?:-[ \t]*){3,}$|^\s{0,3}(?:_[ \t]*){3,}$|^\s{0,3}(?:\*[ \t]*){3,}$")
 INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)\$")
 DEFINITION_DESCRIPTION = re.compile(r"^:\s+(.+)$")
 PROTECTED_INLINE = re.compile(r"(`[^`]+`|(?<!\\)\$[^$\n]+\$|!?\[[^\]]*\]\([^)]*\))")
@@ -40,7 +42,7 @@ def slugify(text: str) -> str:
 
 
 def _plain(value: str) -> str:
-    return re.sub(r"\s+", " ", re.sub(r"[*_`]+", "", value)).strip()
+    return re.sub(r"\s+", " ", re.sub(r"[*_`~]+", "", value)).strip()
 
 
 def _smart(value: str) -> str:
@@ -81,6 +83,7 @@ def _inline(value: str, resolve: LinkResolver) -> str:
     )
     escaped = LINK.sub(lambda match: f'<a href="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}">{match.group(1)}</a>', escaped)
     escaped = CODE.sub(r"<code>\1</code>", escaped)
+    escaped = STRIKE.sub(r"<del>\1</del>", escaped)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
     return INLINE_MATH.sub(
@@ -217,6 +220,34 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
             output.append(f'<aside class="admonition {kind}"><strong>{kind.title()}</strong><p>{_inline(body, resolve_link)}</p></aside>')
             plain.append(_plain(body))
             continue
+        elif line.lstrip().startswith(">"):
+            flush_paragraph()
+            quote_lines: list[str] = []
+            while index < len(lines) and lines[index].lstrip().startswith(">"):
+                stripped = lines[index].lstrip()
+                content = stripped[1:]
+                if content.startswith(" ") or content.startswith("\t"):
+                    content = content[1:]
+                quote_lines.append(content.rstrip())
+                index += 1
+            paragraphs: list[list[str]] = [[]]
+            for quote_line in quote_lines:
+                if quote_line.strip():
+                    paragraphs[-1].append(quote_line.strip())
+                elif paragraphs[-1]:
+                    paragraphs.append([])
+            paragraphs = [part for part in paragraphs if part]
+            if paragraphs:
+                body_html = "".join(f"<p>{_inline(' '.join(part), resolve_link)}</p>" for part in paragraphs)
+                for part in paragraphs:
+                    plain.append(_plain(" ".join(part)))
+            else:
+                body_html = ""
+            output.append(f"<blockquote>{body_html}</blockquote>")
+            continue
+        elif HR.match(line):
+            flush_paragraph()
+            output.append("<hr>")
         elif line.strip() and index + 1 < len(lines) and DEFINITION_DESCRIPTION.match(lines[index + 1]):
             flush_paragraph()
             items: list[str] = []
