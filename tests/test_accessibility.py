@@ -4,7 +4,7 @@ Objective, structural assertions over the maintained visual fixture and
 DocSprout's own built documentation: keyboard-operable native controls, visible
 focus, accessible names, the search keyboard contract, heading structure,
 callout labels, reduced-motion, scroller containment and the shared semantic
-theme-token contract for Classic/Paper/Midnight in Light/Dark/System.
+theme-token contract for Classic/Paper/E-ink/Glassmorphic in Light/Dark/System.
 
 Visual/interactive behaviour that cannot be asserted structurally is covered
 by the manual matrix documented in docs/qualification.md.
@@ -91,7 +91,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
             "button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--dk-focus-ring);outline-offset:3px}",
             css,
         )
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "e-ink", "glassmorphic"):
             self.assertIn(f'html[data-visual-theme="{theme}"]', css)
         self.assertIn("@media(forced-colors:active)", css)
         self.assertIn("outline-color:Highlight", css)
@@ -128,7 +128,7 @@ class AccessibilityQualificationTests(unittest.TestCase):
         self.assertIn("<option value=\"system\">System</option>", page)
         self.assertIn("<option value=\"light\">Light</option>", page)
         self.assertIn("<option value=\"dark\">Dark</option>", page)
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "e-ink", "glassmorphic"):
             self.assertIn(f'<option value="{theme}">{theme.capitalize()}</option>', page)
         self.assertIn('data-visual-theme="classic"', page)
         self.assertIn("prefers-color-scheme:dark", self.fixture.css)
@@ -210,8 +210,10 @@ class AccessibilityQualificationTests(unittest.TestCase):
         for selector in (
             'html[data-theme="dark"]',
             'html[data-visual-theme="paper"][data-theme="dark"]',
-            'html[data-visual-theme="midnight"]',
-            'html[data-visual-theme="midnight"][data-theme="light"]',
+            'html[data-visual-theme="e-ink"]',
+            'html[data-visual-theme="e-ink"][data-theme="dark"]',
+            'html[data-visual-theme="glassmorphic"]',
+            'html[data-visual-theme="glassmorphic"][data-theme="dark"]',
         ):
             coverage = _theme_tokens(css, selector) | base
             self.assertEqual(set(PUBLIC_TOKENS), coverage, selector)
@@ -226,15 +228,17 @@ class AccessibilityQualificationTests(unittest.TestCase):
         self.assertEqual(set(PUBLIC_TOKENS), paper_system_tokens, "paper system dark")
         self.assertIn('html[data-theme="light"]{color-scheme:light}', css)
         self.assertIn('html[data-theme="dark"]{color-scheme:dark', css)
-        for theme in ("classic", "paper", "midnight"):
+        for theme in ("classic", "paper", "e-ink", "glassmorphic"):
             self.assertIn(f'html[data-visual-theme="{theme}"]', css, theme)
+        self.assertIn("@supports ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px)))", css)
+        self.assertIn("--dk-shadow:none", css)
 
     def test_the_classic_system_dark_variant_defines_the_full_token_contract(self) -> None:
         system_blocks = re.findall(
             r'@media\(prefers-color-scheme:dark\)\{html\[data-visual-theme="classic"\]:not\(\[data-theme\]\)\{([^}]*)\}\}',
             self.fixture.css,
         )
-        self.assertEqual(2, len(system_blocks))
+        self.assertEqual(1, len(system_blocks))
         merged = "".join(system_blocks)
         for token in CHROMATIC_TOKENS:
             self.assertIn(token, merged)

@@ -3,13 +3,22 @@
 You do not need to memorise these terms. Use this page when a guide contains an
 unfamiliar word.
 
+Admonition
+: A GitHub-style callout block such as `> [!NOTE]`. Supported labels are
+  `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]` and `[!WARNING]`.
+
 Audit
-: `docsprout audit` re-checks built content for publication mistakes and reports
-  coded errors and warnings without changing files.
+: `docsprout audit` reads your published pages and configuration, reports coded
+  errors and warnings for publication mistakes, and never changes files.
+
+Audit code
+: A stable identifier for one audit finding: `DK001`–`DK005` are errors and
+  `DK101`–`DK104` are warnings. See [Audit your documentation](audit.md).
 
 Banner
-: One image shown above the home page's `h1` heading. Configure it with the
-  top-level `banner` object in `docsprout.json`.
+: One image shown as a full-width band at the top of the home-page hero, above
+  the `h1` heading. Configure it with the top-level `banner` object in
+  `docsprout.json`.
 
 Build
 : Turn source files, such as Markdown, into output files such as a website.
@@ -62,6 +71,11 @@ Home page
 `HEAD`
 : Git's name for the exact commit currently checked out in your project folder.
 
+Hero
+: The designed opening section of the home page: an optional release pill, heading,
+  opening summary, derived actions and optional banner artwork. DocSprout builds
+  it from plain Markdown with no MDX or custom HTML.
+
 Immutable
 : Unable to change. A release tag should keep pointing to the same commit so old
   documentation remains historically accurate.
@@ -100,6 +114,10 @@ Route
 : The output path of a built page, such as `guides/setup.html`. Two listed
   documents must not claim the same route.
 
+Schema version
+: The version number at the top of each configuration file, written as
+  `schema_version`. Every current file uses `1`; leave it unchanged.
+
 Section
 : A titled group of navigation pages in `layout.json`.
 
@@ -112,8 +130,8 @@ Source ref
   live in Git history.
 
 Style
-: The site's starting visual theme: `classic`, `paper` or `midnight`. Visitors
-  can switch it.
+: The site's starting visual theme: `classic`, `paper`, `e-ink` or
+  `glassmorphic`. Visitors can switch it.
 
 Tag
 : A stable Git name attached to one commit, usually for a release. For example,

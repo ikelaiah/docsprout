@@ -87,30 +87,30 @@ wrong.
 - [x] Add deterministic release fixtures and a clear pre-publish checklist.
 - [x] Document upgrade compatibility from every supported 0.x configuration.
 
-## v0.11 — Existing Repo Magic
+## v0.11 — Existing Repo Magic ✅
 
 Safe existing-repository adoption, conservative README/docs discovery, sensible
 initial navigation, explicit power-user control, safe root README support, and
 `docsprout serve`.
 
-## v0.12 — Beautiful by Default
+## v0.12 — Beautiful by Default ✅
 
 A minimally configured repository should produce a site that feels
 publication-ready without custom CSS, custom assets or extensive theme
 configuration.
 
-- [ ] Make the Classic homepage, header, sidebar, typography and code
+- [x] Make the Classic homepage, header, sidebar, typography and code
       presentation feel confident and publication-ready by default.
-- [ ] Refine tables, callouts, search, on-page navigation and previous/next
+- [x] Refine tables, callouts, search, on-page navigation and previous/next
       navigation without changing their existing schemas or core behavior.
-- [ ] Verify Paper and Midnight against the shared semantic design contract in
+- [x] Verify Paper and Midnight against the shared semantic design contract in
       Light, Dark and System modes.
-- [ ] Exercise the result with DocSprout's own docs and the maintained visual
+- [x] Exercise the result with DocSprout's own docs and the maintained visual
       fixture at phone, tablet and desktop widths.
-- [ ] Preserve keyboard navigation, focus visibility, accessible names,
+- [x] Preserve keyboard navigation, focus visibility, accessible names,
       reduced-motion behavior and offline/local assets.
 
-## v0.13 — Explicit Home & DocSprout Identity
+## v0.13 — Explicit Home & DocSprout Identity ✅
 
 Select the published home page explicitly and make the public product identity
 language-neutral while preserving existing technical identifiers.
@@ -178,8 +178,8 @@ remains necessary. See [Qualification evidence](docs/qualification.md).
 The final pre-1.0 simplification and contract-candidate release. Theme:
 **minimal CLI + obvious declarative configuration.** Commands perform
 actions; `layout.json`, `docsprout.json` and `versions.json` describe the site.
-See [release notes](CHANGELOG.md#0180) and [Qualification evidence]
-(docs/qualification.md).
+See [release notes](CHANGELOG.md#0180) and
+[Qualification evidence](docs/qualification.md).
 
 - [x] Keep the command surface operational; making pages, sections, titles,
       order, home and publication ordinary `layout.json` edits with a
@@ -267,6 +267,31 @@ and Pages workflow are now documented as the stable 1.x contract.
       and command vocabulary.
 - [x] Mark the original v0.3.0 specification as historical and give the
       customisation guides an explicit reading order.
+
+## v1.1.4 — Brand hero and contrast proof ✅
+
+Give every generated site a designed opening and make one brand colour
+trustworthy across every theme and mode, without MDX, custom HTML or an
+accessibility judgement call.
+
+- [x] Render one automatic home-page hero from the existing Markdown: heading,
+      opening summary, release pill, derived `Get started`/`Repository` actions
+      and an accent-derived backdrop.
+- [x] Add decorative inline-SVG icons and a hover lift to capability cards.
+- [x] Derive an analogous `accent_secondary` when an explicit accent omits it.
+- [x] Prove link (4.5:1) and focus (3:1) contrast against every shipped surface
+      in each style and mode; correct failing values and report them from
+      `check` and `audit` (`DK104`).
+- [x] Keep every schema, route, machine format and documented `--dk-*` token
+      name unchanged, with regression tests and updated guides.
+
+## v1.2 — Visual Range and Adoption Guides
+
+- [x] Add the `e-ink` and `glassmorphic` visual styles, each with light, dark
+      and system modes, contrast-proven through the shared palette pipeline
+      and documented alongside the existing styles.
+- [x] Add an existing-repository adoption guide and a CI/CD guide covering the
+      portable check/audit gates and static-host deployment.
 
 ## Quality bar
 

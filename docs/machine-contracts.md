@@ -29,6 +29,14 @@ defaults.
 The configuration guide gives the editing examples and the validation
 diagnostics for each field family.
 
+DocSprout derives contrast-verified values for the documented
+`--dk-interactive` and `--dk-focus-ring` tokens in every visual style and
+colour mode, plus an internal `--dk-on-interactive` foreground for filled
+actions. When `theme.accent_secondary` is omitted for an explicit
+`theme.accent`, an analogous secondary is derived from the accent. Token names
+and meanings are the stable contract; the computed values follow the
+configured brand colour.
+
 ## CLI contract
 
 The stable command names are `init`, `serve`, `check`, `audit`, `build`,
@@ -147,7 +155,9 @@ Deterministic CI-friendly diagnostics. Root fields:
 ```
 
 `target` is present only when a finding names one. Findings are ordered
-deterministically by page order, then source position.
+deterministically: pages in navigation order, link and image findings in source
+order within each page, then heading-structure findings, with a configured
+accent finding (`DK104`) last.
 
 ## 1.x compatibility policy
 

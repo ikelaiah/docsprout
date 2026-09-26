@@ -80,7 +80,7 @@ hurt readability in the themes and modes you did not check. When you write
 custom CSS, verify:
 
 - Light, Dark and System mode;
-- Classic, Paper and Midnight (visitors can switch the Style);
+- Classic, Paper, E-ink and Glassmorphic (visitors can switch the Style);
 - phone and desktop widths;
 - keyboard focus is still visible and the page works with a keyboard alone.
 
@@ -91,7 +91,7 @@ documentation builds it in CI.
 ## Before you reach for custom CSS
 
 1. Choose one of the [four colour presets](themes.md#pick-an-accent-colour).
-2. Choose Classic, Paper or Midnight.
+2. Choose Classic, Paper, E-ink or Glassmorphic.
 3. Provide exact [accent colours](themes.md#pick-an-accent-colour) when your
    project already has brand colours.
 4. Use the documented [`--dk-*` tokens](themes.md#the-documented-dk-tokens).

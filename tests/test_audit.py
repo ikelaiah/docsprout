@@ -53,6 +53,25 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(2, result.pages)
         self.assertEqual((), result.findings)
 
+    def test_audit_warns_when_the_accent_fails_light_page_contrast(self) -> None:
+        from docsprout.audit import audit_project
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": "# Home\n"})
+            (root / "docs" / "docsprout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "project": {"name": "Loud"},
+                "theme": {"accent": "#ffff00"},
+            }), encoding="utf-8")
+
+            findings = audit_project(root).findings
+
+        self.assertEqual(["DK104"], [finding.code for finding in findings])
+        self.assertEqual("warning", findings[0].severity)
+        self.assertEqual("docs/docsprout.json", findings[0].file)
+        self.assertIn("#ffff00", findings[0].detail)
+
     def test_audit_reports_page_anchor_unpublished_asset_and_path_errors(self) -> None:
         from docsprout.audit import audit_project
 

@@ -9,8 +9,9 @@ import posixpath
 import re
 from urllib.parse import urlsplit
 
-from .config import load_config, page_source_path, page_source_reference
+from .config import CONFIG_FILENAME, load_config, page_source_path, page_source_reference
 from .markdown import HEADING, render_markdown, slugify
+from .models import SiteConfig
 
 
 IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
@@ -53,13 +54,13 @@ class _AuditPage:
     text: str
 
 
-def _load_pages(root: Path) -> tuple[tuple[_AuditPage, ...], int]:
+def _load_pages(root: Path) -> tuple[tuple[_AuditPage, ...], int, SiteConfig]:
     config = load_config(root)
     pages: list[_AuditPage] = []
     for page in config.pages:
         source = page_source_path(root, page).read_text(encoding="utf-8")
         pages.append(_AuditPage(page.path, page_source_reference(page), render_markdown(source, lambda target: target).headings, source))
-    return tuple(pages), len(config.excluded_documents)
+    return tuple(pages), len(config.excluded_documents), config
 
 
 def _finding(code: str, severity: str, page: _AuditPage, line: int, message: str, detail: str, target: str | None = None) -> Finding:
@@ -173,10 +174,19 @@ def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> l
 def audit_project(root: Path) -> AuditResult:
     """Audit the configured public pages without modifying the project."""
     root = root.resolve()
-    page_list, excluded = _load_pages(root)
+    page_list, excluded, config = _load_pages(root)
     pages = {page.source: page for page in page_list}
-    findings = tuple(finding for page in page_list for finding in _audit_page(page, pages, root))
-    return AuditResult(pages=len(page_list), findings=findings, excluded_documents=excluded)
+    findings = [finding for page in page_list for finding in _audit_page(page, pages, root)]
+    if config.palette and config.palette.note:
+        config_file = f"docs/{config.config_filename or CONFIG_FILENAME}"
+        findings.append(
+            Finding(
+                "DK104", "warning", config_file, 0,
+                "Accent colour fails WCAG AA contrast on light pages",
+                config.palette.note,
+            )
+        )
+    return AuditResult(pages=len(page_list), findings=tuple(findings), excluded_documents=excluded)
 
 
 def format_text(result: AuditResult) -> str:

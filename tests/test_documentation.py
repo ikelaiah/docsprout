@@ -3,6 +3,7 @@ from pathlib import Path
 import unittest
 
 from docsprout import __version__
+from docsprout.config import THEME_STYLES
 
 
 class DocumentationUsabilityTests(unittest.TestCase):
@@ -41,13 +42,20 @@ class DocumentationUsabilityTests(unittest.TestCase):
 
         self.assertEqual("Start here", sections[0]["title"])
         self.assertEqual(
-            ["index.md", "beginners-guide.md", "building.md", "writing-great-docs.md", "glossary.md", "troubleshooting.md"],
+            [
+                "index.md", "beginners-guide.md", "existing-repository.md", "building.md",
+                "writing-great-docs.md", "glossary.md", "troubleshooting.md",
+            ],
             [page["path"] for page in sections[0]["pages"]],
         )
+        self.assertEqual("Maintainer reference", sections[-1]["title"])
         self.assertGreater(
-            next(index for index, section in enumerate(sections) if section["title"] == "Pascal and project internals"),
+            next(index for index, section in enumerate(sections) if section["title"] == "Maintainer reference"),
             next(index for index, section in enumerate(sections) if section["title"] == "Publish safely"),
         )
+        maintained = [page["path"] for page in sections[-1]["pages"]]
+        self.assertIn("architecture.md", maintained)
+        self.assertIn("decisions/0012-brand-hero-and-proven-contrast.md", maintained)
 
     def test_recommended_layouts_use_the_explicit_modern_contract(self) -> None:
         layouts = {
@@ -68,13 +76,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.1.3", __version__)
+        self.assertEqual("1.1.4", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.1.3"', pyproject)
+        self.assertIn('version = "1.1.4"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -122,7 +130,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
             ],
             [card["title"] for card in config["homepage"]["capabilities"]],
         )
-        self.assertTrue(config["homepage"]["sections"]["release_context"])
+        self.assertFalse(config["homepage"]["sections"]["release_context"])
         self.assertIn("The home page is the Markdown document selected by `layout.json.home`", guide)
         self.assertIn("## See it in DocSprout", guide)
 
@@ -163,9 +171,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
         recipes = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
 
-        self.assertEqual("docs/assets/docsprout-banner.svg", config["banner"]["path"])
+        self.assertEqual("docs/assets/docsprout-mountain-banner.jpg", config["banner"]["path"])
         self.assertTrue((self.root / config["banner"]["path"]).is_file())
-        self.assertNotIn("docsprout-banner.svg", index)
+        self.assertNotIn("docsprout-mountain-banner.jpg", index)
+        self.assertIn(f'"{config["banner"]["path"]}"', recipes)
         self.assertIn("[`banner`](#add-a-home-page-banner)", configuration)
         self.assertIn("`banner` is top-level, not a `homepage` value", recipes)
 
@@ -196,6 +205,17 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("[minimal example]", themes)
         self.assertIn("[single-version example]", themes)
 
+    def test_style_lists_cover_every_supported_visual_style(self) -> None:
+        pages = {
+            name: (self.root / "docs" / name).read_text(encoding="utf-8")
+            for name in ("themes.md", "configuration.md", "glossary.md", "troubleshooting.md")
+        }
+
+        for name, text in pages.items():
+            for style in sorted(THEME_STYLES):
+                with self.subTest(page=name, style=style):
+                    self.assertIn(f"`{style}`", text)
+
     def test_configuration_documents_metadata_homepage_defaults_and_archives(self) -> None:
         configuration = (self.root / "docs" / "configuration.md").read_text(encoding="utf-8")
         checklist = (self.root / "docs" / "pre-publish-checklist.md").read_text(encoding="utf-8")
@@ -203,7 +223,8 @@ class DocumentationUsabilityTests(unittest.TestCase):
         minimal = json.loads((self.root / "examples" / "minimal" / "docs" / "docsprout.json").read_text(encoding="utf-8"))
 
         self.assertIn("becomes each generated page's description metadata", configuration)
-        self.assertIn("does not render `repository_url` or `site_url`", configuration)
+        self.assertIn("becomes the home page hero's **Repository** action", configuration)
+        self.assertIn("does not render it anywhere", configuration)
         self.assertIn("| `capabilities` | `true` |", configuration)
         self.assertIn("| `banner` | `true` |", configuration)
         self.assertIn("| `introduction` | `true` |", configuration)
@@ -242,10 +263,23 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.1.3", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.1.4", qualification)
         self.assertIn("Browser automation status", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)
+
+    def test_guides_document_the_hero_and_the_contrast_proof(self) -> None:
+        themes = (self.root / "docs" / "themes.md").read_text(encoding="utf-8")
+        recipes = (self.root / "docs" / "homepage-recipes.md").read_text(encoding="utf-8")
+        audit = (self.root / "docs" / "audit.md").read_text(encoding="utf-8")
+        decision = self.root / "docs" / "decisions" / "0012-brand-hero-and-proven-contrast.md"
+
+        self.assertIn("## One accent is enough", themes)
+        self.assertIn("WCAG AA", themes)
+        self.assertIn("## The automatic hero", recipes)
+        self.assertIn("**Get started**", recipes)
+        self.assertIn("DK104", audit)
+        self.assertTrue(decision.is_file())
 
     def test_v1_five_promises_and_contract_are_explicit(self) -> None:
         readme = (self.root / "README.md").read_text(encoding="utf-8")
@@ -346,7 +380,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("Did you mean", configuration)
         self.assertIn("stable customisation contract", machine)
 
-    def test_migration_guide_covers_every_release_through_v018_and_the_10_checklist(self) -> None:
+    def test_migration_guide_covers_every_release_through_v018_and_the_1x_checklist(self) -> None:
         migration = (self.root / "docs" / "migration.md").read_text(encoding="utf-8")
 
         for release in ("v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0", "v0.6.0", "v0.7.0",
@@ -356,7 +390,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("v0.17.0 to v0.18.0", migration)
         self.assertIn("--dk-bg", migration)
         self.assertIn("search-index.json", migration)
-        self.assertIn("## 0.x to 1.0 upgrade checklist", migration)
+        self.assertIn("## 0.x to 1.x upgrade checklist", migration)
         self.assertIn("v1.0.0", migration)
         self.assertIn("## DocKit to DocSprout (1.x rebrand)", migration)
         self.assertIn("docs/dockit.json", migration)

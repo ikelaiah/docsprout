@@ -10,6 +10,7 @@
       "pages": [
         {"title": "Overview", "path": "index.md"},
         {"title": "Your first site", "path": "beginners-guide.md"},
+        {"title": "Add to an existing repository", "path": "existing-repository.md"},
         {"title": "Build and inspect your site", "path": "building.md"},
         {"title": "Write useful documentation", "path": "writing-great-docs.md"},
         {"title": "Glossary", "path": "glossary.md"},
@@ -34,6 +35,7 @@
       "title": "Publish safely",
       "pages": [
         {"title": "Audit your documentation", "path": "audit.md"},
+        {"title": "Checks in CI and CD", "path": "ci-cd.md"},
         {"title": "GitHub Pages", "path": "github-pages.md"},
         {"title": "Pre-publish checklist", "path": "pre-publish-checklist.md"},
         {"title": "Historical documentation", "path": "historical-docs.md"},
@@ -42,17 +44,12 @@
       ]
     },
     {
-      "title": "Pascal and project internals",
+      "title": "Maintainer reference",
       "pages": [
         {"title": "PasWeave integration", "path": "pasweave-integration.md"},
         {"title": "Architecture", "path": "architecture.md"},
         {"title": "Architecture analysis", "path": "architecture-analysis.md"},
-        {"title": "Project specification (historical)", "path": "spec.md"}
-      ]
-    },
-    {
-      "title": "Project decisions",
-      "pages": [
+        {"title": "Project specification (historical)", "path": "spec.md"},
         {"title": "Boundaries", "path": "decisions/0001-boundaries.md"},
         {"title": "History and customisation", "path": "decisions/0002-history-and-customisation.md"},
         {"title": "Release-tag publication", "path": "decisions/0003-publish-from-release-tags.md"},
@@ -63,7 +60,8 @@
         {"title": "Documentation audit", "path": "decisions/0008-documentation-audit.md"},
         {"title": "Simple configuration", "path": "decisions/0009-simple-configuration-and-stable-customisation.md"},
         {"title": "v1.0 stable contract", "path": "decisions/0010-v1-stable-contract.md"},
-        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"}
+        {"title": "DocSprout rebrand", "path": "decisions/0011-docsprout-rebrand.md"},
+        {"title": "Brand hero and proven contrast", "path": "decisions/0012-brand-hero-and-proven-contrast.md"}
       ]
     }
   ]

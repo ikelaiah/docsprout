@@ -14,7 +14,6 @@ import tempfile
 import threading
 
 from .build import build_site
-from . import assets as assets_module
 from . import build as build_module
 from .audit import audit_project, format_json as format_audit_json, format_text as format_audit_text
 from .archive import write_offline_archive
@@ -199,6 +198,12 @@ def _github_pages(root: Path, *, update: bool) -> list[str]:
     return messages
 
 
+# Rendering modules the preview watches and reloads, in dependency order.
+# errors and models are deliberately absent: their exception and dataclass
+# identities are shared across modules and must never be reloaded mid-flight.
+RENDERER_MODULES = ("assets", "palette", "highlight", "config", "markdown", "build")
+
+
 class _PreviewBuilder:
     """Rebuild a local preview when its documentation sources change."""
 
@@ -212,10 +217,19 @@ class _PreviewBuilder:
         package = Path(__file__).resolve().parent
         self._renderer_sources = tuple(
             path.resolve()
-            for path in (renderer_sources if renderer_sources is not None else (package / "assets.py", package / "build.py"))
+            for path in (
+                renderer_sources
+                if renderer_sources is not None
+                else tuple(package / f"{name}.py" for name in RENDERER_MODULES)
+            )
         )
         self._renderer_snapshot: tuple[tuple[str, int, int], ...] = ()
         self._lock = threading.Lock()
+
+    @staticmethod
+    def _stamp(path: Path) -> tuple[int, int]:
+        info = path.stat()
+        return (info.st_mtime_ns, info.st_size)
 
     def _source_snapshot(self) -> tuple[tuple[str, int, int], ...]:
         sources: list[Path] = []
@@ -226,43 +240,41 @@ class _PreviewBuilder:
         if docs.is_dir():
             sources.extend(path for path in docs.rglob("*") if path.is_file())
         return tuple(
-            (path.relative_to(self.root).as_posix(), path.stat().st_mtime_ns, path.stat().st_size)
+            (path.relative_to(self.root).as_posix(), *self._stamp(path))
             for path in sorted(sources)
         )
 
     def _renderer_source_snapshot(self) -> tuple[tuple[str, int, int], ...]:
         return tuple(
-            (path.as_posix(), path.stat().st_mtime_ns, path.stat().st_size)
+            (path.as_posix(), *self._stamp(path))
             for path in self._renderer_sources if path.is_file()
         )
 
     @staticmethod
     def _reload_renderer() -> None:
-        importlib.reload(assets_module)
-        importlib.reload(build_module)
+        for name in RENDERER_MODULES:
+            importlib.reload(importlib.import_module(f"docsprout.{name}"))
+
+    def _build(self) -> None:
+        # Snapshot before building: a source saved while the build runs must
+        # stay dirty so the next poll rebuilds it instead of serving it stale.
+        self._snapshot = self._source_snapshot()
+        self._renderer_snapshot = self._renderer_source_snapshot()
+        build_module.build_site(root=self.root, output=self.output, release=self.release)
 
     def build_initial(self) -> None:
         with self._lock:
-            build_module.build_site(root=self.root, output=self.output, release=self.release)
-            self._snapshot = self._source_snapshot()
-            self._renderer_snapshot = self._renderer_source_snapshot()
+            self._build()
 
     def rebuild_if_changed(self) -> bool:
         with self._lock:
-            snapshot = self._source_snapshot()
-            renderer_snapshot = self._renderer_source_snapshot()
-            if snapshot == self._snapshot and renderer_snapshot == self._renderer_snapshot:
+            changed = self._source_snapshot() != self._snapshot
+            renderer_changed = self._renderer_source_snapshot() != self._renderer_snapshot
+            if not changed and not renderer_changed:
                 return False
-            if renderer_snapshot != self._renderer_snapshot:
+            if renderer_changed:
                 self._reload_renderer()
-            try:
-                build_module.build_site(root=self.root, output=self.output, release=self.release)
-            except DocSproutError:
-                self._snapshot = snapshot
-                self._renderer_snapshot = renderer_snapshot
-                raise
-            self._snapshot = self._source_snapshot()
-            self._renderer_snapshot = self._renderer_source_snapshot()
+            self._build()
             return True
 
 
@@ -277,7 +289,9 @@ class _PreviewRequestHandler(SimpleHTTPRequestHandler):
         try:
             if self._preview.rebuild_if_changed():
                 print("Rebuilt documentation preview.")
-        except DocSproutError as error:
+        except Exception as error:
+            # A transient stat/read failure must never take down the request or
+            # the watcher; the next request or poll retries.
             print(f"Preview rebuild failed: {error}")
 
     def do_GET(self) -> None:
@@ -298,7 +312,9 @@ def _watch_preview(preview: _PreviewBuilder, stopped: threading.Event) -> None:
         try:
             if preview.rebuild_if_changed():
                 print("Rebuilt documentation preview.")
-        except DocSproutError as error:
+        except Exception as error:
+            # Keep the daemon thread alive through transient source errors
+            # (editor atomic saves, antivirus locks); the next poll retries.
             print(f"Preview rebuild failed: {error}")
 
 
@@ -339,6 +355,12 @@ def _doctor(root: Path) -> list[str]:
                 f"WARNING: docs/{LEGACY_CONFIG_FILENAME} uses the legacy configuration name; "
                 f"rename it to docs/{CONFIG_FILENAME} (the legacy name is removed in v2.0.0)"
             )
+        if config.palette:
+            messages.append(f"Theme: accent {config.palette.accent} verified against every shipped reading surface")
+            if config.palette.secondary_derived:
+                messages.append(f"Theme: accent_secondary derived as {config.palette.accent_secondary} from theme.accent")
+            if config.palette.note:
+                messages.append(f"WARNING: {config.palette.note}")
     except DocSproutError as error:
         messages.append(f"ERROR: {error}")
     if (root / "docs" / "versions.json").exists():
@@ -437,6 +459,8 @@ def main(argv: list[str] | None = None, *, prog: str = "docsprout") -> int:
             result = _check(root)
             excluded = f"; {result.excluded_count} unlisted document(s) excluded" if result.excluded_count else ""
             print(f"Documentation check passed: {result.section_count} section(s), {result.page_count} page(s){excluded}")
+            if result.palette_note:
+                print(f"Note: {result.palette_note}")
         elif args.command == "audit":
             result = audit_project(root)
             print(format_audit_json(result) if args.format == "json" else format_audit_text(result))

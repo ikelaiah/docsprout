@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import unittest
 
-from docsprout.config import load_config
+from docsprout.config import THEME_STYLES, load_config
 from docsprout.errors import DocSproutError
 
 
@@ -75,6 +75,39 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             self.assertEqual("#7c3aed", config.accent)
             self.assertEqual("Built for Pascal maintainers.", config.footer)
             self.assertEqual((("Source code", "https://example.test/source"),), config.project_links)
+            self.assertFalse(config.palette.secondary_derived)
+
+    def test_derives_a_secondary_colour_from_an_explicit_accent(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"accent": "#0f766e"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+
+            config = load_config(root)
+
+            self.assertEqual("#0f766e", config.accent)
+            self.assertTrue(config.palette.secondary_derived)
+            self.assertEqual(config.palette.accent_secondary, config.accent_secondary)
+            self.assertNotEqual("#0891b2", config.accent_secondary)
+            self.assertRegex(config.accent_secondary, r"^#[0-9a-f]{6}$")
+
+    def test_keeps_the_preset_colour_pair_until_an_accent_is_explicit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"preset": "teal"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+
+            config = load_config(root)
+
+            self.assertEqual("#0f766e", config.accent)
+            self.assertEqual("#0891b2", config.accent_secondary)
+            self.assertFalse(config.palette.secondary_derived)
 
     def test_uses_an_explicit_listed_home_page(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -142,16 +175,17 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
                 with self.assertRaisesRegex(DocSproutError, message):
                     load_config(root)
 
-    def test_loads_a_supported_visual_theme(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            self._write_config(
-                root,
-                {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"style": "midnight"}},
-                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
-            )
+    def test_loads_every_supported_visual_theme(self) -> None:
+        for style in sorted(THEME_STYLES):
+            with self.subTest(style=style), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(
+                    root,
+                    {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"style": style}},
+                    {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+                )
 
-            self.assertEqual("midnight", load_config(root).theme_style)
+                self.assertEqual(style, load_config(root).theme_style)
 
     def test_loads_a_supported_content_width(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -2,6 +2,67 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 1.1.4
+
+The brand-hero, contrast-proof and visual-style release. Generated sites get a
+designed home page, four styles in light and dark modes, and a single configured
+accent becomes a complete, WCAG-verified theme. No schema, route,
+machine-format or documented `--dk-*` token name changes: update the package
+and workflow pins to `v1.1.4`, rebuild, and review the home page and link
+colours once.
+
+### Added
+
+- Two more visual styles: `e-ink` (flat, near-monochrome, contrast-first) and
+  `glassmorphic` (translucent blurred chrome with a solid-token fallback),
+  each with light, dark and system modes and the same build-time contrast
+  proof as the existing styles.
+- [Add DocSprout to an existing repository](docs/existing-repository.md): the
+  adoption walkthrough for a project that already has a README or `docs/`.
+- [Checks in CI and CD](docs/ci-cd.md): the `check`/`audit` gates with a
+  complete GitHub Actions job, portable runner guidance and static-host
+  deployment.
+- An automatic home-page hero built from the same Markdown: heading, opening
+  summary, optional release pill, derived **Get started** (first non-home page)
+  and **Repository** (`project.repository_url`) actions, an accent-derived
+  backdrop and decorative inline-SVG icons on capability cards.
+- One-hex brand theming: an explicit `theme.accent` without
+  `accent_secondary` now derives an analogous secondary instead of inheriting
+  the preset pair.
+- Build-time contrast proof: `--dk-interactive` and `--dk-focus-ring` values
+  are computed against every shipped reading surface in each visual style and
+  colour mode, with an internal `--dk-on-interactive` foreground for filled
+  actions. A failing light accent is reported by `docsprout check` and as audit
+  warning `DK104`, while the built site uses the verification-safe link colour.
+
+### Changed
+
+- The sidebar separates group labels from page entries: section headings are
+  quiet small-cap headers, and page links carry the visual weight.
+- A configured banner renders as a full-width band at the top of the home-page
+  hero, capped at `10rem`. Home-page capability cards form two columns on wider
+  screens and one on phones. The DocSprout site uses the header version control
+  instead of repeating the release label in its hero.
+- The header content aligns with the page shell. DocSprout's own header mark is
+  a potted sprout with green leaves, brown soil and a beige pot; Classic hero
+  artwork no longer has an accent-coloured top border.
+- Capability cards use bordered surfaces with decorative icons and a subtle
+  hover lift; the hero replaces the previous plain home-page heading.
+
+### Fixed
+
+- `docsprout serve` no longer serves stale output until restart. A source
+  saved while a rebuild was already running stays queued instead of being
+  marked as built, transient file errors (editor saves, antivirus locks) no
+  longer kill the watcher thread or fail requests, and the preview now
+  watches every module that shapes the built site (`assets`, `palette`,
+  `highlight`, `config`, `markdown`, `build`), not just two of them.
+- `repository_url` becomes the hero's Repository action only when it is an
+  http(s) URL, so an unsafe value can never be emitted as a link. `doctor`
+  reports the verified accent and any derived secondary.
+
 ## 1.1.3
 
 A documentation-quality patch. No configuration, schema, route or token change:

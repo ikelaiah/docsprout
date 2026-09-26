@@ -24,22 +24,60 @@ configure modes.
 
 You choose the site's starting **Style**:
 
-- **Classic** (`classic`) is the clean, dependable default;
-- **Paper** (`paper`) gives long guides a warm reading surface;
-- **Midnight** (`midnight`) starts with a dark technical look.
+- **Classic** (`classic`) pairs crisp surfaces with accent-edged section
+  headings;
+- **Paper** (`paper`) sets long guides on a warm, layered reading sheet with
+  lighter serif headings, italic introductory copy and an editorial drop cap;
+- **E-ink** (`e-ink`) pairs square, flat surfaces with monospace controls,
+  a double-rule page title and still, shadow-free cards;
+- **Glassmorphic** (`glassmorphic`) adds softly lit, frosted panels, rounded
+  controls and a gradient hero title.
 
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
 
+Links follow one system in every style: inline content links carry a
+persistent underline, because colour alone never identifies them; navigation
+chrome—the sidebar, contents, search results, page navigation and
+footer—never underlines, signalling hover with a background tint or colour
+shift instead, and buttons never underline.
+
 The maintained
-[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/single-version)
+[single-version example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/single-version)
 starts in Paper (`"style": "paper"`), so its built opening page shows the
 warm reading surface before a visitor changes the control.
 
 Classic is the showcase default: it keeps the header, navigation and reading
-surface quiet so ordinary Markdown supplies the personality. Paper and
-Midnight use the same spacing, typography and semantic states, with their own
-reading surfaces. No custom CSS is needed to make any of them publication-ready.
+surface quiet so ordinary Markdown supplies the personality. Paper, E-ink and
+Glassmorphic share the same spacing and semantic states, with their own reading
+surfaces, typography and chrome. No custom CSS is needed to make any
+of them publication-ready.
+
+All four share the same component rules, with theme tokens controlling their
+corners and materials in both colour modes. Typography and decoration use local
+CSS and system fonts, with no additional downloads.
+
+## E-ink and Glassmorphic in practice
+
+**E-ink** is an ink-on-paper manual: flat white or near-black surfaces, ruled
+headings, square corners, permanently underlined links, grid-bordered
+tables and an undecorated hero—no shadows, no gradients. Brand decorations such
+as the reading-progress bar, callout rails and text selection stay ink-toned
+rather than accent-coloured. Code blocks stay dark panels so syntax highlighting
+remains readable. It suits long-form reading and displays where colour is
+unreliable; its dark variant is a dimmed night-reading surface rather than a
+saturated dark theme.
+
+**Glassmorphic** puts a viewport-anchored mesh of soft accent tints behind
+frosted chrome: the header, hero, navigation panels, cards and search float on
+translucent, blurred layers with specular edges and larger rounded corners. The
+hero title carries an accent gradient where the browser supports background
+text clipping, and falls back to the solid text colour elsewhere. Titles that
+open with an emoji keep solid ink everywhere so the glyph survives. The
+mesh tint is capped per stop and translucent surfaces stay mostly opaque, so
+every text combination is covered by the same build-time contrast proof as the
+other styles; browsers without `backdrop-filter` fall back to the solid surface
+tokens, so the style never depends on the blur effect.
 
 ## Pick an accent colour
 
@@ -72,18 +110,36 @@ hexadecimal values:
 Test custom colours in both Light and Dark mode. Links, selected navigation and
 keyboard focus must remain easy to see. A preset is safer when you are unsure.
 The maintained
-[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.3/examples/minimal)
+[minimal example](https://github.com/ikelaiah/docsprout/tree/v1.1.4/examples/minimal)
 uses the exact teal values shown above; its built links, selected navigation
 and focus state use that accent.
+
+## One accent is enough
+
+You do not have to choose two colours. When you set `theme.accent` without
+`accent_secondary`, DocSprout derives an analogous secondary from it, so a
+single brand colour still produces a complete theme. An explicit `accent`
+overrides the preset's accent, and the derived secondary then comes from that
+accent, not from the preset pair. Curated presets keep their documented colour
+pair when you do not set an accent.
+
+DocSprout also proves the brand colour against every reading surface it ships.
+Link (`--dk-interactive`) and focus (`--dk-focus-ring`) values are computed for
+each visual style and colour mode: the exact accent is kept wherever it meets
+WCAG AA contrast, and a verification-safe variant is substituted where it
+cannot. If your accent fails AA on the light page background,
+`docsprout check` prints a note and `docsprout audit` reports `DK104` with the
+corrected colour. Decorative surfaces keep using the exact accent you
+configured, and filled actions use an internal `--dk-on-interactive` foreground
+chosen for contrast.
 
 ## Add a banner only when it helps
 
 A home-page banner can show a project logo or useful illustration. It renders
-above the home page's `h1` heading, spans the content width and is capped at
-`16rem` tall, so wide artwork works best. Save the image inside your repository
-first, then reference it and describe it for people who cannot see it. The file
-must already exist: `docsprout build` stops with a validation error when it is
-missing or unsafe.
+as a full-width band at the top of the home-page hero, above the heading. Save
+the image inside your repository first, then reference it and describe it for
+people who cannot see it. The file must already exist: `docsprout build` stops
+with a validation error when it is missing or unsafe.
 
 ```json
 {
@@ -132,7 +188,7 @@ escape hatch](custom-css.md) and by any tooling that reads generated styles:
 | `--dk-shell-width` | full page layout width |
 
 These fifteen tokens are the documented customisation contract for 1.x.
-Classic, Paper and Midnight each define them in Light, Dark and System modes;
+Classic, Paper, E-ink and Glassmorphic each define them in Light, Dark and System modes;
 the contract is regression-tested. **Internal** variables that DocSprout uses but
 does not document—radii, fonts, spacing scales, shadow, control heights and
 anything else whose name begins with `--dk-`—are not part of the contract and

@@ -53,10 +53,11 @@ otherwise intentionally quiet.
 | DK101 | warning | Markdown image has empty alternative text. |
 | DK102 | warning | Heading levels skip an intermediate level. |
 | DK103 | warning | Two headings share the same anchor text; published anchors receive a numeric suffix. |
+| DK104 | warning | The configured accent fails WCAG AA contrast on light pages; the built site substitutes a verification-safe link colour. |
 
 Local Markdown assets are published under the generated site's content assets
-directory. External `https:` URLs are accepted but never network-checked;
-offline, deterministic builds remain the default.
+directory. External `http:`, `https:` and `mailto:` URLs are accepted but never
+network-checked; offline, deterministic builds remain the default.
 
 ## A small CI gate
 
