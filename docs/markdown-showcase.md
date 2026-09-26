@@ -39,13 +39,37 @@ lands in the outline and in the address.
 ## Emphasis and inline code
 
 ```markdown
-**strong emphasis**, *emphasis*, and `inline code`
+**strong emphasis**, *emphasis*, `inline code`, and ~~deleted words~~
 ```
 
-**strong emphasis**, *emphasis*, and `inline code` — write it that way in
-prose. Only asterisks make emphasis; `__underscores__` stay literal. A code
-span keeps its characters exact: the typographic conversion described below
-never touches it, so `--flag` and `a--b` survive untouched.
+**strong emphasis**, *emphasis*, `inline code`, and ~~deleted words~~ — write
+it that way in prose. Only asterisks make emphasis; `__underscores__` stay
+literal. A code span keeps its characters exact: the typographic conversion
+described below never touches it, so `--flag` and `a--b` survive untouched.
+
+Strikethrough uses double tildes:
+
+```markdown
+Use ~~deleted words~~ sparingly.
+```
+
+Rendered:
+
+Use ~~deleted words~~ sparingly.
+
+Inline code is literal: Markdown-looking syntax inside backticks never becomes
+an element:
+
+```markdown
+`![mark](assets/docsprout-mark.svg)` `[Build](building.md)` `**bold**` `~~deleted~~` `$x^2$`
+```
+
+Rendered:
+
+`![mark](assets/docsprout-mark.svg)` `[Build](building.md)` `**bold**` `~~deleted~~` `$x^2$`
+
+The code spans above display exactly what was written. No image, link,
+emphasis, strikethrough, or math element is created from inside a code span.
 
 Emphasis and code can sit inside a link label, as in **bold text inside
 [this link](building.md)**.
@@ -142,10 +166,29 @@ are accepted but ignored; alignment is set by the theme. Wide tables scroll
 sideways instead of breaking the page, and inline formatting works inside
 cells.
 
+## Blockquotes
+
+```markdown
+> An ordinary quotation.
+>
+> A second paragraph in the same quotation.
+```
+
+Rendered:
+
+> An ordinary quotation.
+>
+> A second paragraph in the same quotation.
+
+An ordinary quotation becomes a `<blockquote>`. A callout below starts the
+same way but adds a label in square brackets and renders as a highlighted
+aside instead. Both are supported; they look different on purpose.
+
 ## Callouts
 
-A callout starts a blockquote with a label in square brackets. Only these
-four labels exist:
+A callout is a special blockquote with a label in square brackets. For an
+ordinary quotation, see [Blockquotes](#blockquotes). Only these four labels
+exist:
 
 ```markdown
 > [!NOTE] Supporting detail that does not interrupt the task.
@@ -191,6 +234,31 @@ Audit
 
 Terms follow one another directly and a blank line ends the list. The
 [Glossary](glossary.md) is built from terms in this shape.
+
+## Horizontal rules
+
+Three or more `-`, `_`, or `*` characters on a line of their own become a
+rule. These three forms are equivalent:
+
+```markdown
+First section.
+
+---
+
+Second section.
+```
+
+Rendered:
+
+First section.
+
+---
+
+Second section.
+
+`***` and `___` on their own line render the same `<hr>`. Start a new section
+with a `##` heading for structure; use a rule only for a visual break inside
+one section.
 
 ## Code blocks
 
@@ -275,35 +343,10 @@ a code block; the line after it explains what happens.
 > admonition label outside NOTE, TIP, IMPORTANT and WARNING, and a code fence
 > left unclosed. The terminal message names the file and the line.
 
-A plain quotation prints its own `>` characters:
-
-```markdown
-> An ordinary quotation.
-```
-
-It appears as text starting with `>`, not as a quotation. Use a callout
-instead.
-
-A horizontal rule has no form. Three dashes on a line of their own become an
-em dash inside a paragraph:
-
-```markdown
-First section.
-
----
-
-Second section.
-```
-
-Start a new section with a `##` heading instead.
-
-Strikethrough is not available:
-
-```markdown
-Use ~~deleted words~~ sparingly.
-```
-
-The tildes stay visible. Use plain words, or **strong emphasis** instead.
+Standard blockquotes, strikethrough, and horizontal rules are supported and
+documented above: see [Blockquotes](#blockquotes),
+[Emphasis and inline code](#emphasis-and-inline-code), and
+[Horizontal rules](#horizontal-rules).
 
 Footnotes are not collected:
 
@@ -317,7 +360,7 @@ Both lines print as written. Put the note in a callout or in a definition
 list.
 
 Page front matter has no special meaning. A `---` block at the top of the
-file is printed as visible text:
+file is not treated as metadata: each `---` line becomes a horizontal rule:
 
 ```markdown
 ---
@@ -372,7 +415,7 @@ A section title
 ---------------
 ```
 
-The underline prints as punctuation after the title. Write `## A section
+The underline becomes a horizontal rule after the title. Write `## A section
 title` instead, with the hashes at the start of the line.
 
 Trailing spaces do not force a line break:
@@ -407,7 +450,9 @@ run `docsprout serve` to see every construct at once:
 
 ### A subsection
 
-**strong**, *emphasis*, `inline code`
+**strong**, *emphasis*, `inline code`, ~~deleted~~
+
+`![image](image.svg)` stays literal in code
 
 [Site link](https://example.com)
 
@@ -421,7 +466,11 @@ run `docsprout serve` to see every construct at once:
 - [ ] Open task
 - [x] Done task
 
+> An ordinary quotation.
+
 > [!NOTE] A callout.
+
+---
 
 | Column | Column |
 | --- | --- |
