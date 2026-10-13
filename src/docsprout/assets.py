@@ -451,7 +451,15 @@ SITE_JS = r'''
   const tocLinks=[...document.querySelectorAll('.toc a[href^="#"],.inline-toc a[href^="#"]')];
   if(tocLinks.length&&'IntersectionObserver'in globalThis){
     const headingIds=new Set(tocLinks.map(link=>link.getAttribute('href').slice(1)));
-    const activate=id=>tocLinks.forEach(link=>{const current=link.getAttribute('href').slice(1)===id;link.classList.toggle('is-active',current);if(current){link.setAttribute('aria-current','location');const inline=link.closest('.inline-toc');if(inline&&!inline.open)inline.open=true}else link.removeAttribute('aria-current')});
+    function activate(id){
+      // Track location without changing the reader's disclosure choice.
+      tocLinks.forEach(link=>{
+        const current=link.getAttribute('href').slice(1)===id;
+        link.classList.toggle('is-active',current);
+        if(current)link.setAttribute('aria-current','location');
+        else link.removeAttribute('aria-current');
+      });
+    }
     const observer=new IntersectionObserver(entries=>{const visible=entries.find(entry=>entry.isIntersecting);if(visible)activate(visible.target.id)},{rootMargin:'0px 0px -70% 0px'});
     headingIds.forEach(id=>{const heading=document.getElementById(id);if(heading)observer.observe(heading)});
   }

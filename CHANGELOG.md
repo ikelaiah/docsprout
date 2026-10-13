@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.3.2
+
+### Fixed
+
+- Inline Markdown keeps generated elements out of image alternative-text
+  attributes, preventing attribute injection through code or math in image
+  descriptions. Formatting no longer changes link destinations.
+- Failed single-site rendering preserves the previous output, and a failed
+  first build leaves no partial site. Output ownership is checked before
+  rendering and again before publication.
+- Local preview rebuilds when a configured logo, banner or custom stylesheet
+  changes outside `docs/`, including after changing the configured path.
+- Scrolling updates the current section without reopening an outline that the
+  reader closed.
+
+### Documentation
+
+- Add an editable SVG build diagram, diagram-authoring guidance and contributor
+  instructions for testing Markdown context boundaries and browser behaviour.
+
 ## 1.3.1
 
 A diagnostics and release-validation patch. No configuration, route,

@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 from docsprout import build as build_module
 from docsprout.cli import _PreviewBuilder, _watch_preview, main
+from docsprout.errors import DocSproutError
 
 
 class CliTests(unittest.TestCase):
@@ -280,6 +281,79 @@ class CliTests(unittest.TestCase):
                 else:
                     self.assertIn("--dk-accent:#7c3aed", built)
                 self.assertFalse(preview.rebuild_if_changed())
+
+    def test_preview_rebuilds_when_configured_repository_assets_change(self) -> None:
+        for field, value, filename, generated in (
+            ("theme", {"custom_css": "custom.css"}, "custom.css", "custom.css"),
+            ("identity", {"logo": "logo.svg"}, "logo.svg", "logo.svg"),
+            ("banner", {"path": "banner.svg", "alt": "Banner"}, "banner.svg", "banner.svg"),
+        ):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                docs = root / "docs"
+                docs.mkdir()
+                (docs / "index.md").write_text("# Home", encoding="utf-8")
+                (docs / "docsprout.json").write_text(json.dumps({
+                    "schema_version": 1, "project": {"name": "Demo"}, field: value,
+                }), encoding="utf-8")
+                (docs / "layout.json").write_text(json.dumps({
+                    "schema_version": 1,
+                    "navigation": [{"title": "Docs", "pages": [{"title": "Home", "path": "index.md"}]}],
+                }), encoding="utf-8")
+                asset = root / filename
+                asset.write_text("original", encoding="utf-8")
+                preview = _PreviewBuilder(root=root, output=root / "site", release="preview")
+                preview.build_initial()
+                asset.write_text("updated asset", encoding="utf-8")
+
+                self.assertTrue(preview.rebuild_if_changed())
+                self.assertEqual("updated asset", (root / "site" / "assets" / generated).read_text(encoding="utf-8"))
+                self.assertFalse(preview.rebuild_if_changed())
+
+    def test_preview_tracks_newly_configured_asset_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with redirect_stdout(io.StringIO()):
+                main(["init", "--root", str(root)])
+            (root / "first.css").write_text("first", encoding="utf-8")
+            (root / "second.css").write_text("second", encoding="utf-8")
+            primary = root / "docs" / "docsprout.json"
+            config = json.loads(primary.read_text(encoding="utf-8"))
+            config["theme"]["custom_css"] = "first.css"
+            primary.write_text(json.dumps(config), encoding="utf-8")
+            preview = _PreviewBuilder(root=root, output=root / "site", release="preview")
+            preview.build_initial()
+
+            config["theme"]["custom_css"] = "second.css"
+            primary.write_text(json.dumps(config), encoding="utf-8")
+            self.assertTrue(preview.rebuild_if_changed())
+            (root / "second.css").write_text("second updated", encoding="utf-8")
+            self.assertTrue(preview.rebuild_if_changed())
+            self.assertEqual("second updated", (root / "site" / "assets" / "custom.css").read_text(encoding="utf-8"))
+            (root / "first.css").write_text("no longer used", encoding="utf-8")
+            self.assertFalse(preview.rebuild_if_changed())
+
+    def test_preview_retries_a_deleted_configured_asset_when_it_returns(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            with redirect_stdout(io.StringIO()):
+                main(["init", "--root", str(root)])
+            asset = root / "custom.css"
+            asset.write_text("original", encoding="utf-8")
+            primary = root / "docs" / "docsprout.json"
+            config = json.loads(primary.read_text(encoding="utf-8"))
+            config["theme"]["custom_css"] = "custom.css"
+            primary.write_text(json.dumps(config), encoding="utf-8")
+            preview = _PreviewBuilder(root=root, output=root / "site", release="preview")
+            preview.build_initial()
+
+            asset.unlink()
+            with self.assertRaisesRegex(DocSproutError, "does not exist"):
+                preview.rebuild_if_changed()
+            self.assertEqual("original", (root / "site" / "assets" / "custom.css").read_text(encoding="utf-8"))
+            asset.write_text("restored asset", encoding="utf-8")
+            self.assertTrue(preview.rebuild_if_changed())
+            self.assertEqual("restored asset", (root / "site" / "assets" / "custom.css").read_text(encoding="utf-8"))
 
     def test_the_public_cli_surface_lists_only_operational_commands(self) -> None:
         commands = ("init", "serve", "check", "audit", "build", "build-all", "check-release", "github-pages", "doctor")

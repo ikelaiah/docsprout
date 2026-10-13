@@ -1,6 +1,6 @@
-# Qualification evidence for DocSprout v1.3.1
+# Qualification evidence for DocSprout v1.3.2
 
-DocSprout v1.3.1 is a diagnostics and release-validation patch that preserves
+DocSprout v1.3.2 is a code-safety and documentation-quality patch that preserves
 JSON and Markdown layout compatibility and the v1.0.0 stable contract. The claims below are the contract that CI and the maintained fixtures
 exercise. Every row names how it is verified. "Supported" means the combination
 is run by automated qualification on every pull request and release, not merely
@@ -295,6 +295,18 @@ site configuration; no schema, route or token value changes:
   and `_run_git` when Git is unavailable, plus manifest rejection of release
   names reserved for generated output (`versions.json`, `index.html`) and
   names that differ only by case on case-insensitive filesystems.
+
+## v1.3.2 additions
+
+- Inline rendering tests cover generated HTML attribute boundaries, plain image
+  descriptions, unchanged link targets and composed Markdown contexts.
+- Build and safety tests cover staging a complete site, preserving previous
+  output after a failed rebuild, and refusing unowned output directories.
+- Preview tests cover local logo, banner and CSS edits outside `docs/`, path
+  changes, and restoration of deleted assets.
+- Reading-layout tests ensure scroll tracking leaves disclosure state to the
+  reader. Browser verification covered four styles, two colour modes and four
+  viewports locally; these checks are manual release evidence, not CI jobs.
 
 ## v1.3.0 additions
 

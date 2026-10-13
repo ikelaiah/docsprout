@@ -340,6 +340,18 @@ dependency, or syntax change.
 - [x] Add an existing-repository adoption guide and a CI/CD guide covering the
       portable check/audit gates and static-host deployment.
 
+## v1.3.2 — Rendering and build safety
+
+- [x] Keep Markdown code, math, image descriptions and link destinations in
+      their correct output contexts, with regression coverage for composed
+      syntax.
+- [x] Preserve the last working single-site build on render failure, and
+      rebuild the local preview when configured repository assets change.
+- [x] Keep responsive outline tracking independent of the reader's disclosure
+      choice.
+- [x] Improve the architecture and contributor guides with a readable build
+      diagram, Markdown safety notes and a concrete browser-check workflow.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

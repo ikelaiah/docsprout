@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="544" viewBox="0 0 360 544" role="img" aria-labelledby="title description">
+  <title id="title">From project files to a documentation site</title>
+  <desc id="description">Project-owned Markdown, navigation and identity enter DocSprout. It validates paths, renders pages and resolves links in a staging directory. Only a successful build replaces the published HTML, search index and local assets.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#536377"/>
+    </marker>
+  </defs>
+  <rect width="360" height="544" rx="16" fill="#f5f7fa"/>
+  <g font-family="system-ui, sans-serif" fill="#172033">
+    <text x="24" y="38" font-size="23" font-weight="700">From source to site</text>
+
+    <!-- Project-owned inputs. Keep labels large enough for a phone viewport. -->
+    <rect x="16" y="60" width="328" height="120" rx="10" fill="#fff" stroke="#b8c5d4"/>
+    <circle cx="46" cy="92" r="16" fill="#172033"/>
+    <text x="46" y="99" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">1</text>
+    <text x="74" y="100" font-size="23" font-weight="650">Your project</text>
+    <text x="32" y="134" font-size="20">Markdown + navigation</text>
+    <text x="32" y="162" font-size="20">Identity + local assets</text>
+
+    <path d="M180 188V222" fill="none" stroke="#536377" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+    <!-- Rendering is staged; a failed validation cannot replace a good site. -->
+    <rect x="16" y="236" width="328" height="120" rx="10" fill="#edf7f4" stroke="#247467"/>
+    <circle cx="46" cy="268" r="16" fill="#185b50"/>
+    <text x="46" y="275" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">2</text>
+    <text x="74" y="276" font-size="23" font-weight="650">DocSprout</text>
+    <text x="32" y="310" font-size="20">Validate, render, resolve</text>
+    <text x="32" y="338" font-size="20">Prepare a complete site</text>
+
+    <path d="M180 364V398" fill="none" stroke="#536377" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+    <rect x="16" y="412" width="328" height="116" rx="10" fill="#fff" stroke="#b8c5d4"/>
+    <circle cx="46" cy="444" r="16" fill="#172033"/>
+    <text x="46" y="451" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">3</text>
+    <text x="74" y="452" font-size="23" font-weight="650">Your built site</text>
+    <text x="32" y="486" font-size="20">HTML + search + assets</text>
+    <text x="32" y="514" font-size="20">Publish after success</text>
+  </g>
+</svg>

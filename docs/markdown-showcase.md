@@ -5,6 +5,10 @@ then the same content rendered by DocSprout underneath. Write the source in a
 file under `docs/`, save, and reload your preview to see the same result on
 your own site.
 
+For diagrams, use an exported SVG or raster image with descriptive alternative
+text. [Draw one idea at a time](writing-great-docs.md#draw-one-idea-at-a-time)
+shows the workflow; Mermaid and Graphviz fences display as code.
+
 The examples use only the Markdown that DocSprout supports. Common syntax it
 leaves alone is listed under
 [What DocSprout does not render](#what-docsprout-does-not-render).

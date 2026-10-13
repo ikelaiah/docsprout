@@ -48,7 +48,9 @@ that Previous names its destination's section. Expand the inline outline with
 the keyboard at 1024px and below, follow a nested heading link, and check that
 the heading is visible below the sticky header. Reopen the outline and check
 that the current section is marked, as it is in the desktop outline. On
-`build/minimal/quick-start.html`, check that a page without section headings
+scroll, the outline must keep the open or closed state you chose; tracking the
+active section must not reopen it. On `build/minimal/quick-start.html`, check
+that a page without section headings
 has no empty outline or reserved right column, and that Previous names the
 destination's section. Repeat these checks in print preview: the section label
 remains, while page navigation and both versions of the outline are omitted.
@@ -70,6 +72,11 @@ site uses the omitted `comfortable` default. Together, those checked-in builds
 cover the semantic width contract. The checked-in banner is the canonical visual
 banner state; use a separate temporary project when you need to inspect the
 optional no-banner default.
+
+DocSprout's own [Architecture](architecture.md#follow-one-build) page includes
+a vertical SVG build diagram. Check its label legibility at 320px and 1440px,
+in light and dark mode. It must remain within the article width; its nearby
+prose must explain the same sequence without relying on the image.
 
 The fixture is also the maintained [custom CSS](custom-css.md) example: its
 `docs/assets/custom.css` uses the documented `--dk-*` tokens, every built page
