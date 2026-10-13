@@ -91,6 +91,10 @@ class ReadingLayoutTests(unittest.TestCase):
         one = self.pages["one.html"]
         self.assertIn('<small>Next</small><span class="page-nav-context">Reference</span><span>Long guide</span>', one)
 
+    def test_scroll_tracking_does_not_open_the_readers_outline(self) -> None:
+        self.assertNotRegex(self.js, r"\.open\s*=\s*true")
+        self.assertIn("'aria-current'", self.js)
+
     def test_phone_header_and_progress_follow_the_reading_article(self) -> None:
         page = self.pages["long.html"]
         self.assertIn('<main class="prose" id="content"', page)

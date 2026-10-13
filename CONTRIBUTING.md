@@ -36,6 +36,8 @@ docsprout build --output build/docs-site
 | `docsprout/config.py` | configuration discovery, validation and the legacy `dockit.json` filename | `test_config`, `test_compatibility_corpus` |
 | `docsprout/build.py` | page rendering, routes, assets and the search index | `test_build`, `test_route_collisions` |
 | `docsprout/markdown.py` | safe Markdown subset and heading slugs | `test_markdown` |
+| `docsprout/layout_markdown.py` | Markdown navigation outlines and line-specific diagnostics | `test_layout_markdown` |
+| `docsprout/palette.py` | derived colours and contrast checks | `test_palette` |
 | `docsprout/highlight.py` | offline syntax highlighting | `test_markdown` |
 | `docsprout/audit.py` | read-only publication diagnostics | `test_audit` |
 | `docsprout/github_pages.py` | managed Pages workflow rendering and inspection | `test_github_pages`, `test_github_pages_cli` |
@@ -52,10 +54,34 @@ and `tests/qualification_artifacts.py` verify packaged installs and archives.
 Preview documentation changes with `docsprout serve`, and follow
 [Troubleshooting](docs/troubleshooting.md) when a command reports an error.
 
+## Make a small, verifiable improvement
+
+For a renderer change, start with a failing example and run the focused tests:
+
+```powershell
+python -m unittest tests.test_markdown tests.test_inline_contexts -v
+```
+
+Keep raw Markdown, generated HTML and HTML attributes separate. Add cases for
+quotes, code, math, image descriptions and link targets when changing inline
+syntax. The [rendering boundary](docs/architecture.md#keep-rendering-contexts-separate)
+explains why those combinations matter.
+
+For a browser change, build `examples/visual-fixtures` and follow the
+[visual inspection matrix](docs/visual-fixtures.md). Exercise a phone width,
+keyboard navigation, light and dark modes, and the relevant empty or error
+state. Generated-string assertions cannot prove that scrolling, focus or
+layout works in a browser. Record what you actually observed, including any
+tools or platforms you could not check.
+
+Finish with the complete tests and lint, then the documentation checks above
+when content or generated output changes. Explain the reader-visible result
+and its verification in the change description.
+
 Before a release, build and inspect both wheel and sdist, qualify each from a
 fresh environment outside the checkout, run the historical `check-release` and
 `build-all` rehearsal, and follow [the pre-publish checklist](docs/pre-publish-checklist.md).
-Release branches are named `release/vX.Y.Z`; tags are annotated and are never
-moved after publication. The maintainer opens the release PR against `main`,
-waits for all required CI, merges only a green candidate, then tags the merge
-commit and publishes the GitHub Release.
+Release branches are named `dev/vX.Y.Z`. Tags are annotated and never moved
+after publication. The maintainer opens the release PR against `main`, waits
+for all required CI, merges only a green candidate, then tags the merge commit
+and publishes the GitHub Release.

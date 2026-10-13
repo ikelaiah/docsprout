@@ -10,6 +10,48 @@ from docsprout.errors import DocSproutError
 
 
 class BuildSiteTests(unittest.TestCase):
+    def test_failed_rebuild_preserves_the_complete_previous_site(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Original home\n", encoding="utf-8")
+            output = root / "site"
+            build_site(root=root, output=output, release="dev")
+            original = {path.relative_to(output): path.read_bytes() for path in output.rglob("*") if path.is_file()}
+            (docs / "index.md").write_text("# Broken home\n\n[Missing](missing.md)\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(DocSproutError, "does not exist"):
+                build_site(root=root, output=output, release="dev")
+
+            remaining = {path.relative_to(output): path.read_bytes() for path in output.rglob("*") if path.is_file()}
+            self.assertEqual(original, remaining)
+            self.assertEqual({"docs", "site"}, {path.name for path in root.iterdir()})
+
+    def test_failed_first_build_leaves_no_partial_output(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home\n\n[Missing](missing.md)\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(DocSproutError, "does not exist"):
+                build_site(root=root, output=root / "site", release="dev")
+
+            self.assertEqual({"docs"}, {path.name for path in root.iterdir()})
+
+    def test_rejects_unowned_output_before_reading_documentation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            output = root / "site"
+            output.mkdir()
+            (output / "important.txt").write_text("keep", encoding="utf-8")
+
+            with self.assertRaisesRegex(DocSproutError, "not owned"):
+                build_site(root=root, output=output, release="dev")
+
+            self.assertEqual("keep", (output / "important.txt").read_text(encoding="utf-8"))
+
     def test_publishes_local_markdown_images_with_their_page(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

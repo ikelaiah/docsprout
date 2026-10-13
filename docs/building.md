@@ -14,6 +14,15 @@ The build validates the configuration first, then writes the complete site to
 `build/docs-site` and prints the page count. The output is offline-ready: every
 asset is local, and `index.html` opens directly in a browser.
 
+Single-site builds prepare their files beside the output folder and replace it
+only after rendering succeeds. If a link, configuration or rendering error
+stops a rebuild, the previous site stays available. A first build that fails
+does not leave a partial site. This also keeps a working `serve` preview
+readable while you fix the source.
+
+The preview watches `README.md`, `docs/`, and the configured logo, banner and
+custom stylesheet even when those assets live elsewhere in the repository.
+
 | Option | Effect |
 | --- | --- |
 | `--output <folder>` | Write somewhere else, such as `dist/site`. DocSprout marks generated folders with `.docsprout-site` and refuses to replace a folder it does not own. |
@@ -24,7 +33,7 @@ asset is local, and `index.html` opens directly in a browser.
 ## Ship a ZIP
 
 ```bash
-docsprout build --release 1.3.1 --offline-archive dist/docsprout-docs-1.3.1.zip
+docsprout build --release 1.3.2 --offline-archive dist/docsprout-docs-1.3.2.zip
 ```
 
 The release label used for an offline archive must start with a letter or
@@ -40,6 +49,10 @@ When `docs/versions.json` exists, `docsprout build-all` builds the current
 documentation and every declared historical release into one site, each under
 its own path. The [historical documentation guide](historical-docs.md) covers
 the release order, and `docsprout check-release` validates the manifest first.
+
+Unlike a single-site build, `build-all` currently replaces its output before
+building releases. Rehearse historical builds in a separate output folder;
+keep the previous published artifact until the entire command succeeds.
 
 ## Start with `doctor`
 

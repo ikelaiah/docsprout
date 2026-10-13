@@ -17,7 +17,7 @@ from .config import load_config, page_source_path, page_source_reference
 from .errors import DocSproutError
 from .markdown import render_markdown
 from .models import Page
-from .safety import prepare_output
+from .safety import prepare_output, staged_output
 
 
 DEFAULT_CAPABILITIES = (
@@ -360,6 +360,18 @@ def build_site(
     require_listed_documents: bool = True,
 ) -> BuildResult:
     """Build one release. `root` is never used as an output location."""
+    with staged_output(output) as staging:
+        return _build_site(
+            root=root, output=staging, release=release, versions=versions,
+            require_listed_documents=require_listed_documents,
+        )
+
+
+def _build_site(
+    *, root: Path, output: Path, release: str, versions: tuple[tuple[str, str], ...],
+    require_listed_documents: bool,
+) -> BuildResult:
+    """Render into an unpublished staging directory."""
     root, output = root.resolve(), output.resolve()
     config = load_config(root, require_listed_documents=require_listed_documents)
     docs = root / "docs"

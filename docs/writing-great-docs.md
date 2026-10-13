@@ -127,6 +127,42 @@ Define an unavoidable technical term the first time you use it. You can link to
 the [glossary](glossary.md) instead of interrupting every guide with a long
 definition.
 
+## Draw one idea at a time
+
+A useful diagram answers a question: what happens next, where does this data
+go, or which part owns this responsibility? Choose one question per diagram.
+Three clearly labelled stages usually teach more than a crowded map of every
+module.
+
+- Follow one reading direction, from top to bottom or left to right.
+- Name the boxes with the same words used in the surrounding explanation.
+- Label an arrow when its meaning would otherwise be ambiguous.
+- Use colour as a cue, with labels and shapes that still work in greyscale.
+- Keep labels readable at a phone's width. Split a large diagram into smaller
+  views when shrinking it would make the text tiny.
+- Explain the same idea in nearby prose, so the image is never the only way to
+  learn it.
+
+DocSprout publishes local SVG and raster images. Export your diagram to SVG
+for crisp text, save it under `docs/assets/`, and reference it with ordinary
+Markdown. Mermaid and Graphviz fences currently display as code; export the
+finished diagram before including it.
+
+For example, after saving `docs/assets/build-pipeline.svg`:
+
+```markdown
+![Project files are validated and rendered before the completed site is published.](assets/build-pipeline.svg)
+
+The build reads project files, validates and renders them, then publishes
+the completed site. If rendering fails, the previous single-site build stays
+available.
+```
+
+See this pattern in [Architecture](architecture.md#follow-one-build). Its
+diagram is a small, editable SVG with a solid reading surface that works in
+both light and dark sites. A link to the [full-size diagram](assets/build-pipeline.svg)
+lets readers inspect it separately when needed.
+
 ## Review the page as a beginner
 
 Before publishing, ask someone—or your future tired self—to follow the page

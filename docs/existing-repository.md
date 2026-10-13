@@ -18,7 +18,7 @@ Run both commands from the repository's top-level folder—the one that contains
 `README.md` or `.git/`:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.3.1.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.3.2.zip"
 docsprout init
 ```
 

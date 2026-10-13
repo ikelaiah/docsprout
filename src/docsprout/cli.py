@@ -243,6 +243,7 @@ class _PreviewBuilder:
         self.output = output.resolve()
         self.release = release
         self._snapshot: tuple[tuple[str, int, int], ...] = ()
+        self._asset_sources: tuple[Path, ...] = ()
         package = Path(__file__).resolve().parent
         self._renderer_sources = tuple(
             path.resolve()
@@ -261,7 +262,7 @@ class _PreviewBuilder:
         return (info.st_mtime_ns, info.st_size)
 
     def _source_snapshot(self) -> tuple[tuple[str, int, int], ...]:
-        sources: list[Path] = []
+        sources = [path for path in self._asset_sources if path.is_file()]
         readme = self.root / "README.md"
         if readme.is_file():
             sources.append(readme)
@@ -270,7 +271,7 @@ class _PreviewBuilder:
             sources.extend(path for path in docs.rglob("*") if path.is_file())
         return tuple(
             (path.relative_to(self.root).as_posix(), *self._stamp(path))
-            for path in sorted(sources)
+            for path in sorted(set(sources))
         )
 
     def _renderer_source_snapshot(self) -> tuple[tuple[str, int, int], ...]:
@@ -285,6 +286,12 @@ class _PreviewBuilder:
             importlib.reload(importlib.import_module(f"docsprout.{name}"))
 
     def _build(self) -> None:
+        # Resolve configured dependencies only when building, not on each poll.
+        # Read through the renderer module so live reload uses current code.
+        config = build_module.load_config(self.root)
+        self._asset_sources = tuple(
+            self.root / path for path in (config.banner, config.logo, config.custom_css) if path
+        )
         # Snapshot before building: a source saved while the build runs must
         # stay dirty so the next poll rebuilds it instead of serving it stale.
         source_snapshot = self._source_snapshot()

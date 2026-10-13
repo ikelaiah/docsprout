@@ -87,45 +87,69 @@ def _typographic(value: str) -> str:
     return "".join(parts)
 
 
+def _emphasis(escaped: str) -> str:
+    """Format escaped prose only; never pass generated HTML into this function."""
+    escaped = STRIKE.sub(r"<del>\1</del>", escaped)
+    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+    return re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
+
+
 def _inline(value: str, resolve: LinkResolver) -> str:
-    # Protect inline code and math spans from every ordinary inline transform.
-    # Code is literal code; math is TeX, not Markdown prose. The token is
-    # deterministic per render, scoped to this call, and uses NUL sentinels
-    # that ordinary prose never contains. The base is extended until it
-    # cannot collide with the current input.
+    # Keep every generated element outside subsequent Markdown transforms.
+    # A span has three meanings: HTML in prose, plain text in image alt, and
+    # exact source (including delimiters) in a URL. Restore the right context
+    # before escaping attributes; inserting rendered spans there permits XSS.
     base = "DOCSPROUT"
     while base in value:
         base += "X"
-    contents: list[tuple[str, str]] = []
+    token = re.compile(r"\x00" + re.escape(base) + r"\d+\x00")
+    fragments: dict[str, str] = {}
+    sources: dict[str, str] = {}
+    span_text: dict[str, str] = {}
 
-    def _stash(match: re.Match[str]) -> str:
+    def protect(rendered: str, source: str) -> str:
+        key = f"\x00{base}{len(fragments)}\x00"
+        fragments[key] = rendered
+        sources[key] = source
+        return key
+
+    def restore_html(text: str) -> str:
+        return token.sub(lambda match: fragments[match.group()], text)
+
+    def restore_source(text: str) -> str:
+        return token.sub(lambda match: sources[match.group()], html.unescape(text))
+
+    def protect_span(match: re.Match[str]) -> str:
         if match.group(1) is not None:
-            contents.append(("code", match.group(1)))
+            raw = match.group(1)
+            rendered = f"<code>{html.escape(raw, quote=False)}</code>"
         else:
-            contents.append(("math", match.group(2) or ""))
-        return f"\x00{base}{len(contents) - 1}\x00"
+            raw = match.group(2)
+            rendered = f'<span class="math-inline" data-tex="{html.escape(raw, quote=True)}"></span>'
+        key = protect(rendered, match.group())
+        span_text[key] = raw
+        return key
 
-    working = PROTECTED_SPAN.sub(_stash, value)
+    def target_attribute(text: str) -> str:
+        return html.escape(resolve(restore_source(text)), quote=True)
+
+    def image_element(match: re.Match[str]) -> str:
+        description = html.unescape(match.group(1))
+        description = token.sub(lambda span: span_text[span.group()], description)
+        return protect(
+            f'<img src="{target_attribute(match.group(2))}" alt="{html.escape(description, quote=True)}">',
+            restore_source(match.group()),
+        )
+
+    def link_element(match: re.Match[str]) -> str:
+        label = restore_html(_emphasis(match.group(1)))
+        return protect(f'<a href="{target_attribute(match.group(2))}">{label}</a>', restore_source(match.group()))
+
+    working = PROTECTED_SPAN.sub(protect_span, value)
     escaped = html.escape(_typographic(working), quote=False)
-    escaped = IMAGE.sub(
-        lambda match: f'<img src="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}" alt="{html.escape(html.unescape(match.group(1)), quote=True)}">',
-        escaped,
-    )
-    escaped = LINK.sub(lambda match: f'<a href="{html.escape(resolve(html.unescape(match.group(2))), quote=True)}">{match.group(1)}</a>', escaped)
-    escaped = STRIKE.sub(r"<del>\1</del>", escaped)
-    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
-    escaped = re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
-    if contents:
-        token = re.compile(r"\x00" + re.escape(base) + r"(\d+)\x00")
-
-        def _restore(match: re.Match[str]) -> str:
-            kind, raw = contents[int(match.group(1))]
-            if kind == "code":
-                return f"<code>{html.escape(raw, quote=False)}</code>"
-            return f'<span class="math-inline" data-tex="{html.escape(raw, quote=True)}"></span>'
-
-        escaped = token.sub(_restore, escaped)
-    return escaped
+    escaped = IMAGE.sub(image_element, escaped)
+    escaped = LINK.sub(link_element, escaped)
+    return restore_html(_emphasis(escaped))
 
 
 def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown:
