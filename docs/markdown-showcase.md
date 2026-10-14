@@ -146,6 +146,17 @@ two spaces to nest, and write `- [ ]` or `- [x]` for a task. Text wrapped onto
 the next indented line joins the same item, while a blank line starts a new
 list.
 
+The first number sets the starting step; later items count upward. This lets
+you continue instructions after an explanation:
+
+```markdown
+3. Build the site.
+4. Inspect the result.
+```
+
+3. Build the site.
+4. Inspect the result.
+
 ## Tables
 
 ```markdown

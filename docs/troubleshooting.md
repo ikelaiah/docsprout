@@ -115,6 +115,26 @@ Correct the link or move the target inside `README.md` or `docs/`.
 A link points at a heading anchor that does not exist on the target page.
 Correct the fragment or add the heading.
 
+### Search says “Search is unavailable”
+
+The browser could not load a usable search index. Reload once; if the message
+persists on a published site, rebuild and upload the complete output, including
+`search-index.json` beside each release's home page. You can still use the
+navigation while search is unavailable.
+
+If you opened an HTML file directly from disk, serve the built site locally:
+
+```bash
+python -m http.server 8000 --bind 127.0.0.1 --directory build/docs-site
+```
+
+Visit <http://127.0.0.1:8000>. This uses only your computer and does not need
+internet access. Stop the server with `Ctrl+C`.
+
+“Loading search…” means the index is still loading; “No pages match” means
+it loaded successfully but found no matching page. Press Escape to close the
+results without losing your query, then ArrowDown to reopen them.
+
 ## Markdown content
 
 ### `Markdown: unclosed fenced code block` or `unclosed display math block`

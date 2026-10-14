@@ -107,6 +107,13 @@ The browser search reads this file. Versioned shape:
 }
 ```
 
+Each entry's `url` is relative to the directory containing `search-index.json`,
+including when the reader searches from a nested page. Historical builds keep
+one index inside each release directory, so results stay within that release.
+The browser also accepts the legacy bare array of entries. Unavailable or
+malformed indexes produce a recovery message; an empty valid index produces
+the no-match state.
+
 ### `release.json`
 
 Written by every single-release build. Versioned shape:

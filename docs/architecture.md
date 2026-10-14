@@ -8,6 +8,8 @@ identity; the installed package supplies the renderer, CSS and browser code.
 
 ![Project files enter DocSprout for validation and rendering; a successful build replaces the static site.](assets/build-pipeline.svg)
 
+[Open the build diagram at full size](assets/build-pipeline.svg).
+
 The three stages are **project-owned inputs**, **DocSprout's build**, and
 **a complete static site**. The image is a local SVG; the steps below provide
 the same information in text and name the modules to explore.
@@ -103,6 +105,6 @@ needs no custom CSS; the custom stylesheet mechanism is a deliberately bounded
 escape hatch whose inclusion mechanics DocSprout owns and whose accessibility
 the author owns.
 
-Downstream projects should pin released tags such as `v1.3.3`, never the main
+Downstream projects should pin released tags such as `v1.4.0`, never the main
 branch. The stable boundary and deprecation policy are in [Machine-readable
 contracts](machine-contracts.md).

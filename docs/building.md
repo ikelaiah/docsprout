@@ -14,6 +14,11 @@ The build validates the configuration first, then writes the complete site to
 `build/docs-site` and prints the page count. The output is offline-ready: every
 asset is local, and `index.html` opens directly in a browser.
 
+Search loads a local JSON index, which browsers may block for pages opened
+directly from disk. Use `docsprout serve`, or [serve the built folder
+locally](troubleshooting.md#search-says-search-is-unavailable), for working
+search without an internet connection.
+
 Single-site builds prepare their files beside the output folder and replace it
 only after rendering succeeds. If a link, configuration or rendering error
 stops a rebuild, the previous site stays available. A first build that fails
@@ -33,7 +38,7 @@ custom stylesheet even when those assets live elsewhere in the repository.
 ## Ship a ZIP
 
 ```bash
-docsprout build --release 1.3.3 --offline-archive dist/docsprout-docs-1.3.3.zip
+docsprout build --release 1.4.0 --offline-archive dist/docsprout-docs-1.4.0.zip
 ```
 
 The release label used for an offline archive must start with a letter or

@@ -352,6 +352,17 @@ dependency, or syntax change.
 - [x] Improve the architecture and contributor guides with a readable build
       diagram, Markdown safety notes and a concrete browser-check workflow.
 
+## v1.4.0 — Reader quality and repeatable browser checks
+
+- [x] Keep search result links correct below nested routes and make keyboard
+      dismissal, loading, error and empty states predictable.
+- [x] Preserve ordered-list numbering and attach mixed nested lists to the
+      right parent.
+- [x] Run shared browser-reader scenarios in Chromium, Firefox and WebKit in
+      CI, keeping screenshots and logs for failure review.
+- [x] Improve browser and contributor guidance with responsive diagram
+      checks, output descriptions and a concise screen-reader procedure.
+
 ## v1.3.3 — Existing-repository and release safety
 
 - [x] Let root `README.md` and `docs/README.md` coexist as separate pages,

@@ -96,6 +96,26 @@ class MarkdownTests(unittest.TestCase):
             '<aside class="admonition tip"><strong>Tip</strong><p>Start with one page. It takes only a few minutes.</p></aside>',
         )
 
+    def test_ordered_lists_preserve_the_first_step_number(self) -> None:
+        for marker in ("3.", "3)", "0."):
+            with self.subTest(marker=marker):
+                rendered = render_markdown(f"{marker} Resume here\n1. Continue", lambda target: target)
+                self.assertEqual(
+                    f'<ol start="{marker[:-1]}"><li>Resume here</li><li>Continue</li></ol>',
+                    rendered.html,
+                )
+
+    def test_mixed_nested_lists_remain_children_of_the_same_parent(self) -> None:
+        rendered = render_markdown(
+            "- Parent\n  - Materials\n    - Detail\n  3. Assemble\n  4. Inspect\n- Sibling",
+            lambda target: target,
+        )
+        self.assertEqual(
+            '<ul><li>Parent<ul><li>Materials<ul><li>Detail</li></ul></li></ul>'
+            '<ol start="3"><li>Assemble</li><li>Inspect</li></ol></li><li>Sibling</li></ul>',
+            rendered.html,
+        )
+
     def test_marks_inline_display_and_fenced_math_for_katex(self) -> None:
         rendered = render_markdown(
             "Inline $x^2$\n\n$$\n\\int_0^1 x dx\n$$\n\n```math\n\\frac{a}{b}\n```",

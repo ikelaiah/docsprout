@@ -1,15 +1,15 @@
-# Qualification evidence for DocSprout v1.3.3
+# Qualification evidence for DocSprout v1.4.0
 
-DocSprout v1.3.3 is a README-adoption and historical-build safety patch that
-preserves JSON and Markdown layout compatibility and the v1.0.0 stable
-contract. The claims below are the contract that CI and the maintained
-fixtures exercise. Every row names how it is verified. "Supported" means the
-combination is run by automated qualification on every pull request and
-release, not merely believed to work.
+DocSprout v1.4.0 improves reader interactions and adds repeatable browser
+qualification. It preserves JSON and Markdown layout compatibility and the
+v1.0.0 stable contract. The claims below are the contract that CI and the
+maintained fixtures exercise. Every row names how it is verified. "Supported"
+means the combination is run by automated qualification on every pull request
+and release, not merely believed to work.
 
-Evidence levels: **automated** rows run in CI with no browser or network
-dependency; **manual** rows are explicit review steps; **unavailable** rows are
-not claimed as completed when the required browser tooling is absent.
+Evidence levels: **automated** rows run in CI with their test tooling installed;
+**manual** rows are explicit review steps; **unavailable** rows are not claimed
+as completed when the required tooling is absent.
 
 ## Current support at a glance
 
@@ -17,8 +17,8 @@ not claimed as completed when the required browser tooling is absent.
 | --- | --- | --- |
 | Which Python versions? | Python 3.10–3.14 | [Supported Python versions](#supported-python-versions) |
 | Which operating systems? | Linux, Windows and macOS | [Qualified operating systems](#qualified-operating-systems) |
-| What is checked automatically? | The unit suite, package artifacts and generated-site contracts | [Package qualification](#package-qualification) and [accessibility qualification](#accessibility-qualification) |
-| What still needs a person? | Browser, keyboard, touch and screen-reader checks | [Manual browser/keyboard matrix](#manual-browserkeyboard-matrix) and [known limitations](#known-limitations) |
+| What is checked automatically? | The unit suite, package artifacts, generated-site contracts and browser reader scenarios | [Package qualification](#package-qualification), [accessibility qualification](#accessibility-qualification) and [v1.4.0 additions](#v140-additions) |
+| What still needs a person? | Actual Safari, touch-device and screen-reader checks, plus visual inspection | [Manual browser/keyboard matrix](#manual-browserkeyboard-matrix) and [known limitations](#known-limitations) |
 
 ## Supported Python versions
 
@@ -297,6 +297,17 @@ site configuration; no schema, route or token value changes:
   names reserved for generated output (`versions.json`, `index.html`) and
   names that differ only by case on case-insensitive filesystems.
 
+## v1.4.0 additions
+
+- Browser-reader CI runs the shared Playwright scenarios in isolated Chromium,
+  Firefox and WebKit jobs. Coverage includes keyboard search, nested routes
+  under a hosting prefix, loading/error/empty states, keyboard disclosures,
+  focus order and responsive diagrams across themes and colour modes.
+- Each job saves its console, build and browser logs, JSON results and screenshots
+  as a 14-day artifact, including after a failed run.
+- Playwright WebKit is browser automation; it does not qualify the Safari app.
+  Screen-reader and native touch-device observations remain manual checks.
+
 ## v1.3.3 additions
 
 - Repository adoption tests cover a root `README.md` and `docs/README.md`
@@ -533,10 +544,10 @@ operation requires a network connection after installation.
   junctions (see Operating systems above).
 - Git must be installed and on `PATH` for `build-all`, `check-release` and
   `github-pages`; discovery and previews degrade gracefully without Git.
-- Browser automation is not part of CI. v1.2.1 was checked locally with Chromium
-  viewport emulation and the DevTools Protocol, while structural tests run in
-  CI. A real screen-reader and native touch-device pass remain manual release
-  checks; the matrix below does not imply they run in CI.
+- Playwright reader checks run in CI for Chromium, Firefox and WebKit, but
+  Playwright WebKit is not the Safari app. A real screen-reader and native
+  touch-device pass remain manual release checks. The automated screenshots
+  still need a person to judge fine text legibility and visual quality.
 - External URLs in documentation are never network-checked; `audit` reports
   this explicitly.
 - Custom CSS is author-owned: its accessibility, contrast, responsiveness and

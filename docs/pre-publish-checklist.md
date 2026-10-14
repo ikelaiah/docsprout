@@ -62,10 +62,10 @@ This path updates the public site from a branch such as `main`.
 ## Historical site
 
 This path publishes an immutable site for every listed release. This release
-is `1.3.3`.
+is `1.4.0`.
 
-1. Add release `1.3.3` and source ref `v1.3.3` to `docs/versions.json`. Set
-   `current` to `1.3.3`.
+1. Add release `1.4.0` and source ref `v1.4.0` to `docs/versions.json`. Set
+   `current` to `1.4.0`.
 2. Run `docsprout check`.
 3. Commit all release files, including package metadata, documentation,
    examples and workflows, on a branch named `dev/vX.Y.Z`:
@@ -73,7 +73,7 @@ is `1.3.3`.
    ```bash
    git add pyproject.toml src/docsprout README.md CHANGELOG.md CONTRIBUTING.md docs .github examples tests tasks
    git diff --cached --check
-   git commit -m "Prepare v1.3.3 documentation"
+   git commit -m "Prepare v1.4.0 documentation"
    ```
 
 4. Push the qualified branch and open a PR against `main`. Wait for every
@@ -83,7 +83,7 @@ is `1.3.3`.
 5. Check out the merged `main` commit and create the tag on that exact commit:
 
    ```bash
-   git tag -a v1.3.3 -m "v1.3.3"
+   git tag -a v1.4.0 -m "v1.4.0"
    ```
 
 6. Run the release checks and historical build:
@@ -101,7 +101,7 @@ is `1.3.3`.
 8. Push the annotated tag (the merge commit is already on `main`):
 
    ```bash
-   git push origin v1.3.3
+   git push origin v1.4.0
    ```
 
 9. Create the GitHub Release from the tag. Put the release notes in the body
@@ -113,9 +113,9 @@ is `1.3.3`.
 ## If you find a mistake
 
 If the tag exists only on your computer, correct and commit the files, delete
-the local tag with `git tag -d v1.3.3`, then create it again on the corrected
+the local tag with `git tag -d v1.4.0`, then create it again on the corrected
 commit.
 
 If the tag has been pushed, do not move or replace it. Publish the correction
-as a new patch release, such as `v1.3.4`, so links and historical documentation
+as a new patch release, such as `v1.4.1`, so links and historical documentation
 remain trustworthy.

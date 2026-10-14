@@ -93,13 +93,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.3.3", __version__)
+        self.assertEqual("1.4.0", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.3.3"', pyproject)
+        self.assertIn('version = "1.4.0"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -296,8 +296,8 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.3.3", qualification)
-        self.assertIn("Browser automation is not part of CI", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.4.0", qualification)
+        self.assertIn("Playwright reader checks run in CI", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)
 
@@ -349,7 +349,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         guide = (self.root / "docs" / "building.md").read_text(encoding="utf-8")
         readme = (self.root / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("docsprout build --release 1.3.3 --offline-archive", guide)
+        self.assertIn("docsprout build --release 1.4.0 --offline-archive", guide)
         historical = (self.root / "docs" / "building.md").read_text(encoding="utf-8")
         self.assertIn("the previous complete site remains available", " ".join(historical.split()))
         self.assertIn("`--root <folder>`", guide)

@@ -358,8 +358,15 @@ SITE_JS = r'''
   version?.addEventListener('change',()=>{location.href=version.value});
 
   const input=document.querySelector('#search'),results=document.querySelector('#search-results');
+  const searchIndexUrl=new URL(input?.dataset.searchIndex||'search-index.json',document.baseURI);
   let entries=[];
+  let searchState='loading';
   function closeSearch(){if(!results)return;results.hidden=true;input?.setAttribute('aria-expanded','false')}
+  function searchMessage(message){
+    const paragraph=document.createElement('p');
+    paragraph.className='search-empty';paragraph.textContent=message;
+    results.replaceChildren(paragraph);
+  }
   function appendHighlight(element,text,query){
     const haystack=text.toLowerCase();let offset=0,index=haystack.indexOf(query,offset);
     while(index!==-1){element.append(text.slice(offset,index));const mark=document.createElement('mark');mark.textContent=text.slice(index,index+query.length);element.append(mark);offset=index+query.length;index=haystack.indexOf(query,offset)}
@@ -386,30 +393,66 @@ SITE_JS = r'''
   function showSearch(){
     const query=input.value.trim().toLowerCase();
     if(!query){closeSearch();return}
+    results.hidden=false;input.setAttribute('aria-expanded','true');
+    if(searchState!=='ready'){
+      searchMessage(searchState==='loading'?'Loading search…':'Search is unavailable. Reload to try again, or browse the navigation.');
+      return;
+    }
     const terms=query.split(/\s+/),matches=entries.map(entry=>({entry,score:rank(entry,terms)})).filter(match=>Number.isFinite(match.score)).sort((left,right)=>left.score-right.score||left.entry.title.localeCompare(right.entry.title)).slice(0,8);
-    if(!matches.length){const empty=document.createElement('p');empty.className='search-empty';empty.textContent=`No pages match “${input.value.trim()}”.`;results.replaceChildren(empty)}
+    if(!matches.length)searchMessage(`No pages match “${input.value.trim()}”.`);
     else{
       const count=document.createElement('p');count.className='search-count';count.textContent=`${matches.length} result${matches.length===1?'':'s'}`;
       results.replaceChildren(count,...matches.map(({entry})=>{
-        const link=document.createElement('a');link.href=entry.url;
+        const link=document.createElement('a');link.href=new URL(entry.url,searchIndexUrl).href;
         const title=document.createElement('strong');appendHighlights(title,entry.title,terms);
         const summary=document.createElement('small');summary.textContent=`${entry.section} — `;const excerptText=excerpt(entry.text,terms[0]);const span=document.createElement('span');appendHighlights(span,excerptText,terms);summary.append(span);
         link.append(title,summary);return link;
       }));
     }
-    results.hidden=false;input.setAttribute('aria-expanded','true');
   }
   if(input&&results){
-    fetch(input.dataset.searchIndex||'search-index.json').then(response=>response.ok?response.json():[]).then(value=>{entries=Array.isArray(value)?value:value?.entries||[];if(input.value.trim())showSearch()}).catch(()=>{});
+    async function loadSearch(){
+      try{
+        const response=await fetch(searchIndexUrl);
+        if(!response.ok)throw new Error('Search index request failed');
+        const value=await response.json(),index=Array.isArray(value)?value:value?.entries;
+        if(!Array.isArray(index)||!index.every(entry=>entry&&['title','section','text','url'].every(field=>typeof entry[field]==='string'))){
+          throw new Error('Invalid search index');
+        }
+        entries=index;searchState='ready';
+      }catch(_){searchState='error'}
+      // Loading must not reopen results dismissed with Escape or a click away.
+      if(!results.hidden)showSearch();
+    }
+    loadSearch();
     input.addEventListener('input',showSearch);
+    input.addEventListener('focus',showSearch);
     input.addEventListener('keydown',event=>{
+      if(event.isComposing)return;
+      if(event.key==='Escape'){event.preventDefault();closeSearch();return}
+      if(event.key==='ArrowDown'&&results.hidden)showSearch();
+      if(results.hidden)return;
       const links=[...results.querySelectorAll('a')];const current=links.indexOf(document.activeElement);
       if(event.key==='ArrowDown'&&links.length){event.preventDefault();links[Math.min(current+1,links.length-1)].focus()}
       if(event.key==='ArrowUp'&&links.length){event.preventDefault();if(current>0)links[current-1].focus();else input.focus()}
       if(event.key==='End'&&links.length){event.preventDefault();links[links.length-1].focus()}
       if(event.key==='Enter'&&links.length){event.preventDefault();links[0].click()}
     });
-    results.addEventListener('keydown',event=>{const links=[...results.querySelectorAll('a')],current=links.indexOf(document.activeElement);if(event.key==='ArrowDown'&&current>=0&&current+1<links.length){event.preventDefault();links[current+1].focus()}if(event.key==='ArrowUp'&&current>=0){event.preventDefault();if(current)links[current-1].focus();else input.focus()}if(event.key==='Home'&&links.length){event.preventDefault();links[0].focus()}if(event.key==='End'&&links.length){event.preventDefault();links[links.length-1].focus()}if(event.key==='Escape'){closeSearch();input.focus()}});
+    results.addEventListener('keydown',event=>{
+      const links=[...results.querySelectorAll('a')],current=links.indexOf(document.activeElement);
+      if(event.key==='ArrowDown'&&current>=0&&current+1<links.length){
+        event.preventDefault();links[current+1].focus();
+      }
+      if(event.key==='ArrowUp'&&current>=0){
+        event.preventDefault();
+        if(current)links[current-1].focus();else input.focus();
+      }
+      if(event.key==='Home'&&links.length){event.preventDefault();links[0].focus()}
+      if(event.key==='End'&&links.length){event.preventDefault();links[links.length-1].focus()}
+      if(event.key==='Escape'){
+        event.preventDefault();input.focus();closeSearch();
+      }
+    });
     document.addEventListener('pointerdown',event=>{if(!results.contains(event.target)&&event.target!==input)closeSearch()});
   }
   document.addEventListener('keydown',event=>{

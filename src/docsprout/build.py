@@ -313,8 +313,9 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         f"{custom_css_link}"
         "</head><body>"
     )
+    # Keep the skip link in WebKit's sequential navigation even when links are skipped.
     site_header = (
-        '<a class="skip-link" href="#content">Skip to content</a>'
+        '<a class="skip-link" href="#content" tabindex="0">Skip to content</a>'
         '<div class="reading-progress" aria-hidden="true"><span></span></div>'
         '<header class="site-header"><div class="topbar">'
         f'<a class="brand" href="{home_route}">{brand_identity}<span>{html.escape(config.name)}</span> <em>docs</em></a>'

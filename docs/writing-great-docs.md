@@ -153,8 +153,10 @@ For example, after saving `docs/assets/build-pipeline.svg`:
 ```markdown
 ![Project files are validated and rendered before the completed site is published.](assets/build-pipeline.svg)
 
+[Open the build diagram at full size](assets/build-pipeline.svg).
+
 The build reads project files, validates and renders them, then publishes
-the completed site. If rendering fails, the previous single-site build stays
+the completed site. If rendering fails, the previous build stays
 available.
 ```
 
