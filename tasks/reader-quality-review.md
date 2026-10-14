@@ -44,9 +44,12 @@ Review date: 15 October 2026. Changes are prepared for v1.4.0, based on v1.3.3.
   visual matrix covers 320, 768, 1024 and 1440 pixels, four themes, and light
   and dark modes. Phone and desktop screenshots were inspected in both modes;
   diagram labels remain readable at phone width.
-- The CI workflow YAML parses and its Chromium/Firefox/WebKit matrix,
-  30-minute limit, debug console capture, and `always()` artifact upload were
-  checked. GitHub Actions evidence is pending the release candidate PR.
+- GitHub Actions run [#245](https://github.com/ikelaiah/docsprout/actions/runs/38649514349)
+  for [PR #55](https://github.com/ikelaiah/docsprout/pull/55) passed every
+  blocking job: Linux Python 3.10–3.14, Windows and macOS Python 3.10/3.14,
+  package qualification, documentation qualification, lint, and Chromium,
+  Firefox and WebKit browser checks. The non-blocking Python 3.15 run passed
+  too. The run retains separate browser artifacts for 14 days.
 
 Useful screenshots are in ignored `build/reader-artifacts/`:
 
@@ -62,11 +65,10 @@ them. CI also preserves the browser `console.log`.
 
 ## Limits
 
-The installed Playwright Firefox launches but cannot spawn its tab subprocess in
-this Windows sandbox (`Error:-2147024809`); `browserContext.newPage()` fails
-before DocSprout code runs. Firefox remains in the Ubuntu CI matrix, which has
-not yet run from this workspace. Playwright WebKit is not the Safari app. No
-screen reader was available for actual observation; `docs/visual-fixtures.md`
-gives a short NVDA/VoiceOver procedure. Playwright WebKit is not Safari, and no
-screen reader was available here; retain those as manual checks. The CI job
-will provide qualification evidence after the release candidate runs.
+The installed Playwright Firefox cannot spawn its tab subprocess in this
+Windows sandbox (`Error:-2147024809`); `browserContext.newPage()` fails before
+DocSprout code runs. The Ubuntu Firefox CI job passed, so this is a local
+environment limitation. Playwright WebKit is not the Safari app. No screen
+reader was available for actual observation; `docs/visual-fixtures.md` gives a
+short NVDA/VoiceOver procedure, and actual Safari and screen-reader checks remain
+manual.
