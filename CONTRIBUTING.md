@@ -78,6 +78,42 @@ Finish with the complete tests and lint, then the documentation checks above
 when content or generated output changes. Explain the reader-visible result
 and its verification in the change description.
 
+## Repeat the browser reader checks
+
+`tests/browser_reader.mjs` builds and serves the site under a path prefix, then
+checks Chromium, Firefox and WebKit. It exercises real keyboard search,
+nested links, delayed and invalid indexes, accessible controls and the build
+diagram at four widths in four themes and both colour modes. Screenshots and
+one JSON results file go to `build/reader-artifacts/`. GitHub Actions runs an
+isolated job for each browser and keeps those artifacts for 14 days.
+
+Use Node.js 24, as in CI, and install the development-only browser dependency:
+
+```text
+npm ci
+npx playwright install chromium firefox webkit
+npm run test:browser
+```
+
+Playwright downloads separate browser automation builds. These checks verify
+Chromium, Firefox, and WebKit behavior; WebKit automation is not qualification
+of the Safari app. They do not replace screen-reader testing. Use a dedicated
+browser profile for any manual headed run.
+
+If a browser executable is missing, install its Playwright build with
+`npx playwright install <browser>`. For launch or page errors, inspect
+`results.json`, `build.log`, `run.log`, `console.log` and the per-browser logs
+in `build/reader-artifacts/`; a process-spawn failure may be an operating
+system restriction that reinstalling cannot fix. CI uploads the logs with the
+phone and desktop screenshots, including after a failed check. Screenshots
+still need a human to judge text legibility. The browser suite complements the
+[visual inspection matrix](docs/visual-fixtures.md).
+
+For detailed local browser-startup diagnostics in PowerShell, set
+`$env:DEBUG='pw:browser*'` before `npm run test:browser`.
+
+## Before a release
+
 Before a release, build and inspect both wheel and sdist, qualify each from a
 fresh environment outside the checkout, run the historical `check-release` and
 `build-all` rehearsal, and follow [the pre-publish checklist](docs/pre-publish-checklist.md).

@@ -1,5 +1,34 @@
 # Changelog
 
+## Unreleased
+
+## 1.4.0
+
+A reader-experience and browser-qualification minor. No configuration schema,
+generated route, runtime dependency or public CSS token change is required.
+Update package and workflow pins to `v1.4.0`, then rebuild.
+
+### Fixed
+
+- Search results on nested pages resolve relative to the search index, keeping
+  links inside the correct site or release.
+- Escape closes search without clearing the query; hidden results cannot be
+  opened with Enter. ArrowDown reopens the results. A late index response
+  respects the reader's dismissal.
+- Search distinguishes loading, unavailable and no-match states, including
+  malformed indexes, with recovery guidance when loading fails.
+- Ordered lists retain their starting number. Adjacent mixed nested lists
+  remain attached to their parent instead of an earlier child.
+- The skip-to-content link remains in sequential keyboard navigation in WebKit.
+
+### Documentation and verification
+
+- Add a full-size architecture diagram link and examples for resumed steps
+  and local search recovery.
+- Add repeatable Chromium, Firefox and WebKit checks for keyboard search,
+  nested routes, index failures, focus order and responsive output. The same
+  scenarios run in CI, with screenshots and logs retained as artifacts.
+
 ## 1.3.3
 
 A documentation-adoption and historical-build safety patch. No configuration

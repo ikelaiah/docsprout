@@ -78,6 +78,21 @@ a vertical SVG build diagram. Check its label legibility at 320px and 1440px,
 in light and dark mode. It must remain within the article width; its nearby
 prose must explain the same sequence without relying on the image.
 
+The repository's `tests/browser_reader.mjs` automates the architecture-page
+width/theme checks, accessible focus order, page-outline and mobile navigation
+disclosures, and search keyboard, loading and error cases in Chromium, Firefox
+and WebKit. Setup and
+commands are in `CONTRIBUTING.md`. Keep the manual fixture checks above for
+code copying, tables, print output and screen-reader behavior. WebKit here
+means Playwright's WebKit build; it does not qualify Apple's Safari.
+
+With NVDA on Windows or VoiceOver on macOS, start at the top of the long-form
+fixture. Confirm the skip link moves focus to the article, the mobile and page
+outline disclosures announce collapsed and expanded state, search announces
+its name and result updates, and the current heading link is announced as the
+location changes. Record the browser, screen reader and observed result; the
+automated browser suite cannot make these screen-reader observations.
+
 The fixture is also the maintained [custom CSS](custom-css.md) example: its
 `docs/assets/custom.css` uses the documented `--dk-*` tokens, every built page
 loads it after DocSprout's styles, and CI builds the fixture on every change, so

@@ -175,6 +175,8 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
         base_indent = base_indent if base_indent is not None else len(first.group("indent").expandtabs(4))
         ordered = first.group("ordered") is not None
         tag = "ol" if ordered else "ul"
+        start_number = first.group("ordered")[:-1] if ordered else "1"
+        start_attribute = f' start="{start_number}"' if start_number != "1" else ""
         items: list[str] = []
         current = start
         while current < len(lines):
@@ -188,7 +190,8 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
                 if not items:
                     break
                 nested, current = render_list(current, indent)
-                items[-1] = items[-1].replace("</li>", f"{nested}</li>", 1)
+                # Append before the parent's closing tag, after any earlier sublist.
+                items[-1] = items[-1].removesuffix("</li>") + nested + "</li>"
                 continue
             if (match.group("ordered") is not None) != ordered:
                 break
@@ -215,7 +218,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
             else:
                 items.append(f"<li>{_inline(item, resolve_link)}</li>")
                 plain.append(_plain(item))
-        return f"<{tag}>{''.join(items)}</{tag}>", current
+        return f"<{tag}{start_attribute}>{''.join(items)}</{tag}>", current
 
     while index < len(lines):
         line = lines[index]

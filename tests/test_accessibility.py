@@ -30,6 +30,7 @@ IMAGE = re.compile(r"<img\b[^>]*>")
 ATTRIBUTE = re.compile(r'([a-z-]+)="([^"]*)"', re.IGNORECASE)
 VOID_TAG = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 INTERACTIVE_ATTRIBUTE = re.compile(r"\b(onclick|onkeydown|onkeyup|onkeypress|tabindex)\s*=", re.IGNORECASE)
+SKIP_LINK_HTML = '<a class="skip-link" href="#content" tabindex="0">Skip to content</a>'
 PUBLIC_TOKENS = (
     "--dk-accent", "--dk-accent-secondary", "--dk-bg", "--dk-surface", "--dk-text", "--dk-muted",
     "--dk-border", "--dk-code-bg", "--dk-code-text", "--dk-raised", "--dk-focus-ring",
@@ -81,7 +82,10 @@ class AccessibilityQualificationTests(unittest.TestCase):
         for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
-                    self.assertNotRegex(page.replace('id="content" tabindex="-1"', 'id="content"'), INTERACTIVE_ATTRIBUTE, route)
+                    page_without_intentional_tab_stops = page.replace(
+                        SKIP_LINK_HTML, ''
+                    ).replace('id="content" tabindex="-1"', 'id="content"')
+                    self.assertNotRegex(page_without_intentional_tab_stops, INTERACTIVE_ATTRIBUTE, route)
                     interactive = {tag for tag in _open_tags(page) if tag in NATIVE_INTERACTIVE}
                     self.assertTrue({"input", "select", "summary", "a"} <= interactive, route)
 
@@ -100,7 +104,9 @@ class AccessibilityQualificationTests(unittest.TestCase):
         for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):
             with self.subTest(site=name):
                 for route, page in site.files.items():
-                    self.assertLess(page.index('<a class="skip-link" href="#content">Skip to content</a>'), page.index('<header class="site-header">'), route)
+                    self.assertLess(
+                        page.index(SKIP_LINK_HTML), page.index('<header class="site-header">'), route
+                    )
                     self.assertIn('<main class="prose" id="content" tabindex="-1"', page, route)
                 self.assertIn('.skip-link:focus{', site.css)
 
