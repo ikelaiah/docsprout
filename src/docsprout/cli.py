@@ -218,7 +218,10 @@ def _github_pages(root: Path, *, update: bool) -> list[str]:
         messages.extend((created, f"Created: {relative_workflow}."))
     else:
         messages.append("No changes required.")
-    messages.append(f"Home: {result.home_document}")
+    home = result.home_document
+    if result.home_source == "docs" and home == "README.md":
+        home = f"docs/{home}"
+    messages.append(f"Home: {home}")
     if discovery.github_remote_url:
         messages.append(f"GitHub remote: {discovery.github_remote_url}")
     else:

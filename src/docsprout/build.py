@@ -73,15 +73,30 @@ class BuildResult:
     home_document: str
     excluded_count: int = 0
     palette_note: str | None = None
+    home_source: str = "docs"
 
 
-def _route(document: str, home: str) -> str:
-    if document == home:
+def _identity(page: Page) -> tuple[str, str]:
+    return page.source, page.path
+
+
+def _home_identity(config) -> tuple[str, str]:
+    return config.home_source, config.home_document
+
+
+def _route(page: Page, home: tuple[str, str], pages: tuple[Page, ...]) -> str:
+    identity = _identity(page)
+    if identity == home:
         return "index.html"
     # Keep docs/index.md reachable whenever a different page owns the site's
     # index route, including an explicit docs page or repository-root README.
-    if document == "index.md" and home != "index.md":
+    if page.source == "docs" and page.path == "index.md" and home != ("docs", "index.md"):
         return "docs-index.html"
+    document = page.path
+    if page.source == "docs" and page.path == "README.md" and any(
+        item.source == "root" and item.path == "README.md" for item in pages
+    ):
+        document = "docs/README.md"
     return str(Path(document).with_suffix(".html").as_posix())
 
 
@@ -103,7 +118,7 @@ def _page_navigation(*, page: Page, config, current_route: str, include_context:
     links: list[str] = []
     for label, item in (("Previous", config.pages[position - 1] if position else None), ("Next", config.pages[position + 1] if position + 1 < len(config.pages) else None)):
         if item is not None:
-            href = html.escape(_relative(current_route, _route(item.path, config.home_document)), quote=True)
+            href = html.escape(_relative(current_route, _route(item, _home_identity(config), config.pages)), quote=True)
             context = f'<span class="page-nav-context">{_page_context(item)}</span>' if include_context else ""
             links.append(
                 f'<a class="page-{label.lower()}" href="{href}"><small>{label}</small>'
@@ -123,8 +138,8 @@ def _page_context_nav(*, page: Page, config, current_route: str) -> str:
         target = next((item for item in config.pages if item.section == page.section and item.subsection is None), None)
         if target is None:
             target = next((item for item in config.pages if item.section == page.section), None)
-        if target is not None and target.path != page.path:
-            href = html.escape(_relative(current_route, _route(target.path, config.home_document)), quote=True)
+        if target is not None and target != page:
+            href = html.escape(_relative(current_route, _route(target, _home_identity(config), config.pages)), quote=True)
             crumbs.append(f'<li><a href="{href}">{html.escape(page.section)}</a></li>')
         else:
             crumbs.append(f"<li><span>{html.escape(page.section)}</span></li>")
@@ -133,8 +148,8 @@ def _page_context_nav(*, page: Page, config, current_route: str) -> str:
             (item for item in config.pages if item.section == page.section and item.subsection == page.subsection),
             None,
         )
-        if target is not None and target.path != page.path:
-            href = html.escape(_relative(current_route, _route(target.path, config.home_document)), quote=True)
+        if target is not None and target != page:
+            href = html.escape(_relative(current_route, _route(target, _home_identity(config), config.pages)), quote=True)
             crumbs.append(f'<li><a href="{href}">{html.escape(page.subsection)}</a></li>')
         else:
             crumbs.append(f"<li><span>{html.escape(page.subsection)}</span></li>")
@@ -166,9 +181,9 @@ def _hero_title_has_emoji(body: str) -> bool:
 def _hero_actions(*, config, current_route: str) -> str:
     """Derive the home-page call to action from navigation and repository metadata."""
     links: list[str] = []
-    target = next((item for item in config.pages if item.path != config.home_document), None)
+    target = next((item for item in config.pages if _identity(item) != _home_identity(config)), None)
     if target is not None:
-        href = html.escape(_relative(current_route, _route(target.path, config.home_document)), quote=True)
+        href = html.escape(_relative(current_route, _route(target, _home_identity(config), config.pages)), quote=True)
         links.append(f'<a class="hero-primary" href="{href}">Get started</a>')
     repository = config.repository_url or ""
     if urlsplit(repository).scheme.lower() in {"http", "https"}:
@@ -185,10 +200,10 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         section_pages = [item for item in config.pages if item.section == section]
         for item in section_pages:
             if item.subsection is None:
-                is_current = item.path == page.path
+                is_current = item == page
                 active_class = "active" if is_current else ""
                 aria_current = ' aria-current="page"' if is_current else ""
-                href = html.escape(_relative(current_route, _route(item.path, config.home_document)), quote=True)
+                href = html.escape(_relative(current_route, _route(item, _home_identity(config), config.pages)), quote=True)
                 section_items.append(
                     f'<a class="{active_class}" href="{href}"{aria_current}>{html.escape(item.title)}</a>'
                 )
@@ -200,11 +215,11 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
             group_links: list[str] = []
             group_active = False
             for entry in group_pages:
-                is_current = entry.path == page.path
+                is_current = entry == page
                 group_active = group_active or is_current
                 active_class = "active" if is_current else ""
                 aria_current = ' aria-current="page"' if is_current else ""
-                href = html.escape(_relative(current_route, _route(entry.path, config.home_document)), quote=True)
+                href = html.escape(_relative(current_route, _route(entry, _home_identity(config), config.pages)), quote=True)
                 group_links.append(
                     f'<a class="{active_class}" href="{href}"{aria_current}>{html.escape(entry.title)}</a>'
                 )
@@ -223,7 +238,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     palette_style = f"<style>{config.palette.stylesheet()}</style>" if config.palette else ""
     brand_mark = BRAND_SVG.replace("<svg ", '<svg class="brand-mark" aria-hidden="true" focusable="false" ', 1)
     brand_identity = f'<img class="brand-logo" src="{html.escape(_relative(current_route, logo), quote=True)}" alt="" aria-hidden="true">' if logo else brand_mark
-    homepage = page.path == config.home_document
+    homepage = _identity(page) == _home_identity(config)
     if homepage and not config.homepage.show_introduction:
         body = INITIAL_INTRODUCTION.sub(r"\1", body)
     cards = config.homepage.capabilities if config.homepage.capabilities is not None else DEFAULT_CAPABILITIES
@@ -334,7 +349,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
     return "".join((document_head, site_header, mobile_navigation, document_body, document_close))
 
 
-def detect_route_collisions(pages: tuple[Page, ...], home: str) -> None:
+def detect_route_collisions(pages: tuple[Page, ...], home: str | tuple[str, str]) -> None:
     """Reject documented pages whose generated routes would overwrite each other.
 
     Exact collisions are deterministic on every platform. Case-insensitive
@@ -342,9 +357,10 @@ def detect_route_collisions(pages: tuple[Page, ...], home: str) -> None:
     case-insensitive filesystems; a site that builds on Linux must not
     silently break when deployed to GitHub Pages or a Windows/macOS host.
     """
+    home_identity = ("docs", home) if isinstance(home, str) else home
     owners: dict[str, str] = {}
     for page in pages:
-        route = _route(page.path, home)
+        route = _route(page, home_identity, pages)
         for key in (route, route.casefold()):
             owner = owners.get(key)
             if owner is not None and owner != page.path:
@@ -375,8 +391,9 @@ def _build_site(
     root, output = root.resolve(), output.resolve()
     config = load_config(root, require_listed_documents=require_listed_documents)
     docs = root / "docs"
-    routes = {item.path: _route(item.path, config.home_document) for item in config.pages}
-    detect_route_collisions(config.pages, config.home_document)
+    home_identity = _home_identity(config)
+    routes = {_identity(item): _route(item, home_identity, config.pages) for item in config.pages}
+    detect_route_collisions(config.pages, home_identity)
     prepare_output(output)
     assets = output / "assets"
     assets.mkdir()
@@ -398,23 +415,24 @@ def _build_site(
     if config.custom_css:
         custom_css_route = "assets/custom.css"
         shutil.copyfile(root / config.custom_css, output / custom_css_route)
-    source_documents = {page_source_reference(page): page.path for page in config.pages}
+    source_documents = {page_source_reference(page): _identity(page) for page in config.pages}
     content_assets: dict[str, str] = {}
     anchors = {
-        page.path: {identifier for _level, _text, identifier in render_markdown(page_source_path(root, page).read_text(encoding="utf-8"), lambda target: target).headings}
+        _identity(page): {identifier for _level, _text, identifier in render_markdown(page_source_path(root, page).read_text(encoding="utf-8"), lambda target: target).headings}
         for page in config.pages
     }
     entries: list[dict[str, str]] = []
     for page in config.pages:
         source = page_source_path(root, page).read_text(encoding="utf-8")
-        current_route = routes[page.path]
+        page_identity = _identity(page)
+        current_route = routes[page_identity]
         def resolve(target: str) -> str:
             target = _safe_url(target)
             parsed = urlsplit(target)
             if parsed.scheme:
                 return target
             if target.startswith("#"):
-                if target[1:] not in anchors[page.path]:
+                if target[1:] not in anchors[page_identity]:
                     raise DocSproutError(f"{docs / page.path}: heading fragment {target} does not exist in {page.path}")
                 return target
             document, marker, fragment = target.partition("#")
@@ -422,8 +440,8 @@ def _build_site(
             requested_source = posixpath.normpath(posixpath.join(posixpath.dirname(current_source), document)) if document else current_source
             if requested_source == ".." or requested_source.startswith("../"):
                 raise DocSproutError(f"Markdown: unsafe local link {target!r}")
-            requested = source_documents.get(requested_source)
-            if requested not in routes:
+            requested_identity = source_documents.get(requested_source)
+            if requested_identity not in routes:
                 if requested_source == "README.md" or not requested_source.startswith("docs/"):
                     raise DocSproutError(f"Markdown: unsafe local link {target!r}")
                 source_asset = root / requested_source
@@ -447,16 +465,16 @@ def _build_site(
                     shutil.copyfile(resolved_asset, destination)
                     content_assets[requested_source] = asset_route
                 return _relative(current_route, asset_route) + (marker + fragment if marker else "")
-            if marker and fragment not in anchors[requested]:
+            if marker and fragment not in anchors[requested_identity]:
                 raise DocSproutError(
-                    f"{docs / page.path}: heading fragment #{fragment} does not exist in {requested}"
+                    f"{docs / page.path}: heading fragment #{fragment} does not exist in {requested_identity[1]}"
                 )
-            url = _relative(current_route, routes[requested])
+            url = _relative(current_route, routes[requested_identity])
             return url + (marker + fragment if marker else "")
         rendered = render_markdown(source, resolve)
         path = output / current_route
         path.parent.mkdir(parents=True, exist_ok=True)
-        page_banner = banner if page.path == config.home_document and config.homepage.show_banner else None
+        page_banner = banner if page_identity == home_identity and config.homepage.show_banner else None
         if versions:
             global_current_route = f"{release}/{current_route}"
             version_options = "".join(
@@ -472,5 +490,5 @@ def _build_site(
     return BuildResult(
         len(entries), len({page.section for page in config.pages}), config.legacy,
         config.home_document, len(config.excluded_documents),
-        config.palette.note if config.palette else None,
+        config.palette.note if config.palette else None, config.home_source,
     )

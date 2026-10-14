@@ -15,7 +15,7 @@ import tempfile
 from .build import build_site
 from .config import MANIFEST_FIELDS, VERSION_FIELDS, _reject_unknown_fields, load_config
 from .errors import DocSproutError
-from .safety import prepare_output
+from .safety import OWNERSHIP_MARKER, staged_output
 
 MOVING_REFS = {"head", "main", "master", "develop", "development", "latest"}
 COMMIT = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -178,26 +178,28 @@ def build_all(*, root: Path, output: Path) -> BuildAllResult:
     root = root.resolve()
     manifest = check_release(root)
     output = output.resolve()
-    prepare_output(output)
     page_count = 0
-    with tempfile.TemporaryDirectory(prefix="docsprout-") as temporary:
-        staging = Path(temporary)
-        targets = tuple((item.release, f"{item.release}/index.html") for item in manifest.versions)
-        for item in manifest.versions:
-            source = staging / item.release
-            source.mkdir()
-            _archive_to(root, item.source_ref, source)
-            result = build_site(
-                root=source, output=output / item.release, release=item.release, versions=targets,
-                require_listed_documents=item.release == manifest.current,
-            )
-            page_count += result.page_count
-    (output / "versions.json").write_text(json.dumps({
-        "schema_version": 1, "current": manifest.current,
-        "versions": [{"release": item.release, "source_ref": item.source_ref} for item in manifest.versions],
-    }, indent=2) + "\n", encoding="utf-8")
-    (output / "index.html").write_text(
-        f'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url={manifest.current}/index.html"><a href="{manifest.current}/index.html">Open {manifest.current} documentation</a>\n',
-        encoding="utf-8",
-    )
+    with staged_output(output) as site:
+        site.mkdir()
+        (site / OWNERSHIP_MARKER).write_text("DocSprout generated output.\n", encoding="utf-8")
+        with tempfile.TemporaryDirectory(prefix="docsprout-sources-") as temporary:
+            source_workspace = Path(temporary)
+            targets = tuple((item.release, f"{item.release}/index.html") for item in manifest.versions)
+            for item in manifest.versions:
+                source = source_workspace / item.release
+                source.mkdir()
+                _archive_to(root, item.source_ref, source)
+                result = build_site(
+                    root=source, output=site / item.release, release=item.release, versions=targets,
+                    require_listed_documents=item.release == manifest.current,
+                )
+                page_count += result.page_count
+        (site / "versions.json").write_text(json.dumps({
+            "schema_version": 1, "current": manifest.current,
+            "versions": [{"release": item.release, "source_ref": item.source_ref} for item in manifest.versions],
+        }, indent=2) + "\n", encoding="utf-8")
+        (site / "index.html").write_text(
+            f'<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url={manifest.current}/index.html"><a href="{manifest.current}/index.html">Open {manifest.current} documentation</a>\n',
+            encoding="utf-8",
+        )
     return BuildAllResult(len(manifest.versions), page_count)

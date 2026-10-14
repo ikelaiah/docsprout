@@ -31,7 +31,7 @@ def read_markdown_layout(path: Path) -> dict:
     group: dict | None = None
     section_line = 0
     group_line = 0
-    seen_pages: set[str] = set()
+    seen_pages: set[tuple[str, str]] = set()
     listed_sources: set[tuple[str, str]] = set()
     started = False
 
@@ -117,11 +117,11 @@ def read_markdown_layout(path: Path) -> dict:
             source_path = path.parent.parent / "README.md" if entry.get("source") == "root" else path.parent / entry["path"]
             if not source_path.is_file():
                 fail(number, f"navigation page {target!r} does not exist")
-            identity = entry["path"]
+            identity = (entry.get("source", "docs"), entry["path"])
             if identity in seen_pages:
                 fail(number, f"navigation page {target!r} appears more than once")
             seen_pages.add(identity)
-            listed_sources.add((entry.get("source", "docs"), identity))
+            listed_sources.add(identity)
             (group if indent else section)["pages"].append(entry)
             continue
         fail(number, "unsupported outline line; use a # section, ## group, or - [Title](path.md) page")

@@ -122,9 +122,43 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
             self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, {"schema_version": 1, "unlisted": "exclude", "home": {"path": "README.md", "source": "root"}, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "README.md", "source": "root"}]}]})
             (root / "README.md").write_text("# Root home", encoding="utf-8")
             self.assertEqual("README.md", load_config(root).home_document)
+            self.assertEqual("root", load_config(root).home_source)
+
+    def test_uses_a_docs_readme_as_home_when_explicitly_selected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}},
+                {"schema_version": 1, "unlisted": "exclude", "home": {"path": "README.md"}, "navigation": [
+                    {"title": "Start", "pages": [{"title": "Home", "path": "README.md"}]},
+                ]},
+            )
+            (root / "docs" / "README.md").write_text("# Documentation home", encoding="utf-8")
+
+            config = load_config(root)
+
+            self.assertEqual("README.md", config.home_document)
+            self.assertEqual("docs", config.home_source)
+
+    def test_root_readme_does_not_mark_the_docs_readme_as_listed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo"}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [
+                    {"title": "Project", "path": "README.md", "source": "root"},
+                ]}]},
+            )
+            (root / "README.md").write_text("# Project", encoding="utf-8")
+            (root / "docs" / "README.md").write_text("# Docs", encoding="utf-8")
+
+            with self.assertRaisesRegex(DocSproutError, "unlisted Markdown document 'README.md'"):
+                load_config(root)
 
     def test_rejects_an_unlisted_or_invalid_explicit_home_page(self) -> None:
-        for home, message in (({"path": "missing.md"}, "home.path.*listed navigation page"), ({"path": "README.md", "source": "docs"}, "home.*source.*root"), ({"path": "index.md", "source": "root"}, "repository-root source only supports README.md")):
+        for home, message in (({"path": "missing.md"}, "home.path.*listed navigation page"), ({"path": "index.md", "source": "root"}, "repository-root source only supports README.md")):
             with self.subTest(home=home), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}}, {"schema_version": 1, "home": home, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]})

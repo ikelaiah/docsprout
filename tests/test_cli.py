@@ -71,6 +71,35 @@ class CliTests(unittest.TestCase):
             self.assertIn("Available for explicit inclusion: CHANGELOG.md, CONTRIBUTING.md", output.getvalue())
             self.assertEqual(before, {path: path.read_text(encoding="utf-8") for path in before})
 
+    def test_init_publishes_root_and_docs_readmes_as_distinct_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (root / "README.md").write_text("# Project overview\n\n[Docs](docs/README.md)", encoding="utf-8")
+            (docs / "README.md").write_text("# Documentation home\n\n[Project](../README.md)", encoding="utf-8")
+
+            self.assertEqual(0, main(["init", "--root", str(root)]))
+            self.assertEqual(0, main(["check", "--root", str(root)]))
+            audit = io.StringIO()
+            with redirect_stdout(audit):
+                self.assertEqual(0, main(["audit", "--root", str(root)]))
+            self.assertIn("Ready to publish.", audit.getvalue())
+            self.assertEqual(0, main(["build", "--root", str(root), "--output", str(root / "site")]))
+
+            layout = json.loads((docs / "layout.json").read_text(encoding="utf-8"))
+            pages = [page for section in layout["navigation"] for page in section["pages"]]
+            self.assertEqual(("README.md", "root"), (layout["home"]["path"], layout["home"]["source"]))
+            self.assertEqual([("README.md", "root"), ("README.md", "docs")], [
+                (page["path"], page.get("source", "docs")) for page in pages
+            ])
+            project_page = (root / "site" / "index.html").read_text(encoding="utf-8")
+            docs_page = (root / "site" / "docs" / "README.html").read_text(encoding="utf-8")
+            self.assertIn("Project overview", project_page)
+            self.assertIn("Documentation home", docs_page)
+            self.assertIn('href="docs/README.html"', project_page)
+            self.assertIn('href="../index.html"', docs_page)
+
     def test_init_uses_github_remote_metadata_and_leaves_an_existing_layout_authoritative(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

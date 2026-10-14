@@ -93,13 +93,13 @@ class DocumentationUsabilityTests(unittest.TestCase):
     def test_release_metadata_and_version_manifest_agree(self) -> None:
         manifest = json.loads((self.root / "docs" / "versions.json").read_text(encoding="utf-8"))
 
-        self.assertEqual("1.3.2", __version__)
+        self.assertEqual("1.3.3", __version__)
         self.assertEqual(__version__, manifest["current"])
         self.assertEqual(f"v{__version__}", manifest["versions"][0]["source_ref"])
 
         pyproject = (self.root / "pyproject.toml").read_text(encoding="utf-8")
         self.assertIn('name = "docsprout"', pyproject)
-        self.assertIn('version = "1.3.2"', pyproject)
+        self.assertIn('version = "1.3.3"', pyproject)
         self.assertIn('license = "MIT"', pyproject)
         self.assertIn('name = "DocSprout contributors"', pyproject)
         self.assertNotIn('Development Status :: 3 - Alpha', pyproject)
@@ -145,9 +145,10 @@ class DocumentationUsabilityTests(unittest.TestCase):
             ],
             layout["navigation"][0]["pages"],
         )
-        root_policy = "Only the repository-root `README.md` has special root-source support."
-        self.assertIn(root_policy, beginner)
-        self.assertIn(root_policy, configuration)
+        self.assertIn('The repository-root `README.md` uses `"source": "root"`', beginner)
+        self.assertIn('The repository-root README and `docs/README.md` are separate pages.', configuration)
+        machine = (self.root / "docs" / "machine-contracts.md").read_text(encoding="utf-8")
+        self.assertIn('Page identity is the pair `(source, path)`', machine)
 
     def test_docs_project_demonstrates_its_homepage_configuration(self) -> None:
         config = json.loads((self.root / "docs" / "docsprout.json").read_text(encoding="utf-8"))
@@ -295,7 +296,7 @@ class DocumentationUsabilityTests(unittest.TestCase):
         self.assertIn("wheel", qualification)
         self.assertIn("sdist", qualification)
         self.assertIn("## Manual browser/keyboard matrix", qualification)
-        self.assertIn("# Qualification evidence for DocSprout v1.3.2", qualification)
+        self.assertIn("# Qualification evidence for DocSprout v1.3.3", qualification)
         self.assertIn("Browser automation is not part of CI", qualification)
         self.assertIn("ruff check", qualification)
         self.assertIn("ruff check .", ci)
@@ -348,7 +349,9 @@ class DocumentationUsabilityTests(unittest.TestCase):
         guide = (self.root / "docs" / "building.md").read_text(encoding="utf-8")
         readme = (self.root / "README.md").read_text(encoding="utf-8")
 
-        self.assertIn("docsprout build --release 1.3.2 --offline-archive", guide)
+        self.assertIn("docsprout build --release 1.3.3 --offline-archive", guide)
+        historical = (self.root / "docs" / "building.md").read_text(encoding="utf-8")
+        self.assertIn("the previous complete site remains available", " ".join(historical.split()))
         self.assertIn("`--root <folder>`", guide)
         self.assertIn("Status: preview-ready", guide)
         self.assertIn("docs/building.md", readme)

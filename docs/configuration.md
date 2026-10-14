@@ -108,6 +108,13 @@ replace only the top-level `home` object with:
 root README, then `docs/index.md`, then the first listed page. New layouts
 should make the selection explicit.
 
+The repository-root README and `docs/README.md` are separate pages. The root
+page uses `"source": "root"`; the docs page uses the default source and can be
+selected as home with `{"path": "README.md"}`. When both are listed, DocSprout
+keeps their routes separate: the selected home uses `index.html`; when the
+root README is home, the docs copy uses `docs/README.html`, and when the docs
+README is home, the root copy uses `README.html`.
+
 `unlisted` controls what happens to Markdown under `docs/` that is not in
 navigation:
 
@@ -249,10 +256,9 @@ The generated layout uses this narrow navigation entry for a root README:
 `"source": "root"` supports only the exact repository-root `README.md`; it
 does not permit `../README.md`, another root file, or any path outside the
 repository. A README can link to a configured `docs/` page and a docs page can
-link back to the README. Historical builds read the README from the matching
-Git release archive.
-Only the repository-root `README.md` has special root-source support. Other
-Markdown you want to publish should live under `docs/`.
+link back to the README. A `docs/README.md` page uses the default docs source,
+so it can appear alongside the repository README without a path conflict.
+Historical builds read each page from the matching Git release archive.
 
 After `layout.json` exists it is authoritative. DocSprout will not discover new
 pages, alter order or titles, add ancillary files, or reorganise sections. Add

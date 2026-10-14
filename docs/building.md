@@ -33,7 +33,7 @@ custom stylesheet even when those assets live elsewhere in the repository.
 ## Ship a ZIP
 
 ```bash
-docsprout build --release 1.3.2 --offline-archive dist/docsprout-docs-1.3.2.zip
+docsprout build --release 1.3.3 --offline-archive dist/docsprout-docs-1.3.3.zip
 ```
 
 The release label used for an offline archive must start with a letter or
@@ -50,9 +50,9 @@ documentation and every declared historical release into one site, each under
 its own path. The [historical documentation guide](historical-docs.md) covers
 the release order, and `docsprout check-release` validates the manifest first.
 
-Unlike a single-site build, `build-all` currently replaces its output before
-building releases. Rehearse historical builds in a separate output folder;
-keep the previous published artifact until the entire command succeeds.
+`build-all` stages the complete versioned site and replaces its output only
+after every release succeeds. If any historical release fails to build, the
+previous complete site remains available.
 
 ## Start with `doctor`
 

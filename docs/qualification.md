@@ -1,10 +1,11 @@
-# Qualification evidence for DocSprout v1.3.2
+# Qualification evidence for DocSprout v1.3.3
 
-DocSprout v1.3.2 is a code-safety and documentation-quality patch that preserves
-JSON and Markdown layout compatibility and the v1.0.0 stable contract. The claims below are the contract that CI and the maintained fixtures
-exercise. Every row names how it is verified. "Supported" means the combination
-is run by automated qualification on every pull request and release, not merely
-believed to work.
+DocSprout v1.3.3 is a README-adoption and historical-build safety patch that
+preserves JSON and Markdown layout compatibility and the v1.0.0 stable
+contract. The claims below are the contract that CI and the maintained
+fixtures exercise. Every row names how it is verified. "Supported" means the
+combination is run by automated qualification on every pull request and
+release, not merely believed to work.
 
 Evidence levels: **automated** rows run in CI with no browser or network
 dependency; **manual** rows are explicit review steps; **unavailable** rows are
@@ -295,6 +296,15 @@ site configuration; no schema, route or token value changes:
   and `_run_git` when Git is unavailable, plus manifest rejection of release
   names reserved for generated output (`versions.json`, `index.html`) and
   names that differ only by case on case-insensitive filesystems.
+
+## v1.3.3 additions
+
+- Repository adoption tests cover a root `README.md` and `docs/README.md`
+  together, including home selection and links between both generated routes.
+- Config and layout tests distinguish same-named pages by source and ensure an
+  unlisted docs README remains subject to the configured publication policy.
+- Versioned-build tests prove a failed later release preserves every file in
+  the previous complete site.
 
 ## v1.3.2 additions
 
