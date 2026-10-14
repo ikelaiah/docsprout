@@ -26,7 +26,7 @@ that normally contains `README.md` or `src/`.
 Open a terminal in your project folder and run:
 
 ```bash
-python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.3.2.zip"
+python -m pip install "https://github.com/ikelaiah/docsprout/archive/refs/tags/v1.3.3.zip"
 ```
 
 Then check that the command is available:
@@ -63,8 +63,9 @@ docs/
 By default, DocSprout publishes only `README.md` and `docs/**/*.md`. It tells you
 about `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md` and
 `CODE_OF_CONDUCT.md`, but leaves them private until you choose to add them.
-Only the repository-root `README.md` has special root-source support. Other
-Markdown you want to publish should live under `docs/`.
+The repository-root `README.md` uses `"source": "root"`; `docs/README.md`
+uses the default docs source. Both can be listed and build to distinct pages.
+Other Markdown you want to publish should live under `docs/`.
 
 ## 3. See the site now
 
@@ -254,7 +255,7 @@ appear in the navigation.
   in [How DocSprout renders Markdown](markdown-showcase.md).
 - Learn the three configuration files in [Configuration](configuration.md).
 - Copy a small working project from the
-  [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.3.2/examples/minimal).
+  [minimal example](https://github.com/ikelaiah/docsprout/tree/v1.3.3/examples/minimal).
 - When you truly want a public site, choose the simpler or historical path in
   [GitHub Pages](github-pages.md).
 - Look up unfamiliar words in the [glossary](glossary.md).

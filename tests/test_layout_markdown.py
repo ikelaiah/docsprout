@@ -64,6 +64,25 @@ class MarkdownLayoutTests(unittest.TestCase):
             self.assertIn("guide.md", config.excluded_documents)
             self.assertNotIn("layout.md", config.excluded_documents)
 
+    def test_root_and_docs_readmes_keep_distinct_layout_identities(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = self.make_project(root)
+            (root / "README.md").write_text("# Project", encoding="utf-8")
+            (docs / "README.md").write_text("# Documentation", encoding="utf-8")
+            (docs / "layout.md").write_text(
+                "Layout-Version: 1\nHome: ../README.md\nUnlisted: exclude\n"
+                "# Start\n- [Project](../README.md)\n- [Documentation](README.md)\n",
+                encoding="utf-8",
+            )
+
+            config = load_config(root)
+
+            self.assertEqual([("root", "README.md"), ("docs", "README.md")], [
+                (page.source, page.path) for page in config.pages
+            ])
+            self.assertEqual(("root", "README.md"), (config.home_source, config.home_document))
+
     def test_rejects_both_layouts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

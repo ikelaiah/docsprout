@@ -33,7 +33,9 @@ the same information in text and name the modules to explore.
 publication diagnostics, including warnings about image descriptions and
 heading structure. `versions.py` checks immutable release references and
 builds historical releases from isolated Git archives. `safety.py` limits
-replacement of existing output to DocSprout-owned directories.
+replacement of existing output to DocSprout-owned directories. `build-all`
+stages its complete version tree and swaps it into place only after every
+release succeeds.
 
 For a first code change, start with the command in `cli.py`, follow its call
 into the owning module above, and read the corresponding tests listed in the
@@ -101,6 +103,6 @@ needs no custom CSS; the custom stylesheet mechanism is a deliberately bounded
 escape hatch whose inclusion mechanics DocSprout owns and whose accessibility
 the author owns.
 
-Downstream projects should pin released tags such as `v1.3.2`, never the main
+Downstream projects should pin released tags such as `v1.3.3`, never the main
 branch. The stable boundary and deprecation policy are in [Machine-readable
 contracts](machine-contracts.md).

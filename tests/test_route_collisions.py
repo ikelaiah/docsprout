@@ -47,7 +47,7 @@ class RouteCollisionTests(unittest.TestCase):
             with self.assertRaisesRegex(DocSproutError, r"Generated route collision: 'docs-index.html'.*'index\.md'.*'docs-index\.md'"):
                 build_site(root=root, output=root / "site", release="dev")
 
-    def test_detects_a_root_readme_and_docs_readme_duplicate(self) -> None:
+    def test_routes_root_and_docs_readmes_to_distinct_pages(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             self._project(root, pages=[
@@ -55,8 +55,23 @@ class RouteCollisionTests(unittest.TestCase):
                 {"title": "Readme copy", "path": "README.md"},
             ])
 
-            with self.assertRaisesRegex(DocSproutError, r"navigation page 'README\.md'.*appears more than once"):
-                build_site(root=root, output=root / "site", release="dev")
+            build_site(root=root, output=root / "site", release="dev")
+
+            self.assertIn("Root README", (root / "site" / "index.html").read_text(encoding="utf-8"))
+            self.assertIn("Readme copy", (root / "site" / "docs" / "README.html").read_text(encoding="utf-8"))
+
+    def test_docs_readme_can_be_home_when_both_readmes_are_listed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._project(root, pages=[
+                {"title": "Overview", "path": "README.md", "source": "root"},
+                {"title": "Documentation", "path": "README.md"},
+            ], home={"path": "README.md"})
+
+            build_site(root=root, output=root / "site", release="dev")
+
+            self.assertIn("Documentation", (root / "site" / "index.html").read_text(encoding="utf-8"))
+            self.assertIn("Root README", (root / "site" / "README.html").read_text(encoding="utf-8"))
 
     def test_detects_case_insensitive_route_collisions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

@@ -352,6 +352,13 @@ dependency, or syntax change.
 - [x] Improve the architecture and contributor guides with a readable build
       diagram, Markdown safety notes and a concrete browser-check workflow.
 
+## v1.3.3 — Existing-repository and release safety
+
+- [x] Let root `README.md` and `docs/README.md` coexist as separate pages,
+      with explicit home selection and stable, working links.
+- [x] Publish a complete historical site only after every release builds,
+      preserving the previous output when a later release fails.
+
 ## Quality bar
 
 No release is complete unless it is easy to start, easy to understand, easy to

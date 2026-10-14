@@ -227,7 +227,7 @@ def _legacy_config(docs: Path) -> SiteConfig:
         site_url=None, accent=DEFAULT_ACCENT, accent_secondary=DEFAULT_SECONDARY, theme_style="classic",
         content_width="comfortable",
         banner=None, banner_alt=None, logo=None, footer=None, project_links=(), pages=pages,
-        legacy=True, home_document=home,
+        legacy=True, home_document=home, home_source="docs",
         homepage=Homepage(None, True, True, True, False),
         excluded_documents=(),
         palette=derive_palette(DEFAULT_ACCENT, DEFAULT_SECONDARY),
@@ -357,8 +357,9 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
                 f"{layout_path}: navigation page {path!r} does not exist. "
                 f"Create {location} or correct its path."
             )
-        if any(page.path == path for page in pages):
-            raise DocSproutError(f"{layout_path}: navigation page {path!r} appears more than once")
+        if any(page.path == path and page.source == source for page in pages):
+            location = f"repository-root {path}" if source == "root" else f"docs/{path}"
+            raise DocSproutError(f"{layout_path}: navigation page {location!r} appears more than once")
         pages.append(page)
 
     for section in navigation:
@@ -431,7 +432,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
                     f"{layout_path}: navigation entry {entry['title']!r} needs either 'path' or 'pages'. "
                     "Use 'path' for a page or 'pages' with child page entries for a collapsible group."
                 )
-    listed_paths = {page.path for page in pages}
+    listed_paths = {page.path for page in pages if page.source == "docs"}
     unlisted_paths = sorted(
         path.relative_to(docs).as_posix() for path in docs.rglob("*.md")
         if path.is_file() and path.relative_to(docs).as_posix() not in listed_paths
@@ -442,9 +443,10 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     excluded_documents = tuple(unlisted_paths) if unlisted == "exclude" else ()
     raw_home = layout.get("home")
     if raw_home is None:
-        home = next((page.path for page in pages if page.source == "root"), None)
-        if home is None:
-            home = "index.md" if any(page.path == "index.md" for page in pages) else pages[0].path
+        home_page = next((page for page in pages if page.source == "root"), None)
+        if home_page is None:
+            home_page = next((page for page in pages if page.path == "index.md" and page.source == "docs"), pages[0])
+        home, home_source = home_page.path, home_page.source
     else:
         if not isinstance(raw_home, dict):
             raise DocSproutError(f"{layout_path}: field 'home' must be an object with a listed page path")
@@ -455,11 +457,9 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
             raise DocSproutError(f"{layout_path}: home.source must be 'docs' or 'root'")
         if source == "root" and path != "README.md":
             raise DocSproutError(f"{layout_path}: repository-root source only supports README.md")
-        if source == "docs" and path == "README.md":
-            raise DocSproutError(f"{layout_path}: home README.md requires source 'root'")
         if not any(page.path == path and page.source == source for page in pages):
             raise DocSproutError(f"{layout_path}: home.path {path!r} must name a listed navigation page with the same source")
-        home = path
+        home, home_source = path, source
     banner = data.get("banner")
     if banner is not None and (not isinstance(banner, dict) or not isinstance(banner.get("path"), str) or not isinstance(banner.get("alt"), str)):
         raise DocSproutError(f"{primary}: field 'banner' needs string path and alt fields")
@@ -498,7 +498,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
         banner=banner_path,
         banner_alt=banner.get("alt") if banner else None, logo=logo, footer=footer.strip() if footer else None,
         project_links=tuple(project_links), pages=tuple(pages),
-        legacy=False, home_document=home, homepage=homepage,
+        legacy=False, home_document=home, home_source=home_source, homepage=homepage,
         custom_css=custom_css, excluded_documents=excluded_documents,
         config_filename=primary.name, palette=palette,
         expanded_sections=tuple(expanded_sections),

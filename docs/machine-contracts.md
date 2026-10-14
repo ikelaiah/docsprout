@@ -27,6 +27,10 @@ keep the defaults.
 | `docs/versions.json` | `schema_version`, `current`, `versions` (`release`, `source_ref`) |
 
 `source: "root"` is reserved for the exact repository-root `README.md`.
+Page identity is the pair `(source, path)`, so root `README.md` and
+`docs/README.md` can both be listed. When the root README is home, the docs
+copy uses `docs/README.html`; when the docs README is home, it uses
+`index.html` and the root copy uses `README.html`.
 `theme.custom_css` and `identity.logo` must remain repository-local assets.
 The configuration guide gives the editing examples and the validation
 diagnostics for each field family.

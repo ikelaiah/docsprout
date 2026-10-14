@@ -101,7 +101,9 @@ safely.
 
 Two listed documents would overwrite the same published route, for example
 `index.md` and `docs-index.md` when another page is home, or names differing
-only by case. Rename or move one file.
+only by case. Rename or move one file. A repository-root `README.md` and
+`docs/README.md` are supported together; identify the root entry with
+`"source": "root"` and leave the docs entry on its default source.
 
 ### `Markdown: unsafe local link ...`
 

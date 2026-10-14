@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from docsprout.errors import DocSproutError
 from docsprout.versions import build_all, check_release, load_manifest
@@ -94,6 +95,36 @@ class VersionedBuildTests(unittest.TestCase):
         self.assertNotIn("New content", (old_site / "index.html").read_text(encoding="utf-8"))
         self.assertIn("Version one", (old_site / "index.html").read_text(encoding="utf-8"))
         self.assertIn('value="../2.0.0/index.html"', (old_site / "index.html").read_text(encoding="utf-8"))
+
+    def test_build_all_preserves_the_previous_site_when_a_later_release_fails(self) -> None:
+        root = self._repository()
+        output = root / "site"
+        build_all(root=root, output=output)
+        before = {
+            path.relative_to(output): path.read_bytes()
+            for path in output.rglob("*") if path.is_file()
+        }
+        from docsprout import versions as versions_module
+
+        build_release = versions_module.build_site
+        calls = 0
+
+        def fail_on_second_release(**kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 2:
+                raise DocSproutError("simulated later release failure")
+            return build_release(**kwargs)
+
+        with patch.object(versions_module, "build_site", side_effect=fail_on_second_release):
+            with self.assertRaisesRegex(DocSproutError, "simulated later release failure"):
+                build_all(root=root, output=output)
+
+        after = {
+            path.relative_to(output): path.read_bytes()
+            for path in output.rglob("*") if path.is_file()
+        }
+        self.assertEqual(before, after)
 
     def test_build_all_allows_unlisted_documents_in_historical_modern_releases(self) -> None:
         root = self._modern_history_repository()

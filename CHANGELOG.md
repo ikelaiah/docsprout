@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.3
+
+A documentation-adoption and historical-build safety patch. No configuration
+schema migration is required. Update package and workflow pins to `v1.3.3`.
+
+### Fixed
+
+- `init` and the site builder treat the repository-root `README.md` and
+  `docs/README.md` as separate pages. Their links and generated routes remain
+  distinct, and either page can be selected as the home page.
+- `build-all` stages the complete versioned site before publishing it. If any
+  release fails to build, the previous complete output remains in place.
+
+### Documentation
+
+- Explain README source selection, route behavior, and all-or-nothing historical
+  site publication in the adoption and release guides.
+
 ## 1.3.2
 
 ### Fixed

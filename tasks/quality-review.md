@@ -60,9 +60,9 @@ The browser connector was unavailable; an isolated headless Chrome profile
 provided runtime checks. This is not screen-reader or cross-browser
 qualification, and no release or historical-tag rehearsal was performed.
 
-### Remaining work
+### Follow-ups recorded at the v1.3.2 review cutoff
 
-- **Required: README identity during adoption.** `docsprout init` followed by
+- **Required at that review cutoff: README identity during adoption.** `docsprout init` followed by
   `docsprout check` fails for a project containing only `docs/README.md`:
   explicit home validation reserves `README.md` for the root source. With
   both root and docs READMEs, generated navigation instead fails its duplicate
@@ -70,7 +70,7 @@ qualification, and no release or historical-tag rehearsal was performed.
   compatibility together in `config.py`, `cli.py` and `build.py`; silently
   excluding one README would hide documentation. Until then, rename the docs
   README to `docs/index.md` and use that path in navigation.
-- **Required: historical build preservation.** `versions.py::build_all`
+- **Required at that review cutoff: historical build preservation.** `versions.py::build_all`
   still clears its top-level output before rendering all releases. Extend
   staging to the complete multi-release tree and test failure in a later
   release. This pass changed single-site publication only; the build guide
@@ -84,5 +84,16 @@ The renderer, build and preview fixes received independent review for
 correctness, security, readability and compatibility. The patch changes the
 package version to 1.3.2 and updates current release pins. It introduces no
 runtime dependency, configuration schema, generated route or public CSS token
-change. The remaining required items above prevent an unqualified
-repository-wide approval.
+change. These findings described the review state before the follow-up patch.
+
+### Follow-ups completed for v1.3.3
+
+- Root `README.md` and `docs/README.md` now have source-aware identity,
+  independent home selection and distinct output routes. Regression tests run
+  `init`, `check`, `audit` and `build` with both pages and verify links in
+  both directions.
+- `build-all` now stages its complete multi-release site and publishes it only
+  after all releases succeed. A regression test injects a failure in the second
+  release and confirms the previous output remains byte-for-byte unchanged.
+- The configuration, migration, building and qualification guides now describe
+  the supported README combinations and historical-output guarantee.
