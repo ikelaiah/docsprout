@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.4.1
+
+A reader-fidelity patch. No configuration schema, generated route, heading
+anchor, runtime dependency or public CSS token change is required. Update
+package and workflow pins to `v1.4.1`, then rebuild.
+
 ### Fixed
 
 - Headings keep a trailing `#` that is part of a word: `## Learn C#` no longer

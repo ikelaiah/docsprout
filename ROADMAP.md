@@ -352,6 +352,14 @@ dependency, or syntax change.
 - [x] Improve the architecture and contributor guides with a readable build
       diagram, Markdown safety notes and a concrete browser-check workflow.
 
+## v1.4.1 — Reader fidelity
+
+- [x] Render common Markdown as written: `C#` headings, underscores in titles,
+      prices beside inline math, spaced asterisks, parentheses in URLs,
+      `~~~` fences and code inside list items.
+- [x] Keep the preview console readable after a failed rebuild, and share the
+      renderer's code and link rules with `audit`.
+
 ## v1.4.0 — Reader quality and repeatable browser checks
 
 - [x] Keep search result links correct below nested routes and make keyboard
