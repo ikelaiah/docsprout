@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Fixed
+
+- Headings keep a trailing `#` that is part of a word: `## Learn C#` no longer
+  renders as "Learn C".
+- Page titles, the outline and search keep underscores (`snake_case`).
+  Heading anchors are unchanged, so existing fragment links still work.
+- Prices such as `$5 and $10` stay prose; inline math follows Pandoc's
+  delimiter rule.
+- Spaced asterisks such as `2 * 3 * 4` stay literal instead of italicising.
+- Link and image targets keep balanced parentheses, as in Wikipedia URLs.
+- Fenced code indented under a list item renders inside that item.
+- `~~~` fences are code blocks; a block closes only on its opening marker.
+- `project.description: null` no longer produces a "None" meta description.
+- `serve` prints an unchanged rebuild failure once, not on every poll, and
+  still retries automatically.
+- `audit` uses the renderer's fenced-code lines and link grammar, so both
+  agree on what is code and what is a link.
+
 ## 1.4.0
 
 A reader-experience and browser-qualification minor. No configuration schema,

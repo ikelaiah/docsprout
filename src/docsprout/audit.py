@@ -10,12 +10,12 @@ import re
 from urllib.parse import urlsplit
 
 from .config import CONFIG_FILENAME, load_config, page_source_path, page_source_reference
-from .markdown import DEFINITION_DESCRIPTION, FENCE, HEADING, HR, LIST_ITEM, TABLE_SEPARATOR, mask_protected_spans, render_markdown, slugify
+from .markdown import DEFINITION_DESCRIPTION, HEADING, HR, IMAGE, LINK as _LINK, LIST_ITEM, TABLE_SEPARATOR, heading_anchor, mask_protected_spans, render_markdown
 from .models import SiteConfig
 
 
-IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
-LINK = re.compile(r"(?<!!)\[([^]]+)\]\(([^)]+)\)")
+# Share the renderer's link grammar; only exclude the image prefix.
+LINK = re.compile(r"(?<!!)" + _LINK.pattern)
 SAFE_EXTERNAL_SCHEMES = {"http", "https", "mailto"}
 
 
@@ -51,6 +51,7 @@ class _AuditPage:
     source: str
     headings: tuple[tuple[int, str, str], ...]
     text: str
+    code_lines: frozenset[int] = frozenset()
 
 
 def _load_pages(root: Path) -> tuple[tuple[_AuditPage, ...], int, SiteConfig]:
@@ -58,7 +59,8 @@ def _load_pages(root: Path) -> tuple[tuple[_AuditPage, ...], int, SiteConfig]:
     pages: list[_AuditPage] = []
     for page in config.pages:
         source = page_source_path(root, page).read_text(encoding="utf-8")
-        pages.append(_AuditPage(page.path, page_source_reference(page), render_markdown(source, lambda target: target).headings, source))
+        rendered = render_markdown(source, lambda target: target)
+        pages.append(_AuditPage(page.path, page_source_reference(page), rendered.headings, source, rendered.code_lines))
     return tuple(pages), len(config.excluded_documents), config
 
 
@@ -141,12 +143,15 @@ def _audit_image(page: _AuditPage, line: int, alt: str, target: str, root: Path)
     return findings
 
 
-def _visible_prose_lines(source: str) -> list[str]:
-    """Mask protected spans after joining the same prose lines the renderer joins."""
+def _visible_prose_lines(source: str, code_lines: frozenset[int] = frozenset()) -> list[str]:
+    """Mask protected spans after joining the same prose lines the renderer joins.
+
+    *code_lines* comes from the renderer, so fenced code is skipped exactly
+    where the renderer treats it as code.
+    """
     lines = source.splitlines()
     visible = [""] * len(lines)
     paragraph: list[int] = []
-    inside_fence = False
     inside_display_math = False
     inside_table = False
 
@@ -162,11 +167,8 @@ def _visible_prose_lines(source: str) -> list[str]:
             if line.strip() == "$$":
                 inside_display_math = False
             continue
-        if FENCE.match(line):
+        if index in code_lines:
             flush()
-            inside_fence = not inside_fence
-            continue
-        if inside_fence:
             continue
         if line.strip() == "$$":
             flush()
@@ -196,7 +198,6 @@ def _visible_prose_lines(source: str) -> list[str]:
 def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> list[Finding]:
     findings: list[Finding] = []
     structural_findings: list[Finding] = []
-    inside_fence = False
     inside_display_math = False
     previous_level: int | None = None
     anchors: set[str] = set()
@@ -206,21 +207,21 @@ def _audit_page(page: _AuditPage, pages: dict[str, _AuditPage], root: Path) -> l
             if source_line.strip() == "$$":
                 inside_display_math = False
             continue
-        if FENCE.match(source_line):
-            inside_fence = not inside_fence
-        elif not inside_fence and source_line.strip() == "$$":
+        if line_number - 1 in page.code_lines:
+            continue
+        if source_line.strip() == "$$":
             inside_display_math = True
-        elif not inside_fence and HEADING.match(source_line):
+        elif HEADING.match(source_line):
             heading_lines.append(line_number)
     for (level, text, _identifier), line_number in zip(page.headings, heading_lines):
-        anchor = slugify(text)
+        anchor = heading_anchor(text)
         if anchor in anchors:
             structural_findings.append(_finding("DK103", "warning", page, line_number, "Duplicate heading anchor", "Rename one heading. Anchors that share the same text receive a numeric suffix and stay ambiguous to link.", anchor))
         anchors.add(anchor)
         if previous_level is not None and level > previous_level + 1:
             structural_findings.append(_finding("DK102", "warning", page, line_number, f"Heading level jumps from H{previous_level} to H{level}", "Use an intermediate heading level when it represents document structure."))
         previous_level = level
-    for line_number, visible in enumerate(_visible_prose_lines(page.text), start=1):
+    for line_number, visible in enumerate(_visible_prose_lines(page.text, page.code_lines), start=1):
         matches = [(match.start(), "image", match) for match in IMAGE.finditer(visible)]
         matches.extend((match.start(), "link", match) for match in LINK.finditer(visible))
         for _position, kind, match in sorted(matches, key=lambda item: item[0]):

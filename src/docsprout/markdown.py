@@ -11,23 +11,36 @@ from .errors import DocSproutError
 from .highlight import highlight_code, supports_language
 
 LinkResolver = Callable[[str], str]
-HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*#*\s*$")
-FENCE = re.compile(r"^```\s*([\w+-]*)\s*$")
+# A closing hash run needs a space before it, so "C#" and "F#" keep their "#".
+HEADING = re.compile(r"^(#{1,6})\s+(.+?)(?:\s+#+)?\s*$")
+# Backtick or tilde fences; a block closes only on its own marker.
+FENCE = re.compile(r"^(```|~~~)\s*([\w+-]*)\s*$")
 LIST = re.compile(r"^\s*[-*+]\s+(.+)$")
 ORDERED = re.compile(r"^\s*\d+[.)]\s+(.+)$")
 LIST_ITEM = re.compile(r"^(?P<indent>\s*)(?:(?P<unordered>[-*+])|(?P<ordered>\d+[.)]))\s+(?P<text>.+)$")
 TASK = re.compile(r"^\[([ xX])\]\s+(.+)$")
-LINK = re.compile(r"\[([^]]+)]\(([^)]+)\)")
-IMAGE = re.compile(r"!\[([^]]*)\]\(([^)]+)\)")
+# Link targets may contain one level of balanced parentheses, as in
+# Wikipedia URLs such as .../Pascal_(programming_language).
+_TARGET = r"(?:[^()]|\([^()]*\))"
+LINK = re.compile(r"\[([^]]+)]\((" + _TARGET + r"+)\)")
+IMAGE = re.compile(r"!\[([^]]*)\]\((" + _TARGET + r"+)\)")
 CODE = re.compile(r"`([^`]+)`")
 STRIKE = re.compile(r"~~(.+?)~~")
+# Emphasis delimiters must touch their text, so "2 * 3 * 4" stays literal.
+STRONG = re.compile(r"\*\*(?=\S)(.+?)(?<!\s)\*\*")
+EMPHASIS = re.compile(r"(?<!\*)\*(?=[^\s*])([^*]*?)(?<!\s)\*")
 HR = re.compile(r"^\s{0,3}(?:-[ \t]*){3,}$|^\s{0,3}(?:_[ \t]*){3,}$|^\s{0,3}(?:\*[ \t]*){3,}$")
 TABLE_SEPARATOR = re.compile(r"^\s*\|?\s*:?-{3,}")
-INLINE_MATH = re.compile(r"(?<!\\)\$([^$\n]+)\$")
+# Inline math follows Pandoc: the opening $ is followed by non-space, the
+# closing $ follows non-space and is not followed by a digit. "$5 and $10"
+# therefore stays prose.
+_MATH_OPEN = r"(?<!\\)\$(?=[^\s$])"
+_MATH_CLOSE = r"(?<!\s)\$(?!\d)"
+INLINE_MATH = re.compile(_MATH_OPEN + r"([^$\n]*?)" + _MATH_CLOSE)
 DEFINITION_DESCRIPTION = re.compile(r"^:\s+(.+)$")
-PROTECTED_INLINE = re.compile(r"(`[^`]+`|(?<!\\)\$[^$\n]+\$|!?\[[^\]]*\]\([^)]*\))")
-LINK_COMPONENTS = re.compile(r"(!?)\[([^\]]*)\]\(([^)]*)\)", re.DOTALL)
-PROTECTED_SPAN = re.compile(r"`([^`]+)`|(?<!\\)\$([^$]+)\$")
+PROTECTED_INLINE = re.compile(r"(`[^`]+`|" + _MATH_OPEN + r"[^$\n]*?" + _MATH_CLOSE + r"|!?\[[^\]]*\]\(" + _TARGET + r"*\))")
+LINK_COMPONENTS = re.compile(r"(!?)\[([^\]]*)\]\((" + _TARGET + r"*)\)", re.DOTALL)
+PROTECTED_SPAN = re.compile(r"`([^`]+)`|" + _MATH_OPEN + r"([^$]*?)" + _MATH_CLOSE)
 
 
 def mask_protected_spans(line: str) -> str:
@@ -46,6 +59,8 @@ class RenderedMarkdown:
     title: str
     headings: tuple[tuple[int, str, str], ...]
     text: str
+    # Zero-based source lines consumed by fenced code blocks, markers included.
+    code_lines: frozenset[int] = frozenset()
 
 
 def slugify(text: str) -> str:
@@ -53,8 +68,34 @@ def slugify(text: str) -> str:
     return re.sub(r"[-\s]+", "-", value).strip("-") or "section"
 
 
+def heading_anchor(text: str) -> str:
+    """Return the stable v1 anchor for plain heading text.
+
+    Anchors drop underscores and tildes, as they always have, so existing
+    fragment links keep working while titles show the text as written.
+    """
+    return slugify(re.sub(r"[_~]", "", text))
+
+
 def _plain(value: str) -> str:
-    return re.sub(r"\s+", " ", re.sub(r"[*_`~]+", "", value)).strip()
+    # Underscore emphasis is not Markdown here, so underscores are content.
+    return re.sub(r"\s+", " ", re.sub(r"\*+|`+|~~", "", value)).strip()
+
+
+def _fence(line: str) -> tuple[str, str] | None:
+    """Return (marker, language) when *line* opens or closes a fence."""
+    match = FENCE.match(line)
+    return (match.group(1), match.group(2).lower() or "text") if match else None
+
+
+def _code_block(code: list[str], language: str) -> str:
+    tex = "\n".join(code)
+    if language == "math":
+        return f'<div class="math-display" data-tex="{html.escape(tex, quote=True)}"></div>'
+    classes = f"language-{html.escape(language, quote=True)}"
+    if supports_language(language):
+        classes += " syntax-highlight"
+    return f'<pre class="{classes}"><code>{highlight_code(tex, language)}</code></pre>'
 
 
 def _smart(value: str) -> str:
@@ -90,8 +131,8 @@ def _typographic(value: str) -> str:
 def _emphasis(escaped: str) -> str:
     """Format escaped prose only; never pass generated HTML into this function."""
     escaped = STRIKE.sub(r"<del>\1</del>", escaped)
-    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
-    return re.sub(r"(?<!\*)\*([^*]+)\*", r"<em>\1</em>", escaped)
+    escaped = STRONG.sub(r"<strong>\1</strong>", escaped)
+    return EMPHASIS.sub(r"<em>\1</em>", escaped)
 
 
 def _inline(value: str, resolve: LinkResolver) -> str:
@@ -159,7 +200,45 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
     headings: list[tuple[int, str, str]] = []
     paragraph: list[str] = []
     seen: set[str] = set()
+    code_lines: set[int] = set()
     index = 0
+
+    def fenced_block(start: int, indent: int = 0) -> tuple[str, int]:
+        """Render the fence opening at *start*; return its HTML and the next line."""
+        marker, language = _fence(lines[start][indent:])
+        current = start + 1
+        code: list[str] = []
+        while current < len(lines):
+            closing = _fence(lines[current].strip() if indent else lines[current])
+            if closing and closing[0] == marker:
+                break
+            line = lines[current]
+            # Drop the item's indentation, never more than the line has.
+            code.append(line[min(indent, len(line) - len(line.lstrip(" "))):])
+            current += 1
+        if current == len(lines):
+            raise DocSproutError("Markdown: unclosed fenced code block")
+        code_lines.update(range(start, current + 1))
+        plain.extend(code)
+        return _code_block(code, language), current + 1
+
+    def item_blocks(start: int, base_indent: int) -> tuple[str, int]:
+        """Render fenced code indented under a list item, across blank lines."""
+        blocks: list[str] = []
+        current = start
+        while True:
+            probe = current
+            while probe < len(lines) and not lines[probe].strip():
+                probe += 1
+            if probe == len(lines):
+                break
+            candidate = lines[probe]
+            indent = len(candidate) - len(candidate.lstrip(" "))
+            if indent <= base_indent or not _fence(candidate.strip()):
+                break
+            block, current = fenced_block(probe, indent)
+            blocks.append(block)
+        return "".join(blocks), current
 
     def flush_paragraph() -> None:
         if paragraph:
@@ -204,7 +283,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
                 continuation_match = LIST_ITEM.match(continuation)
                 if not continuation.strip() or not continuation[0].isspace():
                     break
-                if continuation_match:
+                if continuation_match or _fence(continuation.strip()):
                     break
                 parts.append(continuation.strip())
                 current += 1
@@ -213,36 +292,23 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
             if task:
                 complete = task.group(1).lower() == "x"
                 state = "Complete" if complete else "Incomplete"
-                items.append(f'<li><span class="task-list" role="img" aria-label="{state}">{"✓" if complete else "○"}</span>{_inline(task.group(2), resolve_link)}</li>')
+                content = f'<span class="task-list" role="img" aria-label="{state}">{"✓" if complete else "○"}</span>{_inline(task.group(2), resolve_link)}'
                 plain.append(_plain(task.group(2)))
             else:
-                items.append(f"<li>{_inline(item, resolve_link)}</li>")
+                content = _inline(item, resolve_link)
                 plain.append(_plain(item))
+            blocks, current = item_blocks(current, base_indent)
+            items.append(f"<li>{content}{blocks}</li>")
         return f"<{tag}{start_attribute}>{''.join(items)}</{tag}>", current
 
     while index < len(lines):
         line = lines[index]
-        fence = FENCE.match(line)
         heading = HEADING.match(line)
-        if fence:
+        if _fence(line):
             flush_paragraph()
-            language = fence.group(1).lower() or "text"
-            index += 1
-            code: list[str] = []
-            while index < len(lines) and not FENCE.match(lines[index]):
-                code.append(lines[index])
-                index += 1
-            if index == len(lines):
-                raise DocSproutError("Markdown: unclosed fenced code block")
-            tex = "\n".join(code)
-            if language == "math":
-                output.append(f'<div class="math-display" data-tex="{html.escape(tex, quote=True)}"></div>')
-            else:
-                classes = f"language-{html.escape(language, quote=True)}"
-                if supports_language(language):
-                    classes += " syntax-highlight"
-                output.append(f'<pre class="{classes}"><code>{highlight_code(tex, language)}</code></pre>')
-            plain.extend(code)
+            block, index = fenced_block(index)
+            output.append(block)
+            continue
         elif line.strip() == "$$":
             flush_paragraph()
             index += 1
@@ -258,7 +324,7 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
         elif heading:
             flush_paragraph()
             level, text = len(heading.group(1)), _plain(heading.group(2))
-            identifier = slugify(text)
+            identifier = heading_anchor(text)
             if identifier in seen:
                 suffix = 2
                 while f"{identifier}-{suffix}" in seen:
@@ -351,4 +417,6 @@ def render_markdown(source: str, resolve_link: LinkResolver) -> RenderedMarkdown
         index += 1
     flush_paragraph()
     title = next((text for level, text, _ in headings if level == 1), "Documentation")
-    return RenderedMarkdown("\n".join(output), title, tuple(headings), re.sub(r"\s+", " ", " ".join(plain)).strip())
+    return RenderedMarkdown(
+        "\n".join(output), title, tuple(headings), re.sub(r"\s+", " ", " ".join(plain)).strip(), frozenset(code_lines),
+    )

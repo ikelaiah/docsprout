@@ -17,6 +17,17 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
         (docs / "docsprout.json").write_text(json.dumps(document), encoding="utf-8")
         (docs / "layout.json").write_text(json.dumps(layout), encoding="utf-8")
 
+    def test_null_description_is_empty_not_the_word_none(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(
+                root,
+                {"schema_version": 1, "project": {"name": "Demo", "description": None}},
+                {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]},
+            )
+
+            self.assertEqual("", load_config(root).description)
+
     def test_explains_how_to_fix_an_invalid_accent_colour(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

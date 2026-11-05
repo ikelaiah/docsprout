@@ -492,7 +492,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
             raise DocSproutError(f"{primary}: identity.links[{index}].url must be an absolute http(s) URL")
         project_links.append((link["label"].strip(), link["url"]))
     return SiteConfig(
-        name=project["name"].strip(), description=str(project.get("description", "")),
+        name=project["name"].strip(), description=project.get("description") or "",
         repository_url=project.get("repository_url"), site_url=project.get("site_url"),
         accent=accent, accent_secondary=secondary, theme_style=theme_style, content_width=content_width,
         banner=banner_path,

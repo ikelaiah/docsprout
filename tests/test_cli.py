@@ -245,6 +245,27 @@ class CliTests(unittest.TestCase):
             self.assertTrue(preview.rebuild_if_changed())
             self.assertIn("Updated after retry", (root / "build" / "docs-site" / "index.html").read_text(encoding="utf-8"))
 
+    def test_preview_reports_an_unchanged_failure_once_and_its_recovery(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.assertEqual(0, main(["init", "--root", str(root)]))
+            preview = _PreviewBuilder(root=root, output=root / "build" / "docs-site", release="preview")
+            preview.build_initial()
+            index = root / "docs" / "index.md"
+            index.write_text("# Home\n\n```\nunclosed\n", encoding="utf-8")
+            output = io.StringIO()
+            with redirect_stdout(output):
+                for _ in range(4):
+                    preview.poll()
+            self.assertEqual(1, output.getvalue().count("Preview rebuild failed"))
+            self.assertIn("Still serving the last successful preview", output.getvalue())
+
+            index.write_text("# Fixed\n", encoding="utf-8")
+            output = io.StringIO()
+            with redirect_stdout(output):
+                preview.poll()
+            self.assertIn("Rebuilt documentation preview.", output.getvalue())
+
     def test_preview_watcher_survives_transient_source_errors(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
