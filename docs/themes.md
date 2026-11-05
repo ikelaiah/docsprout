@@ -25,16 +25,18 @@ configure modes.
 You choose the site's starting **Style**:
 
 - **Classic** (`classic`) pairs crisp surfaces with accent-edged section
-  headings, an accent-ruled hero and an accent edge on hovered cards;
+  headings, an accent-ruled hero, an accent edge on hovered cards and
+  window-style code blocks;
 - **Paper** (`paper`) sets long guides on a warm, layered reading sheet with
   lighter serif headings, italic introductory copy, an editorial drop cap,
-  pull-quote callouts and stacked-sheet cards;
+  pull-quote callouts, stacked-sheet cards and code printed on the page in
+  warm, muted colours (dark panels in Dark mode);
 - **E-ink** (`e-ink`) pairs square, flat surfaces with uppercase subheads,
-  double rules, ink-toned callout rails, grid-bordered tables and still,
+  double rules, ink-only colour, grid-bordered tables and still,
   shadow-free cards;
 - **Glassmorphic** (`glassmorphic`) stages a glowing hero, softly lit frosted
-  panels with specular edges, rounded controls, hover-glowing cards and a
-  gradient hero title.
+  panels with specular edges, frosted code blocks, rounded controls,
+  hover-glowing cards and a gradient hero title.
 
 Visitors can switch the Style too. DocSprout remembers both choices in
 the browser when storage is available.
@@ -65,12 +67,12 @@ CSS and system fonts, with no additional downloads.
 **E-ink** is an ink-on-paper manual: flat white or near-black surfaces, ruled
 headings with uppercase subheads, double-rule titles and dividers, square
 corners, permanently underlined links, grid-bordered tables with flat rows
-and an undecorated hero—no shadows, no gradients. Brand decorations such
-as the reading-progress bar, callout rails and text selection stay ink-toned
-rather than accent-coloured. Code blocks stay dark panels with a flat
-language bar so syntax highlighting remains readable. It suits long-form
-reading and displays where colour is
-unreliable; its dark variant is a dimmed night-reading surface rather than a
+and an undecorated hero—no shadows, no gradients. It is ink-only: links,
+focus rings, buttons, active navigation, icons and syntax use the text colour
+whatever accent you configure. Callout types differ by rule and marker shape
+(thin, dashed, double, framed), and code is highlighted by weight: bold
+keywords, italic comments. It suits long-form reading and displays where
+colour is unreliable; its dark variant is a dimmed night-reading surface rather than a
 saturated dark theme.
 
 **Glassmorphic** puts a viewport-anchored mesh of soft accent tints behind
@@ -134,7 +136,7 @@ pair when you do not set an accent.
 
 DocSprout also proves the brand colour against every reading surface it ships.
 Link (`--dk-interactive`) and focus (`--dk-focus-ring`) values are computed for
-each visual style and colour mode: the exact accent is kept wherever it meets
+each accented visual style and colour mode (E-ink uses ink instead): the exact accent is kept wherever it meets
 WCAG AA contrast, and a verification-safe variant is substituted where it
 cannot. If your accent fails AA on the light page background,
 `docsprout check` prints a note and `docsprout audit` reports `DK104` with the
