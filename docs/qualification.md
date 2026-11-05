@@ -1,7 +1,8 @@
-# Qualification evidence for DocSprout v1.4.1
+# Qualification evidence for DocSprout v1.5.0
 
-DocSprout v1.4.1 renders common Markdown the way it is written, on top of
-v1.4.0's reader interactions and repeatable browser qualification. It preserves JSON and Markdown layout compatibility and the
+DocSprout v1.5.0 makes every visual style meet WCAG AA for callouts,
+placeholders and focus, keeps prose at a readable measure, and gives each
+style its own code treatment. It preserves JSON and Markdown layout compatibility and the
 v1.0.0 stable contract. The claims below are the contract that CI and the
 maintained fixtures exercise. Every row names how it is verified. "Supported"
 means the combination is run by automated qualification on every pull request
@@ -17,7 +18,7 @@ as completed when the required tooling is absent.
 | --- | --- | --- |
 | Which Python versions? | Python 3.10–3.14 | [Supported Python versions](#supported-python-versions) |
 | Which operating systems? | Linux, Windows and macOS | [Qualified operating systems](#qualified-operating-systems) |
-| What is checked automatically? | The unit suite, package artifacts, generated-site contracts and browser reader scenarios | [Package qualification](#package-qualification), [accessibility qualification](#accessibility-qualification) and [v1.4.1 additions](#v141-additions) |
+| What is checked automatically? | The unit suite, package artifacts, generated-site contracts and browser reader scenarios | [Package qualification](#package-qualification), [accessibility qualification](#accessibility-qualification) and [v1.5.0 additions](#v150-additions) |
 | What still needs a person? | Actual Safari, touch-device and screen-reader checks, plus visual inspection | [Manual browser/keyboard matrix](#manual-browserkeyboard-matrix) and [known limitations](#known-limitations) |
 
 ## Supported Python versions
@@ -296,6 +297,17 @@ site configuration; no schema, route or token value changes:
   and `_run_git` when Git is unavailable, plus manifest rejection of release
   names reserved for generated output (`versions.json`, `index.html`) and
   names that differ only by case on case-insensitive filesystems.
+
+## v1.5.0 additions
+
+- Contrast tests recompute callout-label, placeholder and Paper syntax
+  contrast from the shipped stylesheet against every style's surfaces in
+  Light, Dark and System modes, so a colour change that fails AA fails CI.
+- Tests prove E-ink maps every accent token to ink, its four callout types
+  differ by shape alone, window dots are Classic-only, and the reading measure
+  is set in characters.
+- Browser measurements (recorded in the release PR) show no visible colour in
+  E-ink and 58–73 characters per prose line across styles and widths.
 
 ## v1.4.1 additions
 

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.5.0
+
+A theme-quality minor. No configuration schema, generated route, heading
+anchor, runtime dependency or documented CSS token name change is required.
+Update package and workflow pins to `v1.5.0`, then rebuild and read a page in
+each style you offer: E-ink now ignores the accent, Paper prints code on the
+page, and prose lines are shorter.
+
 ### Fixed
 
 - Callout labels meet WCAG AA text contrast in every theme and colour mode.
