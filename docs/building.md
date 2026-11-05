@@ -38,7 +38,7 @@ custom stylesheet even when those assets live elsewhere in the repository.
 ## Ship a ZIP
 
 ```bash
-docsprout build --release 1.4.0 --offline-archive dist/docsprout-docs-1.4.0.zip
+docsprout build --release 1.4.1 --offline-archive dist/docsprout-docs-1.4.1.zip
 ```
 
 The release label used for an offline archive must start with a letter or

@@ -105,6 +105,6 @@ needs no custom CSS; the custom stylesheet mechanism is a deliberately bounded
 escape hatch whose inclusion mechanics DocSprout owns and whose accessibility
 the author owns.
 
-Downstream projects should pin released tags such as `v1.4.0`, never the main
+Downstream projects should pin released tags such as `v1.4.1`, never the main
 branch. The stable boundary and deprecation policy are in [Machine-readable
 contracts](machine-contracts.md).

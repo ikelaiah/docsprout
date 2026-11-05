@@ -1,7 +1,7 @@
-# Qualification evidence for DocSprout v1.4.0
+# Qualification evidence for DocSprout v1.4.1
 
-DocSprout v1.4.0 improves reader interactions and adds repeatable browser
-qualification. It preserves JSON and Markdown layout compatibility and the
+DocSprout v1.4.1 renders common Markdown the way it is written, on top of
+v1.4.0's reader interactions and repeatable browser qualification. It preserves JSON and Markdown layout compatibility and the
 v1.0.0 stable contract. The claims below are the contract that CI and the
 maintained fixtures exercise. Every row names how it is verified. "Supported"
 means the combination is run by automated qualification on every pull request
@@ -17,7 +17,7 @@ as completed when the required tooling is absent.
 | --- | --- | --- |
 | Which Python versions? | Python 3.10–3.14 | [Supported Python versions](#supported-python-versions) |
 | Which operating systems? | Linux, Windows and macOS | [Qualified operating systems](#qualified-operating-systems) |
-| What is checked automatically? | The unit suite, package artifacts, generated-site contracts and browser reader scenarios | [Package qualification](#package-qualification), [accessibility qualification](#accessibility-qualification) and [v1.4.0 additions](#v140-additions) |
+| What is checked automatically? | The unit suite, package artifacts, generated-site contracts and browser reader scenarios | [Package qualification](#package-qualification), [accessibility qualification](#accessibility-qualification) and [v1.4.1 additions](#v141-additions) |
 | What still needs a person? | Actual Safari, touch-device and screen-reader checks, plus visual inspection | [Manual browser/keyboard matrix](#manual-browserkeyboard-matrix) and [known limitations](#known-limitations) |
 
 ## Supported Python versions
@@ -296,6 +296,17 @@ site configuration; no schema, route or token value changes:
   and `_run_git` when Git is unavailable, plus manifest rejection of release
   names reserved for generated output (`versions.json`, `index.html`) and
   names that differ only by case on case-insensitive filesystems.
+
+## v1.4.1 additions
+
+- Renderer regression tests cover headings ending in `#`, underscores in
+  titles with unchanged anchors, currency beside inline math, spaced
+  asterisks, parentheses in link targets, `~~~` fences and fenced code inside
+  list items.
+- Audit parity tests prove the auditor skips exactly the fenced-code lines the
+  renderer reports, including code inside list items.
+- Preview tests prove an unchanged rebuild failure is reported once while
+  retries continue, and that recovery is announced.
 
 ## v1.4.0 additions
 
