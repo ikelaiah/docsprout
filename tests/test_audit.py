@@ -187,6 +187,16 @@ class AuditTests(unittest.TestCase):
             self.assertIn("<a ", render_markdown(source, lambda target: target).html)
             self.assertEqual([("DK001", 4)], [(finding.code, finding.line) for finding in audit_project(root).findings])
 
+    def test_audit_skips_code_fenced_inside_list_items(self) -> None:
+        from docsprout.audit import audit_project
+
+        source = "# Home\n\n1. Example:\n\n   ~~~markdown\n   [Missing](missing.md)\n   ~~~\n\n[Real](gone.md)\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            _write_project(root, {"index.md": source})
+
+            self.assertEqual([("DK001", 9)], [(finding.code, finding.line) for finding in audit_project(root).findings])
+
     def test_audit_keeps_display_math_open_when_it_contains_backticks(self) -> None:
         from docsprout.audit import audit_project
 

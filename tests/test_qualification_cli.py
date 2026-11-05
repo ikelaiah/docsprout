@@ -49,7 +49,8 @@ class RealCliWorkflowQualificationTests(unittest.TestCase):
             self.assertTrue((site / "assets" / "katex" / "katex.min.css").is_file())
             self.assertTrue(any((site / "assets" / "katex" / "fonts").glob("*.woff2")))
             index = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
-            plain_name = re.sub(r"[*_`]+", "", root.name)
+            # Underscores are content (v1.4.1); temporary names often contain them.
+            plain_name = re.sub(r"[*`]+", "", root.name)
             self.assertEqual(1, index["schema_version"])
             self.assertEqual(
                 [{"title": plain_name, "section": "Getting started", "url": "index.html", "text": f"{plain_name} Welcome to the documentation."}],

@@ -245,7 +245,9 @@ class ImageAltEscapingTests(unittest.TestCase):
         image = images[0]
         self.assertEqual({"src", "alt"}, set(image))
         self.assertNotIn("onerror", image)
-        self.assertEqual('images/diagram.svg" onerror="alert(1', image["src"])
+        # Balanced parentheses belong to the target (v1.4.1), so the whole
+        # payload stays one escaped src value.
+        self.assertEqual('images/diagram.svg" onerror="alert(1)', image["src"])
         self.assertEqual("diagram", image["alt"])
         tags = re.findall(r"<img\b[^>]*>", rendered.html)
         self.assertEqual(1, len(tags))
@@ -477,3 +479,56 @@ class ProtectedResolverTests(unittest.TestCase):
         self.assertEqual(["[b](m2.md)"], _decoded_math_tex(rendered.html))
         self.assertNotIn("<a href", rendered.html)
         self.assertNotIn("<img", rendered.html)
+
+
+class ReaderFidelityTests(unittest.TestCase):
+    """v1.4.1: common prose renders the way the author wrote it."""
+
+    def render(self, source: str):
+        return render_markdown(source, lambda target: target)
+
+    def test_heading_keeps_a_trailing_hash_that_belongs_to_the_word(self) -> None:
+        rendered = self.render("## Learn C#\n\n## Closed heading ##\n")
+        self.assertEqual(["Learn C#", "Closed heading"], [text for _level, text, _id in rendered.headings])
+        self.assertIn(">Learn C#</h2>", rendered.html)
+
+    def test_titles_keep_underscores_while_anchors_stay_stable(self) -> None:
+        rendered = self.render("# Use snake_case names\n\n## `my_func()` reference\n")
+        self.assertEqual("Use snake_case names", rendered.title)
+        self.assertEqual(
+            [("Use snake_case names", "use-snakecase-names"), ("my_func() reference", "myfunc-reference")],
+            [(text, identifier) for _level, text, identifier in rendered.headings],
+        )
+        self.assertIn("snake_case", rendered.text)
+
+    def test_currency_amounts_are_not_math(self) -> None:
+        rendered = self.render("It costs $5 and $10 today, or $x$ when inline.")
+        self.assertIn("$5 and $10", rendered.html)
+        self.assertEqual(1, rendered.html.count("math-inline"))
+
+    def test_spaced_asterisks_stay_literal(self) -> None:
+        rendered = self.render("Compute 2 * 3 * 4, then *emphasis* and **strong**.")
+        self.assertIn("2 * 3 * 4", rendered.html)
+        self.assertIn("<em>emphasis</em>", rendered.html)
+        self.assertIn("<strong>strong</strong>", rendered.html)
+
+    def test_link_targets_keep_balanced_parentheses(self) -> None:
+        rendered = self.render("See [Pascal](https://en.wikipedia.org/wiki/Pascal_(programming_language)) (the language).")
+        self.assertIn('href="https://en.wikipedia.org/wiki/Pascal_(programming_language)"', rendered.html)
+        self.assertIn("</a> (the language).", rendered.html)
+
+    def test_tilde_fences_are_code_and_close_only_on_their_marker(self) -> None:
+        rendered = self.render("~~~text\n```\nliteral\n~~~\n")
+        self.assertIn('<pre class="language-text"><code>```\nliteral</code></pre>', rendered.html)
+        self.assertEqual(frozenset({0, 1, 2, 3}), rendered.code_lines)
+
+    def test_fenced_code_inside_a_list_item_stays_in_the_item(self) -> None:
+        source = "1. Install:\n\n   ```text\n   pip install x\n     indented\n   ```\n\n2. Run it.\n"
+        rendered = self.render(source)
+        self.assertIn('<li>Install:<pre class="language-text"><code>pip install x\n  indented</code></pre></li>', rendered.html)
+        self.assertIn('<ol start="2"><li>Run it.</li></ol>', rendered.html)
+        self.assertEqual(frozenset({2, 3, 4, 5}), rendered.code_lines)
+
+    def test_fence_directly_under_a_list_item_is_not_item_text(self) -> None:
+        rendered = self.render("- Run:\n  ```text\n  make\n  ```\n")
+        self.assertIn('<li>Run:<pre class="language-text"><code>make</code></pre></li>', rendered.html)

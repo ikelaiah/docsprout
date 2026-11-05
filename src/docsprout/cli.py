@@ -258,6 +258,26 @@ class _PreviewBuilder:
         )
         self._renderer_snapshot: tuple[tuple[str, int, int], ...] = ()
         self._lock = threading.Lock()
+        self._last_failure: str | None = None
+
+    def poll(self) -> None:
+        """Rebuild when sources changed and report the outcome once.
+
+        A failed build is retried on every poll (it may be a transient file
+        lock), but an unchanged failure is printed only the first time.
+        """
+        try:
+            rebuilt = self.rebuild_if_changed()
+        except Exception as error:
+            message = f"Preview rebuild failed: {error}"
+            if message != self._last_failure:
+                self._last_failure = message
+                print(message)
+                print("Still serving the last successful preview; retrying automatically.")
+            return
+        if rebuilt:
+            self._last_failure = None
+            print("Rebuilt documentation preview.")
 
     @staticmethod
     def _stamp(path: Path) -> tuple[int, int]:
@@ -327,13 +347,9 @@ class _PreviewRequestHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
     def _rebuild_if_needed(self) -> None:
-        try:
-            if self._preview.rebuild_if_changed():
-                print("Rebuilt documentation preview.")
-        except Exception as error:
-            # A transient stat/read failure must never take down the request or
-            # the watcher; the next request or poll retries.
-            print(f"Preview rebuild failed: {error}")
+        # A transient stat/read failure must never take down the request; the
+        # next request or poll retries.
+        self._preview.poll()
 
     def do_GET(self) -> None:
         self._rebuild_if_needed()
@@ -349,14 +365,10 @@ class _PreviewRequestHandler(SimpleHTTPRequestHandler):
 
 
 def _watch_preview(preview: _PreviewBuilder, stopped: threading.Event) -> None:
+    # poll() keeps the thread alive through transient source errors (editor
+    # atomic saves, antivirus locks); the next poll retries.
     while not stopped.wait(0.25):
-        try:
-            if preview.rebuild_if_changed():
-                print("Rebuilt documentation preview.")
-        except Exception as error:
-            # Keep the daemon thread alive through transient source errors
-            # (editor atomic saves, antivirus locks); the next poll retries.
-            print(f"Preview rebuild failed: {error}")
+        preview.poll()
 
 
 def _serve(root: Path, host: str, port: int) -> None:

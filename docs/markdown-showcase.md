@@ -48,7 +48,8 @@ lands in the outline and in the address.
 
 **strong emphasis**, *emphasis*, `inline code`, and ~~deleted words~~ — write
 it that way in prose. Only asterisks make emphasis; `__underscores__` stay
-literal. A code span keeps its characters exact: the typographic conversion
+literal, so `snake_case` names need no escaping. Asterisks must touch the
+words they wrap: `2 * 3 * 4` stays arithmetic. A code span keeps its characters exact: the typographic conversion
 described below never touches it, so `--flag` and `a--b` survive untouched.
 
 Strikethrough uses double tildes:
@@ -97,7 +98,9 @@ page, and an external site. Link targets are checked while the site builds.
 Only `http`, `https` and `mailto` addresses are allowed; relative `.md`
 targets must name a page that is published in `layout.json`; and `#fragment`
 jumps must match a heading on the target page. Anything else stops the build
-with a message that names the file.
+with a message that names the file. A target may contain balanced
+parentheses, as Wikipedia addresses such as `.../Pascal_(programming_language)`
+do.
 
 ## Images
 
@@ -156,6 +159,27 @@ you continue instructions after an explanation:
 
 3. Build the site.
 4. Inspect the result.
+
+A code block indented under an item belongs to that step, with or without a
+blank line before it:
+
+~~~markdown
+1. Install DocSprout:
+
+   ```bash
+   python -m pip install docsprout
+   ```
+
+2. Preview the site.
+~~~
+
+1. Install DocSprout:
+
+   ```bash
+   python -m pip install docsprout
+   ```
+
+2. Preview the site.
 
 ## Tables
 
@@ -282,16 +306,19 @@ follow them, and three backticks close it. Only the language may follow the
 backticks: an extra word makes the line unrecognisable as a fence, which
 leaves the block open and stops the build.
 
-Fence markers must start at column 0. The sample below indents them by one
-space only because it sits inside another code block:
+Three tildes (`~~~`) work the same way, and a block closes only on the marker
+that opened it. Use tildes to show a backtick fence inside a code block:
 
-```markdown
+~~~markdown
 ## Install DocSprout
 
- ```bash
- python -m pip install "docsprout"
- ```
+```bash
+python -m pip install "docsprout"
 ```
+~~~
+
+Fence markers start at column 0, except under a list item, where they are
+indented to the item's text.
 
 DocSprout highlights `json`, `python`, `bash`, `yaml`, `markdown`, `pascal`
 and their short aliases locally — no network, no CDN. Any other language is
@@ -324,6 +351,10 @@ Euler's identity is $e^{i\pi} + 1 = 0$.
 ```
 
 Euler's identity is $e^{i\pi} + 1 = 0$.
+
+The opening `$` must touch the formula and the closing `$` must follow it
+directly, not be followed by a digit. Prices such as $5 and $10 therefore
+stay prose.
 
 Inline math is TeX, not Markdown: link and image syntax inside dollars is
 never resolved or audited:
