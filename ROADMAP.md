@@ -352,6 +352,14 @@ dependency, or syntax change.
 - [x] Improve the architecture and contributor guides with a readable build
       diagram, Markdown safety notes and a concrete browser-check workflow.
 
+## v1.5.0 — Theme quality
+
+- [x] Meet WCAG AA for callout labels, the search placeholder and focus rings
+      in every style and colour mode.
+- [x] Make E-ink ink-only, with callouts told apart by shape.
+- [x] Keep prose at 58–73 characters per line, and give each style its own
+      code-block treatment.
+
 ## v1.4.1 — Reader fidelity
 
 - [x] Render common Markdown as written: `C#` headings, underscores in titles,

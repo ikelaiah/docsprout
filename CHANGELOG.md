@@ -2,6 +2,41 @@
 
 ## Unreleased
 
+## 1.5.0
+
+A theme-quality minor. No configuration schema, generated route, heading
+anchor, runtime dependency or documented CSS token name change is required.
+Update package and workflow pins to `v1.5.0`, then rebuild and read a page in
+each style you offer: E-ink now ignores the accent, Paper prints code on the
+page, and prose lines are shorter.
+
+### Fixed
+
+- Callout labels meet WCAG AA text contrast in every theme and colour mode.
+  Dark and System-dark modes use lighter callout colours; light-mode "note",
+  "important" and "warning" are darker.
+- The search placeholder uses the theme's muted colour instead of the
+  browser default, which failed contrast in every theme.
+- Focus rings in the sidebar and page outline are drawn inside the link, so
+  their scrolling panels no longer clip them.
+- Focus rings on code blocks (the copy button) use the code text colour, so
+  they stay visible on the dark code surface in light themes.
+- E-ink is ink-only. Links, focus rings, buttons, active navigation, icons
+  and syntax use the text colour whatever accent is configured. Callout types
+  differ by rule and marker shape, and code is highlighted by weight.
+- Top-level pages in the phone navigation menu use the theme's text colour
+  instead of the browser's default link blue.
+
+### Changed
+
+- The reading measure is set in characters, so body text keeps about 60–73
+  characters per line in every style (it was up to about 99). Defaults:
+  compact `54ch`, comfortable `60ch`, wide `64ch`; Paper uses narrower values
+  because its serif digits are narrow. Tables and code keep the full width.
+- Code blocks follow the style. Paper prints code on the page in warm,
+  low-chroma colours (dark panels in Dark mode), Glassmorphic uses a frosted
+  panel, and window dots appear only in Classic.
+
 ## 1.4.1
 
 A reader-fidelity patch. No configuration schema, generated route, heading

@@ -99,6 +99,12 @@ class AccessibilityQualificationTests(unittest.TestCase):
             self.assertIn(f'html[data-visual-theme="{theme}"]', css)
         self.assertIn("@media(forced-colors:active)", css)
         self.assertIn("outline-color:Highlight", css)
+        # Scrolling navigation panels would clip an outward ring; draw it inside.
+        self.assertIn(".sidebar a:focus-visible,.toc a:focus-visible,.sidebar .nav-group summary:focus-visible{outline-offset:-3px}", css)
+        # Controls on dark code blocks use the code text colour for their ring.
+        self.assertIn(".prose pre :focus-visible{outline-color:var(--dk-code-text)}", css)
+        # Top-level phone-menu pages are styled, not browser-default blue.
+        self.assertIn(".mobile-nav nav>a{display:block;padding:.55rem .25rem;color:var(--dk-text);text-decoration:none}", css)
 
     def test_keyboard_readers_can_skip_repeated_navigation(self) -> None:
         for name, site in (("fixture", self.fixture), ("DocSprout", self.docsprout)):

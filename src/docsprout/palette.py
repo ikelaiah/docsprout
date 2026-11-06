@@ -5,7 +5,8 @@ against every reading surface it ships, and substitutes a verification-passing
 variant only when the exact configured colour would fail WCAG AA. The
 documented ``--dk-*`` token family is unchanged: the verified values override
 the internal defaults of ``--dk-interactive`` and ``--dk-focus-ring`` in every
-theme and colour mode.
+accented theme and colour mode. E-ink is ink-only: its stylesheet maps links,
+focus and accents to the text colour, so it needs no derived values.
 """
 
 from __future__ import annotations
@@ -50,15 +51,12 @@ class _Context:
 _CONTEXTS = (
     _Context(":root", "light", CLASSIC_LIGHT),
     _Context('html[data-visual-theme="paper"]', "light", PAPER_LIGHT),
-    _Context('html[data-visual-theme="e-ink"]', "light", EINK_LIGHT),
     _Context('html[data-visual-theme="glassmorphic"]', "light", GLASS_LIGHT_PROOF),
     _Context('html[data-visual-theme="classic"][data-theme="dark"]', "dark", CLASSIC_DARK),
     _Context('html[data-visual-theme="paper"][data-theme="dark"]', "dark", PAPER_DARK),
-    _Context('html[data-visual-theme="e-ink"][data-theme="dark"]', "dark", EINK_DARK),
     _Context('html[data-visual-theme="glassmorphic"][data-theme="dark"]', "dark", GLASS_DARK_PROOF),
     _Context('html[data-visual-theme="classic"]:not([data-theme])', "dark", CLASSIC_DARK, system_dark=True),
     _Context('html[data-visual-theme="paper"]:not([data-theme])', "dark", PAPER_DARK, system_dark=True),
-    _Context('html[data-visual-theme="e-ink"]:not([data-theme])', "dark", EINK_DARK, system_dark=True),
     _Context('html[data-visual-theme="glassmorphic"]:not([data-theme])', "dark", GLASS_DARK_PROOF, system_dark=True),
 )
 
