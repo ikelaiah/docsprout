@@ -16,7 +16,7 @@ keep the defaults.
 | --- | --- |
 | `docsprout.json` | `schema_version`, `project`, `theme`, `layout`, `banner`, `identity`, `homepage` |
 | `project` | `name`, `description`, `repository_url`, `site_url` |
-| `theme` | `preset`, `style`, `accent`, `accent_secondary`, `custom_css` |
+| `theme` | `preset`, `style`, `style_picker`, `accent`, `accent_secondary`, `custom_css` |
 | `layout` in `docsprout.json` | `content_width` (`compact`, `comfortable`, `wide`) |
 | `banner` | `path`, `alt` |
 | `identity` | `logo`, `footer`, `links` |

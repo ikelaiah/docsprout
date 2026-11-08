@@ -7,6 +7,7 @@
   "theme": {
     "preset": "teal",
     "style": "classic",
+    "style_picker": true,
     "custom_css": "docs/assets/custom.css"
   },
   "banner": {

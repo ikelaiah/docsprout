@@ -95,6 +95,7 @@ class VersionedBuildTests(unittest.TestCase):
         self.assertNotIn("New content", (old_site / "index.html").read_text(encoding="utf-8"))
         self.assertIn("Version one", (old_site / "index.html").read_text(encoding="utf-8"))
         self.assertIn('value="../2.0.0/index.html"', (old_site / "index.html").read_text(encoding="utf-8"))
+        self.assertIn('id="version-select"', (old_site / "index.html").read_text(encoding="utf-8"))
 
     def test_build_all_preserves_the_previous_site_when_a_later_release_fails(self) -> None:
         root = self._repository()

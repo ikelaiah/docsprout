@@ -287,9 +287,16 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         f"{footer_links}"
         '<a class="back-to-top" href="#content">Back to top</a></footer>'
     )
-    header_controls = f'''<div class="header-controls" aria-label="Site controls"><label class="header-control"><span>Version</span><select id="version-select" aria-label="Documentation version">{version_options}</select></label><label class="header-control"><span>Style</span><select id="visual-theme" aria-label="Documentation visual theme"><option value="classic">Classic</option><option value="paper">Paper</option><option value="e-ink">E-ink</option><option value="glassmorphic">Glassmorphic</option></select></label><label class="header-control"><span>Mode</span><select id="theme-select" aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>'''
+    display_toggle = '<button class="display-toggle" type="button" aria-expanded="false" aria-controls="header-controls"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M2 4h7M13 4h1M2 8h2M8 8h6M2 12h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="4" r="1.75" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="8" r="1.75" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="1.75" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Display</span></button>'
+    style_control = '<label class="header-control"><span>Style</span><select id="visual-theme" aria-label="Documentation visual theme"><option value="classic">Classic</option><option value="paper">Paper</option><option value="e-ink">E-ink</option><option value="glassmorphic">Glassmorphic</option></select></label>' if config.style_picker else ''
+    # A single release has nothing to switch to.
+    version_control = f'<label class="header-control"><span>Version</span><select id="version-select" aria-label="Documentation version">{version_options}</select></label>' if version_options.count("<option") > 1 else ''
+    header_controls = f'''<div class="header-controls" id="header-controls" aria-label="Site controls">{version_control}{style_control}<label class="header-control"><span>Mode</span><select id="theme-select" aria-label="Colour theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>'''
     main_context = ' data-homepage="true"' if homepage else ' data-homepage="false"'
-    theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme'),visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;if(['classic','paper','e-ink','glassmorphic'].includes(visualTheme))root.dataset.visualTheme=visualTheme}catch(_){}</script>"""
+    theme_bootstrap = """<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);if(previous!==null){localStorage.setItem(primary,previous);localStorage.removeItem(legacy);return previous}return null},theme=readStored('docsprout-theme','dockit-fp-theme');if(theme==='light'||theme==='dark')root.dataset.theme=theme;STYLE}catch(_){}</script>"""
+    # A remembered visitor style applies only while the site offers the picker.
+    stored_style = "const visualTheme=readStored('docsprout-visual-theme','dockit-fp-visual-theme');if(['classic','paper','e-ink','glassmorphic'].includes(visualTheme))root.dataset.visualTheme=visualTheme" if config.style_picker else ""
+    theme_bootstrap = theme_bootstrap.replace("STYLE", stored_style)
     custom_css_link = f'<link rel="stylesheet" href="{html.escape(_relative(current_route, "assets/custom.css"), quote=True)}">' if custom_css else ""
     home_route = html.escape(_relative(current_route, "index.html"), quote=True)
     search_index_route = html.escape(_relative(current_route, "search-index.json"), quote=True)
@@ -329,7 +336,7 @@ def _shell(*, body: str, headings: tuple[tuple[int, str, str], ...], page: Page,
         ' through results, Enter to open, and Escape to close.</span>'
         '<div id="search-results" class="search-results" role="region"'
         ' aria-label="Search results" aria-live="polite" hidden></div></div>'
-        f"{header_controls}"
+        f"{display_toggle}{header_controls}"
         '</div></header>'
     )
     mobile_navigation = f'<details class="mobile-nav"><summary>Browse documentation</summary><nav aria-label="Documentation navigation">{nav}</nav></details>'

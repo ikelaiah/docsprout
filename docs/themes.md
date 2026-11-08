@@ -22,7 +22,7 @@ Visitors can choose a **Mode**: **System**, **Light** or **Dark**. System
 follows their browser or operating-system preference. You do not need to
 configure modes.
 
-You choose the site's starting **Style**:
+You choose the site's **Style**:
 
 - **Classic** (`classic`) pairs crisp surfaces with accent-edged section
   headings, an accent-ruled hero, an accent edge on hovered cards and
@@ -38,8 +38,10 @@ You choose the site's starting **Style**:
   panels with specular edges, frosted code blocks, rounded controls,
   hover-glowing cards and a gradient hero title.
 
-Visitors can switch the Style too. DocSprout remembers both choices in
-the browser when storage is available.
+Visitors see only your Style. To offer a **Style** menu as well, set
+`"style_picker": true` in `theme`. Your `style` is then the starting choice.
+DocSprout remembers a visitor's Mode, and Style when offered, in the browser
+when storage is available.
 
 Links follow one system in every style: inline content links carry a
 persistent underline, because colour alone never identifies them; navigation
@@ -49,8 +51,8 @@ shift instead, and buttons never underline.
 
 The maintained
 [single-version example](https://github.com/ikelaiah/docsprout/tree/v1.5.0/examples/single-version)
-starts in Paper (`"style": "paper"`), so its built opening page shows the
-warm reading surface before a visitor changes the control.
+uses Paper (`"style": "paper"`), so its built opening page shows the
+warm reading surface.
 
 Classic is the showcase default: it keeps the header, navigation and reading
 surface quiet so ordinary Markdown supplies the personality. Paper, E-ink and

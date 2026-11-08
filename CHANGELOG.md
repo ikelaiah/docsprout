@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Changed
+
+- The **Style** menu is hidden unless `theme.style_picker` is `true`. Visitors
+  see the configured `theme.style`; a style they chose earlier is ignored while
+  the menu is off. Add `"style_picker": true` to keep the menu.
+- On screens 768px wide and narrower, Version, Style and Mode sit behind a
+  **Display** button beside search, leaving the header with the logo, search
+  and button. The panel closes on a tap outside it or on Escape. Long project
+  names are cut short with an ellipsis instead of wrapping the header.
+- The **Version** menu appears only when a site has more than one release.
+- Search on phones uses 16px text, so iOS no longer zooms in on focus, and
+  hides the `/` shortcut hint on touch screens.
+
+### Fixed
+
+- Header menus no longer leave an empty column on desktop when the Style or
+  Version menu is hidden.
+
 ## 1.5.0
 
 A theme-quality minor. No configuration schema, generated route, heading
