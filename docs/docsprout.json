@@ -7,7 +7,8 @@
     "site_url": "https://ikelaiah.github.io/docsprout"
   },
   "theme": {
-    "preset": "purple"
+    "preset": "purple",
+    "style_picker": true
   },
   "banner": {
     "path": "docs/assets/docsprout-mountain-banner.jpg",

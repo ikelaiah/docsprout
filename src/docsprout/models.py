@@ -49,3 +49,4 @@ class SiteConfig:
     palette: Palette | None = None
     expanded_sections: tuple[str, ...] = ()
     expanded_groups: tuple[tuple[str, str], ...] = ()
+    style_picker: bool = False

@@ -35,7 +35,7 @@ CONFIG_FILENAME = "docsprout.json"
 LEGACY_CONFIG_FILENAME = "dockit.json"
 DOCSPROUT_FIELDS = ("schema_version", "project", "theme", "layout", "banner", "identity", "homepage")
 PROJECT_FIELDS = ("name", "description", "repository_url", "site_url")
-THEME_FIELDS = ("preset", "style", "accent", "accent_secondary", "custom_css")
+THEME_FIELDS = ("preset", "style", "style_picker", "accent", "accent_secondary", "custom_css")
 LAYOUT_OPTION_FIELDS = ("content_width",)
 BANNER_FIELDS = ("path", "alt")
 IDENTITY_FIELDS = ("logo", "footer", "links")
@@ -294,6 +294,9 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     theme_style = theme.get("style", "classic")
     if not isinstance(theme_style, str) or theme_style not in THEME_STYLES:
         raise DocSproutError(f"{primary}: field 'theme.style' must be one of {', '.join(sorted(THEME_STYLES))}. Choose a supported visual theme or remove the field.")
+    style_picker = theme.get("style_picker", False)
+    if not isinstance(style_picker, bool):
+        raise DocSproutError(f"{primary}: field 'theme.style_picker' must be true or false. Use true to let visitors switch styles, or remove the field.")
     accent = theme.get("accent", preset_accent)
     if not isinstance(accent, str) or not HEX_COLOR.fullmatch(accent):
         raise DocSproutError(
@@ -494,7 +497,7 @@ def load_config(root: Path, *, require_listed_documents: bool = True) -> SiteCon
     return SiteConfig(
         name=project["name"].strip(), description=project.get("description") or "",
         repository_url=project.get("repository_url"), site_url=project.get("site_url"),
-        accent=accent, accent_secondary=secondary, theme_style=theme_style, content_width=content_width,
+        accent=accent, accent_secondary=secondary, theme_style=theme_style, style_picker=style_picker, content_width=content_width,
         banner=banner_path,
         banner_alt=banner.get("alt") if banner else None, logo=logo, footer=footer.strip() if footer else None,
         project_links=tuple(project_links), pages=tuple(pages),

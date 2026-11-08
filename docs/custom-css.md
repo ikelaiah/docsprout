@@ -89,7 +89,7 @@ hurt readability in the themes and modes you did not check. When you write
 custom CSS, verify:
 
 - Light, Dark and System mode;
-- Classic, Paper, E-ink and Glassmorphic (visitors can switch the Style);
+- Classic, Paper, E-ink and Glassmorphic (visitors can switch them when `theme.style_picker` is on);
 - phone and desktop widths;
 - keyboard focus is still visible and the page works with a keyboard alone.
 

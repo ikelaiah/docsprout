@@ -210,6 +210,32 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('class="brand-logo" src="assets/logo.svg" alt="" aria-hidden="true"', home)
             self.assertNotIn('class="brand-mark"', home)
 
+    def test_style_picker_opt_in_adds_menu_and_restores_visitor_style(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "index.md").write_text("# Home\n\nHello.", encoding="utf-8")
+            (docs / "docsprout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "project": {"name": "Picker Demo"},
+                "theme": {"style": "paper", "style_picker": True},
+            }), encoding="utf-8")
+            (docs / "layout.json").write_text(json.dumps({
+                "schema_version": 1,
+                "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}],
+            }), encoding="utf-8")
+
+            build_site(root=root, output=root / "site", release="dev")
+
+            home = (root / "site" / "index.html").read_text(encoding="utf-8")
+            self.assertIn('id="visual-theme"', home)
+            self.assertIn('data-visual-theme="paper"', home)
+            self.assertLess(
+                home.index("readStored('docsprout-visual-theme','dockit-fp-visual-theme')"),
+                home.index('<link rel="stylesheet" href="assets/site.css?v='),
+            )
+
     def test_builds_modern_navigation_search_and_theme_tokens(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -241,7 +267,8 @@ class BuildSiteTests(unittest.TestCase):
             self.assertEqual(2, result.page_count)
             home = (root / "site" / "index.html").read_text(encoding="utf-8")
             self.assertIn('style="--dk-accent:#0f766e;--dk-accent-secondary:#0891b2"', home)
-            self.assertIn('id="visual-theme"', home)
+            self.assertNotIn('id="visual-theme"', home)
+            self.assertNotIn('docsprout-visual-theme', home)
             self.assertIn('data-visual-theme="classic"', home)
             self.assertIn('data-content-width="comfortable"', home)
             self.assertIn('<link rel="icon" href="data:image/svg+xml,', home)
@@ -253,12 +280,14 @@ class BuildSiteTests(unittest.TestCase):
             self.assertIn('data-card-count="4"', home)
             self.assertIn('data-homepage="true"', home)
             self.assertIn("<script>try{const root=document.documentElement,readStored=(primary,legacy)=>{const value=localStorage.getItem(primary);if(value!==null)return value;const previous=localStorage.getItem(legacy);", home)
-            self.assertLess(
-                home.index("readStored('docsprout-visual-theme','dockit-fp-visual-theme')"),
-                home.index('<link rel="stylesheet" href="assets/site.css?v='),
-            )
             self.assertRegex(home, r'<link rel="stylesheet" href="assets/site\.css\?v=[0-9a-f]{12}">')
             self.assertIn('class="header-controls"', home)
+            self.assertIn('<button class="display-toggle" type="button" aria-expanded="false" aria-controls="header-controls">', home)
+            self.assertIn('id="header-controls"', home)
+            # One release: no Version menu. The Display button follows search so tab order matches the phone layout.
+            self.assertNotIn('id="version-select"', home)
+            self.assertLess(home.index('class="search-control"'), home.index('class="display-toggle"'))
+            self.assertLess(home.index('class="display-toggle"'), home.index('id="header-controls"'))
             self.assertIn('aria-current="page"', home)
             self.assertIn('aria-label="Demo-FP capabilities"', home)
             self.assertIn('class="reading-progress"', home)

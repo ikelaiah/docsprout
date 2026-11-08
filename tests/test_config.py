@@ -232,6 +232,19 @@ class ConfigurationDiagnosticsTests(unittest.TestCase):
 
                 self.assertEqual(style, load_config(root).theme_style)
 
+    def test_style_picker_is_opt_in(self) -> None:
+        layout = {"schema_version": 1, "navigation": [{"title": "Start", "pages": [{"title": "Home", "path": "index.md"}]}]}
+        for theme, expected in (({}, False), ({"style_picker": True}, True)):
+            with self.subTest(theme=theme), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}, "theme": theme}, layout)
+                self.assertIs(expected, load_config(root).style_picker)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self._write_config(root, {"schema_version": 1, "project": {"name": "Demo"}, "theme": {"style_picker": "yes"}}, layout)
+            with self.assertRaisesRegex(DocSproutError, r"theme\.style_picker' must be true or false"):
+                load_config(root)
+
     def test_loads_a_supported_content_width(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

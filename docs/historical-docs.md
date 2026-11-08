@@ -2,7 +2,9 @@
 
 A historical site lets someone using version 1.0 read the version 1.0 guide,
 even after version 2.0 changes the project. DocSprout builds each release from
-the files saved in that release's Git tag.
+the files saved in that release's Git tag. Readers switch releases with the
+**Version** menu in the header, which appears only when a site has more than
+one release.
 
 If you only want the latest documentation, you can skip this page and use the
 [single-version Pages path](github-pages.md#github-pages-in-one-command).

@@ -142,7 +142,8 @@ class AccessibilityQualificationTests(unittest.TestCase):
     def test_theme_and_mode_controls_have_accessible_names_and_full_options(self) -> None:
         page = self.fixture.files["index.html"]
         self.assertIn('aria-label="Site controls"', page)
-        self.assertIn('aria-label="Documentation version"', page)
+        # Single-release fixture: the Version menu is omitted.
+        self.assertNotIn('aria-label="Documentation version"', page)
         self.assertIn('aria-label="Colour theme"', page)
         self.assertIn('aria-label="Documentation visual theme"', page)
         self.assertIn("<option value=\"system\">System</option>", page)
